@@ -115,8 +115,8 @@ impl Default for Board {
         hor_conds[5] = Some(false);
 
         let mut ver_conds = vec![None; 12];
-        ver_conds[6] = Some(true);
-        ver_conds[9] = Some(false);
+        ver_conds[6] = Some(false);
+        ver_conds[9] = Some(true);
 
         Self {
             cells,

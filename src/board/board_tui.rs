@@ -166,8 +166,8 @@ impl Board {
         for y in 0..size.y {
             for x in 0..size.x {
                 let c = match self.ver_conds[x + y * size.x] {
-                    Some(true) => '∧',
-                    Some(false) => '∨',
+                    Some(true) => '∨',
+                    Some(false) => '∧',
                     _ => continue,
                 };
                 buffer.set_val(

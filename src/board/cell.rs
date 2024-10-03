@@ -27,8 +27,8 @@ impl Cell {
     }
 
     /// Gets [`Cell`] value
-    pub fn value(&self) -> &usize {
-        &self.value
+    pub fn value(&self) -> usize {
+        self.value
     }
 
     /// Gets whether [`Cell`] is enabled

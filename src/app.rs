@@ -15,10 +15,11 @@ use termint::{
     widgets::{Layout, Paragraph, StrSpanExtension},
 };
 
-use crate::{board::board_struct::Board, error::Error};
+use crate::{board::board_struct::Board, error::Error, solver::SolverType};
 
 pub struct App {
     board: Board,
+    solver: SolverType,
     term: Term,
 }
 
@@ -27,6 +28,7 @@ impl App {
     pub fn new(size: usize) -> Self {
         Self {
             board: Board::new(size),
+            solver: SolverType::Naive,
             term: Term::new().small_screen(Self::small_screen()),
         }
     }
@@ -93,6 +95,7 @@ impl App {
             KeyCode::Down | KeyCode::Char('j') => self.board.down(),
             KeyCode::Right | KeyCode::Char('l') => self.board.right(),
             KeyCode::Left | KeyCode::Char('h') => self.board.left(),
+            KeyCode::Char('s') => _ = self.solver.solve(&mut self.board),
             KeyCode::Char(c) if c.is_numeric() => match c.to_digit(10) {
                 Some(0) => self.board.clear(),
                 Some(val) => self.board.push(val as usize),
@@ -134,6 +137,7 @@ impl Default for App {
     fn default() -> Self {
         Self {
             board: Default::default(),
+            solver: SolverType::Naive,
             term: Term::new().small_screen(Self::small_screen()),
         }
     }
