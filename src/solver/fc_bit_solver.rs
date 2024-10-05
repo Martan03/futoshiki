@@ -57,24 +57,25 @@ impl<'a> FcBitSolver<'a> {
         let id = x + y * self.board.size();
         let vals = self.values[id];
 
-        for i in 0..self.board.size() {
-            let val = vals & (1 << i);
-            if val == 0 {
+        for val in 0..self.board.size() {
+            if (vals & (1 << val)) == 0 {
                 continue;
             }
 
-            self.assign_value(val, x, y);
+            let Some((cx, cy)) = self.assign(val + 1, x, y) else {
+                return false;
+            };
             if self.solve_inner() {
                 return true;
             }
-            self.board[id].set(0);
+            self.unassign_to(val + 1, x, y, self.board.size(), cx, cy);
         }
         false
     }
 
     /// Find unassigned value with the least possible numbers
     fn find_min(&self) -> Option<(usize, usize)> {
-        let mut min_val = usize::MAX;
+        let mut min_val = u32::MAX;
         let mut min = None;
         for y in 0..self.board.size() {
             for x in 0..self.board.size() {
@@ -82,8 +83,9 @@ impl<'a> FcBitSolver<'a> {
                 if self.board[id].value() > 0 {
                     continue;
                 }
-                if self.values[id] < min_val {
-                    min_val = self.values[id];
+                let ones = self.values[id].count_ones();
+                if ones < min_val {
+                    min_val = ones;
                     min = Some((x, y));
                 }
             }
@@ -91,13 +93,60 @@ impl<'a> FcBitSolver<'a> {
         min
     }
 
-    fn assign_value(&mut self, val: usize, x: usize, y: usize) {
+    fn assign(
+        &mut self,
+        val: usize,
+        x: usize,
+        y: usize,
+    ) -> Option<(usize, usize)> {
         let id = x + y * self.board.size();
         self.board[id].set(val);
+        let bval = 1 << (val - 1);
 
+        let mut changed_x = 0;
+        let mut changed_y = 0;
         for pos in 0..self.board.size() {
-            self.values[x + pos * self.board.size()] &= !val;
-            self.values[pos + y * self.board.size()] &= !val;
+            let xid = x + pos * self.board.size();
+            if self.board[xid].value() == 0 && self.values[xid] & bval != 0 {
+                self.values[xid] &= !bval;
+                changed_x &= 1 << pos;
+            }
+
+            let yid = pos + y * self.board.size();
+            if self.board[yid].value() == 0 && self.values[yid] & bval != 0 {
+                self.values[yid] &= !bval;
+                changed_y &= 1 << pos;
+            }
+
+            if (xid != id && self.values[xid] == 0)
+                || (yid != id && self.values[yid] == 0)
+            {
+                self.unassign_to(val, x, y, pos, changed_x, changed_y);
+                return None;
+            }
+        }
+        Some((changed_x, changed_y))
+    }
+
+    fn unassign_to(
+        &mut self,
+        val: usize,
+        x: usize,
+        y: usize,
+        to: usize,
+        changed_x: usize,
+        changed_y: usize,
+    ) {
+        let id = x + y * self.board.size();
+        self.board[id].set(0);
+
+        for pos in 0..=to {
+            if changed_x & (1 << pos) != 0 {
+                self.values[x + pos * self.board.size()] |= 1 << (val - 1);
+            }
+            if changed_y & (1 << pos) != 0 {
+                self.values[pos + y * self.board.size()] |= 1 << (val - 1);
+            }
         }
     }
 
