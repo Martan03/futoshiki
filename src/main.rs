@@ -1,10 +1,12 @@
 use app::App;
+use args::Args;
 use board::board_struct::Board;
 use error::Error;
-use solver::{naive::naive_solver::NaiveSolver, Solver};
+use solver::{bt_solver::BtSolver, Solver};
 use termint::{enums::Color, widgets::StrSpanExtension};
 
 mod app;
+mod args;
 mod board;
 mod error;
 mod solver;
@@ -17,20 +19,21 @@ fn main() {
 }
 
 fn run() -> Result<(), Error> {
-    // let args = Args::parse(std::env::args())?;
-    // if args.help {
-    //     Args::help();
-    //     return Ok(());
-    // }
-    // let mut app = App::default();
-    // app.run()
-    test_solver()
+    let args = Args::parse(std::env::args())?;
+    if args.help {
+        Args::help();
+        return Ok(());
+    }
+    // let mut app = App::new(args.size, args.solver);
+    let mut app = App::default();
+    app.run()
+    // test_solver()
 }
 
 #[allow(unused)]
 fn test_solver() -> Result<(), Error> {
     let mut board = Board::default();
-    if NaiveSolver::solve(&mut board) {
+    if BtSolver::solve(&mut board) {
         println!("Solved!");
         print_board(&board);
         Ok(())

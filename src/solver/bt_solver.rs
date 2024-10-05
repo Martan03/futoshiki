@@ -1,18 +1,19 @@
 use crate::{board::board_struct::Board, solver::Solver};
 
+/// Backtracking solver
 #[derive(Debug, PartialEq)]
-pub struct NaiveSolver<'a> {
+pub struct BtSolver<'a> {
     board: &'a mut Board,
 }
 
-impl<'a> Solver<'a> for NaiveSolver<'a> {
+impl<'a> Solver<'a> for BtSolver<'a> {
     fn solve(board: &'a mut Board) -> bool {
         let mut solver = Self { board };
         solver.solve_inner(0, 0)
     }
 }
 
-impl<'a> NaiveSolver<'a> {
+impl<'a> BtSolver<'a> {
     /// Recursive solver, which tries every value, until it finds solution
     fn solve_inner(&mut self, mut x: usize, mut y: usize) -> bool {
         if x == self.board.size() {

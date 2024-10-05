@@ -25,10 +25,10 @@ pub struct App {
 
 impl App {
     /// Creates new [`App`]
-    pub fn new(size: usize) -> Self {
+    pub fn new(size: usize, solver: SolverType) -> Self {
         Self {
             board: Board::new(size),
-            solver: SolverType::Naive,
+            solver,
             term: Term::new().small_screen(Self::small_screen()),
         }
     }
@@ -97,7 +97,6 @@ impl App {
             KeyCode::Left | KeyCode::Char('h') => self.board.left(),
             KeyCode::Char('s') => _ = self.solver.solve(&mut self.board),
             KeyCode::Char(c) if c.is_numeric() => match c.to_digit(10) {
-                Some(0) => self.board.clear(),
                 Some(val) => self.board.push(val as usize),
                 _ => {}
             },
@@ -137,7 +136,7 @@ impl Default for App {
     fn default() -> Self {
         Self {
             board: Default::default(),
-            solver: SolverType::Naive,
+            solver: SolverType::ForwardBitCheck,
             term: Term::new().small_screen(Self::small_screen()),
         }
     }

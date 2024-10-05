@@ -1,8 +1,11 @@
-use naive::naive_solver::NaiveSolver;
+use bt_solver::BtSolver;
+use fc_bit_solver::FcBitSolver;
 
 use crate::board::board_struct::Board;
 
-pub mod naive;
+pub mod bt_solver;
+pub mod fc_bit_solver;
+pub mod fc_solver;
 
 pub trait Solver<'a> {
     /// Solves given board and returns Some(board) when solvable, else None
@@ -11,13 +14,15 @@ pub trait Solver<'a> {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SolverType {
-    Naive,
+    Backtrack,
+    ForwardBitCheck,
 }
 
 impl SolverType {
     pub fn solve(&self, board: &mut Board) -> bool {
         match self {
-            SolverType::Naive => NaiveSolver::solve(board),
+            SolverType::Backtrack => BtSolver::solve(board),
+            SolverType::ForwardBitCheck => FcBitSolver::solve(board),
         }
     }
 }
