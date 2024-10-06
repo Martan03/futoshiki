@@ -3,7 +3,7 @@ use std::{
     ops::{Index, IndexMut},
 };
 
-use termint::geometry::Coords;
+use termint::geometry::{Rect, Vec2};
 
 use super::cell::Cell;
 
@@ -13,7 +13,7 @@ pub struct Board {
     cells: Vec<Cell>,
     pub hor_conds: Vec<Option<bool>>,
     pub ver_conds: Vec<Option<bool>>,
-    pub selected: Coords,
+    pub selected: Vec2,
     size: usize,
 }
 
@@ -24,7 +24,7 @@ impl Board {
             cells: vec![Cell::empty(); size * size],
             hor_conds: vec![None; size * size.saturating_sub(1)],
             ver_conds: vec![None; size * size.saturating_sub(1)],
-            selected: Coords::new(0, 0),
+            selected: Vec2::new(0, 0),
             size,
         }
     }
@@ -32,6 +32,11 @@ impl Board {
     /// Gets the size of the [`Board`]
     pub fn size(&self) -> usize {
         self.size
+    }
+
+    /// Gets rectangle of the [`Board`]
+    pub fn rect(&self) -> Rect {
+        Rect::new(0, 0, self.size, self.size)
     }
 
     /// Pushes the given digit to the selected cell
@@ -84,10 +89,10 @@ impl Index<usize> for Board {
     }
 }
 
-impl Index<Coords> for Board {
+impl Index<Vec2> for Board {
     type Output = Cell;
 
-    fn index(&self, index: Coords) -> &Self::Output {
+    fn index(&self, index: Vec2) -> &Self::Output {
         &self.cells[index.x + index.y * self.size]
     }
 }
@@ -98,8 +103,8 @@ impl IndexMut<usize> for Board {
     }
 }
 
-impl IndexMut<Coords> for Board {
-    fn index_mut(&mut self, index: Coords) -> &mut Self::Output {
+impl IndexMut<Vec2> for Board {
+    fn index_mut(&mut self, index: Vec2) -> &mut Self::Output {
         &mut self.cells[index.x + index.y * self.size]
     }
 }
@@ -122,7 +127,7 @@ impl Default for Board {
             cells,
             hor_conds,
             ver_conds,
-            selected: Coords::new(0, 0),
+            selected: Vec2::new(0, 0),
             size: 4,
         }
     }

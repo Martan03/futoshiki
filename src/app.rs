@@ -12,7 +12,7 @@ use termint::{
     geometry::{Constraint, TextAlign},
     paragraph,
     term::Term,
-    widgets::{Layout, Paragraph, StrSpanExtension},
+    widgets::{Layout, Paragraph, Spacer, StrSpanExtension},
 };
 
 use crate::{board::board_struct::Board, error::Error, solver::SolverType};
@@ -66,14 +66,16 @@ impl App {
     /// Renders the [`App`]
     fn render(&mut self) -> Result<(), Error> {
         let mut game = Layout::vertical().center();
-        game.add_child(self.board.clone(), Constraint::Min(0));
+        game.push(self.board.clone(), Constraint::Min(0));
 
         let mut wrapper = Layout::horizontal().center();
-        wrapper.add_child(game, Constraint::Min(0));
+        wrapper.push(game, Constraint::Min(0));
 
         let mut main = Layout::vertical();
-        main.add_child(wrapper, Constraint::Fill);
-        main.add_child(self.render_help(), Constraint::Min(0));
+        main.push(Spacer::new(), Constraint::Fill(1));
+        main.push(wrapper, Constraint::Min(0));
+        main.push(Spacer::new(), Constraint::Fill(1));
+        main.push(self.render_help(), Constraint::Min(0));
 
         self.term.render(main)?;
         Ok(())
@@ -109,13 +111,13 @@ impl App {
     /// Small screen to be displayed, when game can't fit
     fn small_screen() -> Layout {
         let mut layout = Layout::vertical().center();
-        layout.add_child(
+        layout.push(
             "Terminal too small!"
                 .modifier(Modifier::BOLD)
                 .align(TextAlign::Center),
             Constraint::Min(0),
         );
-        layout.add_child(
+        layout.push(
             "You have to increase terminal size".align(TextAlign::Center),
             Constraint::Min(0),
         );

@@ -1,7 +1,7 @@
 use termint::{
     buffer::Buffer,
     enums::{Color, Modifier},
-    geometry::Coords,
+    geometry::Vec2,
     style::Style,
     widgets::Widget,
 };
@@ -18,11 +18,11 @@ impl Widget for Board {
         self.render_hor_conds(buffer);
     }
 
-    fn height(&self, _size: &Coords) -> usize {
+    fn height(&self, _size: &Vec2) -> usize {
         self.size() * 2 + 1
     }
 
-    fn width(&self, _size: &Coords) -> usize {
+    fn width(&self, _size: &Vec2) -> usize {
         self.size() * 4 + 1
     }
 }
@@ -46,15 +46,15 @@ impl Board {
             (x, _) if x + 1 == self.size() => ("╆━━━┪", "╄━━━┩"),
             _ => ("╆━━━╅", "╄━━━╃"),
         };
-        buffer.set_str(top, &Coords::new(sel_x, sel_y));
-        buffer.set_str(bottom, &Coords::new(sel_x, sel_y + 2));
-        buffer.set_val('┃', &Coords::new(sel_x, sel_y + 1));
-        buffer.set_val('┃', &Coords::new(sel_x + 4, sel_y + 1));
+        buffer.set_str(top, &Vec2::new(sel_x, sel_y));
+        buffer.set_str(bottom, &Vec2::new(sel_x, sel_y + 2));
+        buffer.set_val('┃', &Vec2::new(sel_x, sel_y + 1));
+        buffer.set_val('┃', &Vec2::new(sel_x + 4, sel_y + 1));
     }
 
     /// Renders cells
     fn render_cells(&self, buffer: &mut Buffer) {
-        let mut coords = Coords::new(buffer.x() + 2, buffer.y() + 1);
+        let mut coords = Vec2::new(buffer.x() + 2, buffer.y() + 1);
         let mut id = 0;
         for _ in 0..self.size() {
             for _ in 0..self.size() {
@@ -87,17 +87,17 @@ impl Board {
 
         buffer.set_str_styled(
             "───┬".repeat(self.size()),
-            &Coords::new(buffer.x() + 1, buffer.y()),
+            &Vec2::new(buffer.x() + 1, buffer.y()),
             Style::new().fg(Color::Gray),
         );
         buffer.set_str_styled(
             "───┴".repeat(self.size()),
-            &Coords::new(buffer.x() + 1, buffer.y() + bottom),
+            &Vec2::new(buffer.x() + 1, buffer.y() + bottom),
             Style::new().fg(Color::Gray),
         );
 
-        let mut leftc = Coords::new(buffer.x(), buffer.y() + 1);
-        let mut rightc = Coords::new(buffer.x() + right, buffer.y() + 1);
+        let mut leftc = Vec2::new(buffer.x(), buffer.y() + 1);
+        let mut rightc = Vec2::new(buffer.x() + right, buffer.y() + 1);
         for _ in buffer.y()..buffer.y() + self.size() {
             Board::border_part('│', buffer, &leftc);
             leftc.y += 1;
@@ -110,7 +110,7 @@ impl Board {
             rightc.y += 1;
         }
 
-        let mut pos = buffer.pos();
+        let mut pos = buffer.pos().clone();
         Board::border_part('┌', buffer, &pos);
         pos.x += right;
         Board::border_part('┐', buffer, &pos);
@@ -126,7 +126,7 @@ impl Board {
         for y in 1..self.size() {
             buffer.set_str_styled(
                 &line,
-                &Coords::new(buffer.x() + 1, buffer.y() + y * 2),
+                &Vec2::new(buffer.x() + 1, buffer.y() + y * 2),
                 Style::new().fg(Color::Gray),
             );
         }
@@ -135,14 +135,14 @@ impl Board {
         for y in 0..self.size() {
             buffer.set_str_styled(
                 &line,
-                &Coords::new(buffer.x() + 1, buffer.y() + y * 2 + 1),
+                &Vec2::new(buffer.x() + 1, buffer.y() + y * 2 + 1),
                 Style::new().fg(Color::Gray),
             )
         }
     }
 
     fn render_hor_conds(&self, buffer: &mut Buffer) {
-        let size = Coords::new(self.size().saturating_sub(1), self.size());
+        let size = Vec2::new(self.size().saturating_sub(1), self.size());
         for y in 0..size.y {
             for x in 0..size.x {
                 let c = match self.hor_conds[x + y * size.x] {
@@ -152,17 +152,14 @@ impl Board {
                 };
                 buffer.set_val(
                     c,
-                    &Coords::new(
-                        buffer.x() + x * 4 + 4,
-                        buffer.y() + y * 2 + 1,
-                    ),
+                    &Vec2::new(buffer.x() + x * 4 + 4, buffer.y() + y * 2 + 1),
                 );
             }
         }
     }
 
     fn render_ver_conds(&self, buffer: &mut Buffer) {
-        let size = Coords::new(self.size(), self.size().saturating_sub(1));
+        let size = Vec2::new(self.size(), self.size().saturating_sub(1));
         for y in 0..size.y {
             for x in 0..size.x {
                 let c = match self.ver_conds[x + y * size.x] {
@@ -172,17 +169,14 @@ impl Board {
                 };
                 buffer.set_val(
                     c,
-                    &Coords::new(
-                        buffer.x() + x * 4 + 2,
-                        buffer.y() + y * 2 + 2,
-                    ),
+                    &Vec2::new(buffer.x() + x * 4 + 2, buffer.y() + y * 2 + 2),
                 );
             }
         }
     }
 
     /// Renders part of the border
-    fn border_part(val: char, buffer: &mut Buffer, pos: &Coords) {
+    fn border_part(val: char, buffer: &mut Buffer, pos: &Vec2) {
         buffer.set_val(val, pos);
         buffer.set_fg(Color::Gray, pos);
     }
