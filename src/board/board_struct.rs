@@ -54,6 +54,13 @@ impl Board {
         _ = self[sel].set(val);
     }
 
+    /// Pops the last digit from current value
+    pub fn pop(&mut self) {
+        let sel = self.selected.x + self.selected.y * self.size;
+        let val = self[sel].value() / 10;
+        self[sel].set(val);
+    }
+
     /// Clears selected cell
     pub fn clear(&mut self) {
         let sel = self.selected.x + self.selected.y * self.size;
@@ -78,6 +85,11 @@ impl Board {
     /// Moves selected up
     pub fn right(&mut self) {
         self.selected.x = min(self.selected.x + 1, self.size - 1);
+    }
+
+    /// Sets selected cell to given position
+    pub fn set_selected(&mut self, pos: Vec2) {
+        self.selected = pos;
     }
 }
 

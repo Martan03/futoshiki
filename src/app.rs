@@ -9,7 +9,7 @@ use crossterm::{
 };
 use termint::{
     enums::{Color, Modifier},
-    geometry::{Constraint, TextAlign},
+    geometry::{Constraint, TextAlign, Vec2},
     paragraph,
     term::Term,
     widgets::{Layout, Paragraph, Spacer, StrSpanExtension},
@@ -17,8 +17,29 @@ use termint::{
 
 use crate::{board::board_struct::Board, error::Error, solver::SolverType};
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+enum Action {
+    Greater,
+    Lower,
+    Clear,
+    #[default]
+    None,
+}
+
+impl Action {
+    pub fn inverse(self) -> Self {
+        match self {
+            Action::Greater => Action::Lower,
+            Action::Lower => Action::Greater,
+            act => act,
+        }
+    }
+}
+
+#[derive(Debug)]
 pub struct App {
     board: Board,
+    action: Action,
     solver: SolverType,
     term: Term,
 }
@@ -28,6 +49,7 @@ impl App {
     pub fn new(size: usize, solver: SolverType) -> Self {
         Self {
             board: Board::new(size),
+            action: Default::default(),
             solver,
             term: Term::new().small_screen(Self::small_screen()),
         }
@@ -93,15 +115,20 @@ impl App {
     /// Handles key events
     fn key_handler(&mut self, event: KeyEvent) -> Result<(), Error> {
         match event.code {
-            KeyCode::Up | KeyCode::Char('k') => self.board.up(),
-            KeyCode::Down | KeyCode::Char('j') => self.board.down(),
-            KeyCode::Right | KeyCode::Char('l') => self.board.right(),
-            KeyCode::Left | KeyCode::Char('h') => self.board.left(),
+            KeyCode::Up | KeyCode::Char('k') => self.move_neg((0, 1)),
+            KeyCode::Down | KeyCode::Char('j') => self.move_pos((0, 1)),
+            KeyCode::Right | KeyCode::Char('l') => self.move_pos((1, 0)),
+            KeyCode::Left | KeyCode::Char('h') => self.move_neg((1, 0)),
             KeyCode::Char('s') => _ = self.solver.solve(&mut self.board),
+            KeyCode::Char('>') => self.action = Action::Greater,
+            KeyCode::Char('<') => self.action = Action::Lower,
+            KeyCode::Char('c') => self.action = Action::Clear,
             KeyCode::Char(c) if c.is_numeric() => match c.to_digit(10) {
                 Some(val) => self.board.push(val as usize),
                 _ => {}
             },
+            KeyCode::Backspace => self.board.pop(),
+            KeyCode::Delete => self.board.clear(),
             KeyCode::Char('q') | KeyCode::Esc => return Err(Error::Exit),
             _ => return Ok(()),
         }
@@ -138,8 +165,67 @@ impl Default for App {
     fn default() -> Self {
         Self {
             board: Default::default(),
+            action: Default::default(),
             solver: SolverType::ForwardBitCheck,
             term: Term::new().small_screen(Self::small_screen()),
+        }
+    }
+}
+
+impl App {
+    fn move_pos<T>(&mut self, dir: T)
+    where
+        T: Into<Vec2>,
+    {
+        let dir = dir.into();
+        match self.board.selected + dir {
+            pos if pos.x < self.board.size() && pos.y < self.board.size() => {
+                self.board_move(pos, dir);
+            }
+            _ => {}
+        }
+        self.action = Action::None;
+    }
+
+    fn move_neg<T>(&mut self, dir: T)
+    where
+        T: Into<Vec2>,
+    {
+        let dir = dir.into();
+        self.action = self.action.inverse();
+        match self.board.selected.checked_sub(dir) {
+            Some(mpos) => self.board_move(mpos, dir),
+            None => {}
+        }
+        self.action = Action::None;
+    }
+
+    fn board_move(&mut self, mpos: Vec2, dir: Vec2) {
+        match self.action {
+            Action::Greater => self.set_cond(mpos, dir, Some(true)),
+            Action::Lower => self.set_cond(mpos, dir, Some(false)),
+            Action::Clear => self.set_cond(mpos, dir, None),
+            Action::None => {}
+        }
+        self.board.set_selected(mpos);
+    }
+
+    fn set_cond(&mut self, mpos: Vec2, dir: Vec2, cond: Option<bool>) {
+        let mut cpos = self.board.selected;
+        if mpos.x <= cpos.x && mpos.y <= cpos.y {
+            cpos = mpos;
+        }
+
+        match dir {
+            Vec2 { x, y: 0 } if x != 0 => {
+                let id = cpos.x + cpos.y * self.board.size().saturating_sub(1);
+                self.board.hor_conds[id] = cond;
+            }
+            Vec2 { x: 0, y } if y != 0 => {
+                let id = cpos.x + cpos.y * self.board.size();
+                self.board.ver_conds[id] = cond;
+            }
+            _ => return,
         }
     }
 }
