@@ -4,7 +4,7 @@ use crate::board::board_struct::Board;
 
 use super::Solver;
 
-/// Forward check solver that uses bitmaps for available numbers (domains).
+/// Forward checking solver that uses bitmaps for available numbers (domains).
 /// Supports boards smaller then 64
 #[derive(Debug, PartialEq)]
 pub struct FcBitSolver<'a> {
@@ -19,17 +19,13 @@ impl<'a> Solver<'a> for FcBitSolver<'a> {
             values: vec![],
         };
         solver.board.disable_vals();
-
-        solver.gen_values();
-        solver.apply_conds();
-
-        solver.solve_inner()
+        solver.gen_values() && solver.apply_conds() && solver.solve_inner()
     }
 }
 
 impl<'a> FcBitSolver<'a> {
     /// Generates the cell domains (possible values for each cell)
-    fn gen_values(&mut self) {
+    fn gen_values(&mut self) -> bool {
         let mut rows = vec![];
         let mut cols = vec![];
 
@@ -47,20 +43,23 @@ impl<'a> FcBitSolver<'a> {
             cols.push(col);
         }
 
-        for pos in self.board.rect().into_iter() {
+        for pos in self.board.rect() {
             let val = match self.board[pos].enabled() {
                 true => rows[pos.y] & cols[pos.x],
                 false => self.cell_to_bit(pos.x, pos.y),
             };
+            if val == 0 {
+                return false;
+            }
             self.values.push(val);
         }
+        true
     }
 
     /// Applies all the conditions
     fn apply_conds(&mut self) -> bool {
         let lsize = self.board.size().saturating_sub(1);
-        let rect = Rect::new(0, 0, lsize, self.board.size());
-        for pos in rect.into_iter() {
+        for pos in Rect::new(0, 0, lsize, self.board.size()) {
             let mut changed = false;
             let spos = Vec2::new(pos.x + 1, pos.y);
 
@@ -91,14 +90,16 @@ impl<'a> FcBitSolver<'a> {
 
         let id = x + y * self.board.size();
         for val in 0..self.board.size() {
-            let vals = self.values.clone();
-            let board = self.board.get_cells();
-
             if (self.values[id] & (1 << val)) == 0 {
                 continue;
             }
 
+            let vals = self.values.clone();
+            let board = self.board.get_cells();
+
             if !self.assign(val + 1, x, y) {
+                self.board.cells(board);
+                self.values = vals;
                 return false;
             };
             if self.solve_inner() {
@@ -115,7 +116,7 @@ impl<'a> FcBitSolver<'a> {
         let mut min_val = u32::MAX;
         let mut min = None;
 
-        for pos in self.board.rect().into_iter() {
+        for pos in self.board.rect() {
             let id = pos.x + pos.y * self.board.size();
             if self.board[id].value() > 0 {
                 continue;

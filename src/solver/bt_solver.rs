@@ -72,6 +72,7 @@ impl<'a> BtSolver<'a> {
         )
     }
 
+    /// Checks if the condition is valid
     fn check_cond<F>(
         &self,
         val: usize,
@@ -99,6 +100,7 @@ impl<'a> BtSolver<'a> {
         }
     }
 
+    /// Checks if the given position is valid (less then the maximum value)
     fn check_cond_pos(
         x: usize,
         y: usize,

@@ -7,11 +7,11 @@ use super::cell::Cell;
 /// Represents the game board of Futoshiki
 #[derive(Debug, Clone, PartialEq)]
 pub struct Board {
-    cells: Vec<Cell>,
+    pub cells: Vec<Cell>,
     pub hor_conds: Vec<Option<bool>>,
     pub ver_conds: Vec<Option<bool>>,
     pub selected: Vec2,
-    size: usize,
+    pub size: usize,
 }
 
 impl Board {

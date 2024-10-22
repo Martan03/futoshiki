@@ -50,3 +50,12 @@ impl Default for Cell {
         }
     }
 }
+
+impl From<i32> for Cell {
+    fn from(value: i32) -> Self {
+        Self {
+            value: value as usize,
+            enabled: true,
+        }
+    }
+}

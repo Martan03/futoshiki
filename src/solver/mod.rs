@@ -12,6 +12,7 @@ pub trait Solver<'a> {
     fn solve(board: &'a mut Board) -> bool;
 }
 
+/// Enum containing all available solver types
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SolverType {
     Backtrack,
@@ -19,6 +20,7 @@ pub enum SolverType {
 }
 
 impl SolverType {
+    /// Solves the board using the corresponding solver algorithm
     pub fn solve(&self, board: &mut Board) -> bool {
         match self {
             SolverType::Backtrack => BtSolver::solve(board),
@@ -26,14 +28,3 @@ impl SolverType {
         }
     }
 }
-
-// 2 1
-// 1 1 hor
-// 2 0 ver
-// 2 1 hor
-// 2 1 ver
-
-// 1 4 2 3
-// 4 3 1 2
-// 3 2 4 1
-// 2 1 3 4

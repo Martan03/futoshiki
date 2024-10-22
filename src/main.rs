@@ -10,6 +10,7 @@ mod args;
 mod board;
 mod error;
 mod solver;
+mod tests;
 
 fn main() {
     if let Err(e) = run() {
