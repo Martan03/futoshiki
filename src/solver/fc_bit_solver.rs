@@ -4,7 +4,7 @@ use crate::board::board_struct::Board;
 
 use super::Solver;
 
-/// Forward check solver that uses bitmaps for available numbers.
+/// Forward check solver that uses bitmaps for available numbers (domains).
 /// Supports boards smaller then 64
 #[derive(Debug, PartialEq)]
 pub struct FcBitSolver<'a> {
@@ -57,26 +57,38 @@ impl<'a> FcBitSolver<'a> {
     }
 
     /// Applies all the conditions
-    fn apply_conds(&mut self) {
+    fn apply_conds(&mut self) -> bool {
         let lsize = self.board.size().saturating_sub(1);
         let rect = Rect::new(0, 0, lsize, self.board.size());
         for pos in rect.into_iter() {
+            let mut changed = false;
             let spos = Vec2::new(pos.x + 1, pos.y);
-            match self.board.hor_conds[pos.x + pos.y * lsize] {
-                Some(true) => _ = self.apply_cond(pos, spos),
-                Some(false) => _ = self.apply_cond(spos, pos),
-                None => {}
-            }
-            match self.board.ver_conds[pos.y + pos.x * self.board.size()] {
-                Some(true) => {
-                    _ = self.apply_cond(pos.inverse(), spos.inverse())
-                }
-                Some(false) => {
-                    _ = self.apply_cond(spos.inverse(), pos.inverse())
-                }
-                None => {}
+
+            let cond = self.board.hor_conds[pos.x + pos.y * lsize];
+            let Some((f, s)) = self.check_cond(pos, spos, cond) else {
+                return false;
+            };
+            changed = changed || f;
+            if s && !self.check_conds(spos.x, spos.y) {
+                return false;
+            };
+
+            let cond = self.board.ver_conds[pos.y + pos.x * self.board.size()];
+            let Some((f, s)) =
+                self.check_cond(pos.inverse(), spos.inverse(), cond)
+            else {
+                return false;
+            };
+            changed = changed || f;
+            if s && !self.check_conds(spos.y, spos.x) {
+                return false;
+            };
+
+            if changed && !self.check_conds(pos.x, pos.y) {
+                return false;
             }
         }
+        true
     }
 
     /// Solves the board using the forward checking, returns true on success
@@ -86,20 +98,23 @@ impl<'a> FcBitSolver<'a> {
         };
 
         let id = x + y * self.board.size();
-        let vals = self.values[id];
-
         for val in 0..self.board.size() {
-            if (vals & (1 << val)) == 0 {
+            let vals = self.values.clone();
+            let board = self.board.get_cells();
+
+            if (self.values[id] & (1 << val)) == 0 {
                 continue;
             }
 
-            let Some(changed) = self.assign(val + 1, x, y) else {
+            if !self.assign(val + 1, x, y) {
                 return false;
             };
             if self.solve_inner() {
                 return true;
             }
-            self.unassign_to(val + 1, x, y, self.board.size(), changed);
+            self.board.cells(board);
+            self.values = vals;
+            // self.unassign_to(val + 1, x, y, self.board.size(), changed);
         }
         false
     }
@@ -125,43 +140,35 @@ impl<'a> FcBitSolver<'a> {
 
     /// Assigns given value to cell on given coordinates and removes the value
     /// from the neighbor domains
-    fn assign(
-        &mut self,
-        val: usize,
-        x: usize,
-        y: usize,
-    ) -> Option<Vec<usize>> {
+    fn assign(&mut self, val: usize, x: usize, y: usize) -> bool {
         let id = x + y * self.board.size();
         self.board[id].set(val);
         let bval = 1 << (val - 1);
 
-        let mut changed = vec![0; self.board.size()];
         for pos in 0..self.board.size() {
-            let yid = x + pos * self.board.size();
-            if self.board[yid].value() == 0 && self.values[yid] & bval != 0 {
-                self.values[yid] &= !bval;
-                changed[pos] &= 1 << pos;
-            }
-
-            let xid = pos + y * self.board.size();
-            if self.board[xid].value() == 0 && self.values[xid] & bval != 0 {
-                self.values[xid] &= !bval;
-                changed[y] &= 1 << pos;
-            }
-
-            if (xid != id && self.values[xid] == 0)
-                || (yid != id && self.values[yid] == 0)
+            if !self.rem_val(id, bval, x, pos)
+                || !self.rem_val(id, bval, pos, y)
             {
-                self.unassign_to(val, x, y, pos, changed);
-                return None;
+                return false;
             }
         }
-        Some(changed)
+        true
+    }
+
+    /// Removes the given value from the domain on given coordinates and
+    /// checks/applies the conditions
+    fn rem_val(&mut self, cid: usize, val: usize, x: usize, y: usize) -> bool {
+        let id = x + y * self.board.size();
+        if self.board[id].value() != 0 || self.values[id] & val == 0 {
+            return true;
+        }
+        self.values[id] &= !val;
+        self.check_conds(x, y) && (cid == id || self.values[id] != 0)
     }
 
     /// Unassignes the given value from given coordinates and adds it to
     /// neighbor domains which were affected
-    fn unassign_to(
+    fn _unassign_to(
         &mut self,
         val: usize,
         x: usize,
@@ -183,49 +190,92 @@ impl<'a> FcBitSolver<'a> {
     }
 
     /// Good idea, but have to differentiate horizontal conds and vertical
-    fn check_conds(&self, x: usize, y: usize) -> bool {
-        if let Some(xs) = x.checked_sub(1) {}
+    fn check_conds(&mut self, x: usize, y: usize) -> bool {
+        let pos = Vec2::new(x, y);
+        let lsize = self.board.size().saturating_sub(1);
+
+        let mut changed = false;
+        if let Some(xs) = x.checked_sub(1) {
+            let cond = self.board.hor_conds[xs + y * lsize];
+            let Some((_, s)) = self.check_cond(Vec2::new(xs, y), pos, cond)
+            else {
+                return false;
+            };
+            if s && !self.check_conds(xs, y) {
+                return false;
+            }
+        }
         if let Some(ys) = y.checked_sub(1) {
-            todo!()
+            let cond = self.board.ver_conds[x + ys * self.board.size()];
+            let Some((f, s)) = self.check_cond(Vec2::new(x, ys), pos, cond)
+            else {
+                return false;
+            };
+            changed = changed || f;
+            if s && !self.check_conds(x, ys) {
+                return false;
+            }
         }
 
-        let lsize = self.board.size().saturating_sub(1);
         if x < lsize {
-            todo!()
+            let cond = self.board.hor_conds[x + y * lsize];
+            let Some((f, s)) = self.check_cond(pos, Vec2::new(x + 1, y), cond)
+            else {
+                return false;
+            };
+            changed = changed || f;
+            if s && !self.check_conds(x + 1, y) {
+                return false;
+            }
         }
         if y < lsize {
-            todo!()
+            let cond = self.board.ver_conds[x + y * self.board.size()];
+            let Some((f, s)) = self.check_cond(pos, Vec2::new(x, y + 1), cond)
+            else {
+                return false;
+            };
+            changed = changed || f;
+            if s && !self.check_conds(x, y + 1) {
+                return false;
+            }
         }
-        todo!()
+
+        !changed || self.check_conds(x, y)
     }
 
-    fn check_cond<F>(&mut self, fpos: Vec2, spos: Vec2, cond: Option<bool>) {
+    /// Checks condition on given positions and with given condition
+    fn check_cond(
+        &mut self,
+        fpos: Vec2,
+        spos: Vec2,
+        cond: Option<bool>,
+    ) -> Option<(bool, bool)> {
         match cond {
-            Some(true) => _ = self.apply_cond(fpos, spos),
-            Some(false) => _ = self.apply_cond(spos, fpos),
-            None => {}
+            Some(true) => self.apply_cond(fpos, spos),
+            Some(false) => self.apply_cond(spos, fpos),
+            None => Some((false, false)),
         }
     }
 
     /// Applies the condition, return whether the cells changed
-    fn apply_cond(&mut self, fpos: Vec2, spos: Vec2) -> (bool, bool) {
+    fn apply_cond(&mut self, fpos: Vec2, spos: Vec2) -> Option<(bool, bool)> {
         let fid = fpos.x + fpos.y * self.board.size();
         let sid = spos.x + spos.y * self.board.size();
 
-        let schange = self.apply_cond_mask(sid, self.get_max_mask(fid));
-        let fchange = self.apply_cond_mask(fid, self.get_min_mask(sid));
-        (fchange, schange)
+        let fchange = self.apply_cond_mask(fid, self.get_min_mask(sid))?;
+        let schange = self.apply_cond_mask(sid, self.get_max_mask(fid))?;
+        Some((fchange, schange))
     }
 
     /// Applies the given mask to the cell, returns true when changed
-    fn apply_cond_mask(&mut self, sid: usize, mask: usize) -> bool {
+    fn apply_cond_mask(&mut self, sid: usize, mask: usize) -> Option<bool> {
         if !self.board[sid].enabled() {
-            return false;
+            return Some(false);
         }
         let val = self.values[sid] & mask;
         let change = self.values[sid] != val;
         self.values[sid] = val;
-        change
+        (val != 0).then_some(change)
     }
 
     /// Gets max value mask

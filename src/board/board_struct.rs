@@ -84,6 +84,16 @@ impl Board {
             }
         }
     }
+
+    /// Clones current cells vector
+    pub fn get_cells(&self) -> Vec<Cell> {
+        self.cells.clone()
+    }
+
+    /// Sets cells to given value
+    pub fn cells(&mut self, cells: Vec<Cell>) {
+        self.cells = cells;
+    }
 }
 
 impl Index<usize> for Board {

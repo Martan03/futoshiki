@@ -2,6 +2,7 @@ use crate::board::board_struct::Board;
 
 use super::Solver;
 
+#[allow(unused)]
 pub struct FcSolver<'a> {
     board: &'a mut Board,
 }
@@ -14,7 +15,7 @@ impl<'a> Solver<'a> for FcSolver<'a> {
 }
 
 impl<'a> FcSolver<'a> {
-    fn gen_values(&mut self) {
+    fn _gen_values(&mut self) {
         let mut rows = vec![];
         let mut cols = vec![];
 
@@ -23,8 +24,8 @@ impl<'a> FcSolver<'a> {
             let mut col: Vec<usize> = (0..self.board.size()).collect();
 
             for x in 0..self.board.size() {
-                self.rem_val(&mut row, x + y * self.board.size());
-                self.rem_val(&mut col, y + x * self.board.size());
+                self._rem_val(&mut row, x + y * self.board.size());
+                self._rem_val(&mut col, y + x * self.board.size());
             }
 
             rows.push(row);
@@ -36,7 +37,7 @@ impl<'a> FcSolver<'a> {
         todo!()
     }
 
-    fn rem_val(&self, arr: &mut Vec<usize>, id: usize) {
+    fn _rem_val(&self, arr: &mut Vec<usize>, id: usize) {
         let val = self.board[id].value();
         if val == 0 {
             return;

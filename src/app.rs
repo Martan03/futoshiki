@@ -131,6 +131,7 @@ impl App {
             KeyCode::Backspace => self.board.pop(),
             KeyCode::Delete => self.board.clear(),
             KeyCode::Char('r') => self.board.reset(),
+            KeyCode::Char('d') => self.board = Board::default(),
             KeyCode::Char('q') | KeyCode::Esc => return Err(Error::Exit),
             _ => return Ok(()),
         }
@@ -175,6 +176,7 @@ impl Default for App {
 }
 
 impl App {
+    /// Moves in positive direction with action check
     fn move_pos<T>(&mut self, dir: T)
     where
         T: Into<Vec2>,
@@ -189,6 +191,7 @@ impl App {
         self.action = Action::None;
     }
 
+    /// Moves in negative direction with action check
     fn move_neg<T>(&mut self, dir: T)
     where
         T: Into<Vec2>,
@@ -201,6 +204,7 @@ impl App {
         self.action = Action::None;
     }
 
+    /// Moves selection to given position, sets the condition based on action
     fn board_move(&mut self, mpos: Vec2, dir: Vec2) {
         match self.action {
             Action::Greater => self.set_cond(mpos, dir, Some(true)),
@@ -211,6 +215,7 @@ impl App {
         self.board.set_selected(mpos);
     }
 
+    /// Sets the condition to given value between the two positions given
     fn set_cond(&mut self, mpos: Vec2, dir: Vec2, cond: Option<bool>) {
         let mut cpos = self.board.selected;
         if mpos.x <= cpos.x && mpos.y <= cpos.y {
