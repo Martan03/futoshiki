@@ -65,24 +65,16 @@ impl<'a> FcBitSolver<'a> {
             let spos = Vec2::new(pos.x + 1, pos.y);
 
             let cond = self.board.hor_conds[pos.x + pos.y * lsize];
-            let Some((f, s)) = self.check_cond(pos, spos, cond) else {
-                return false;
-            };
-            changed = changed || f;
-            if s && !self.check_conds(spos.x, spos.y) {
-                return false;
-            };
+            match self.check_cond(pos, spos, cond, true) {
+                Some(c) => changed = changed || c,
+                None => return false,
+            }
 
             let cond = self.board.ver_conds[pos.y + pos.x * self.board.size()];
-            let Some((f, s)) =
-                self.check_cond(pos.inverse(), spos.inverse(), cond)
-            else {
-                return false;
-            };
-            changed = changed || f;
-            if s && !self.check_conds(spos.y, spos.x) {
-                return false;
-            };
+            match self.check_cond(pos.inverse(), spos.inverse(), cond, true) {
+                Some(c) => changed = changed || c,
+                None => return false,
+            }
 
             if changed && !self.check_conds(pos.x, pos.y) {
                 return false;
@@ -114,7 +106,6 @@ impl<'a> FcBitSolver<'a> {
             }
             self.board.cells(board);
             self.values = vals;
-            // self.unassign_to(val + 1, x, y, self.board.size(), changed);
         }
         false
     }
@@ -197,46 +188,31 @@ impl<'a> FcBitSolver<'a> {
         let mut changed = false;
         if let Some(xs) = x.checked_sub(1) {
             let cond = self.board.hor_conds[xs + y * lsize];
-            let Some((_, s)) = self.check_cond(Vec2::new(xs, y), pos, cond)
-            else {
-                return false;
-            };
-            if s && !self.check_conds(xs, y) {
-                return false;
+            match self.check_cond(Vec2::new(xs, y), pos, cond, false) {
+                Some(c) => changed = changed || c,
+                None => return false,
             }
         }
         if let Some(ys) = y.checked_sub(1) {
             let cond = self.board.ver_conds[x + ys * self.board.size()];
-            let Some((f, s)) = self.check_cond(Vec2::new(x, ys), pos, cond)
-            else {
-                return false;
-            };
-            changed = changed || f;
-            if s && !self.check_conds(x, ys) {
-                return false;
+            match self.check_cond(Vec2::new(x, ys), pos, cond, false) {
+                Some(c) => changed = changed || c,
+                None => return false,
             }
         }
 
         if x < lsize {
             let cond = self.board.hor_conds[x + y * lsize];
-            let Some((f, s)) = self.check_cond(pos, Vec2::new(x + 1, y), cond)
-            else {
-                return false;
-            };
-            changed = changed || f;
-            if s && !self.check_conds(x + 1, y) {
-                return false;
+            match self.check_cond(pos, Vec2::new(x + 1, y), cond, true) {
+                Some(c) => changed = changed || c,
+                None => return false,
             }
         }
         if y < lsize {
             let cond = self.board.ver_conds[x + y * self.board.size()];
-            let Some((f, s)) = self.check_cond(pos, Vec2::new(x, y + 1), cond)
-            else {
-                return false;
-            };
-            changed = changed || f;
-            if s && !self.check_conds(x, y + 1) {
-                return false;
+            match self.check_cond(pos, Vec2::new(x, y + 1), cond, true) {
+                Some(c) => changed = changed || c,
+                None => return false,
             }
         }
 
@@ -249,12 +225,16 @@ impl<'a> FcBitSolver<'a> {
         fpos: Vec2,
         spos: Vec2,
         cond: Option<bool>,
-    ) -> Option<(bool, bool)> {
-        match cond {
-            Some(true) => self.apply_cond(fpos, spos),
-            Some(false) => self.apply_cond(spos, fpos),
-            None => Some((false, false)),
-        }
+        pos: bool,
+    ) -> Option<bool> {
+        let (f, s) = match cond {
+            Some(true) => self.apply_cond(fpos, spos)?,
+            Some(false) => self.apply_cond(spos, fpos)?,
+            None => return Some(false),
+        };
+        (!s || ((!pos || self.check_conds(spos.x, spos.y))
+            && (pos || self.check_conds(fpos.x, fpos.y))))
+        .then_some(f)
     }
 
     /// Applies the condition, return whether the cells changed
