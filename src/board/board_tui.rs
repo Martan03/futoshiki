@@ -110,7 +110,7 @@ impl Board {
             rightc.y += 1;
         }
 
-        let mut pos = buffer.pos().clone();
+        let mut pos = *buffer.pos();
         Board::border_part('┌', buffer, &pos);
         pos.x += right;
         Board::border_part('┐', buffer, &pos);

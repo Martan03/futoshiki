@@ -24,8 +24,8 @@ fn run() -> Result<(), Error> {
         Args::help();
         return Ok(());
     }
-    let mut app = App::new(args.size, args.solver);
-    // let mut app = App::default();
+    // let mut app = App::new(args.size, args.solver);
+    let mut app = App::default();
     app.run()
     // test_solver()
 }

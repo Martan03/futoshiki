@@ -123,12 +123,14 @@ impl App {
             KeyCode::Char('>') => self.action = Action::Greater,
             KeyCode::Char('<') => self.action = Action::Lower,
             KeyCode::Char('c') => self.action = Action::Clear,
-            KeyCode::Char(c) if c.is_numeric() => match c.to_digit(10) {
-                Some(val) => self.board.push(val as usize),
-                _ => {}
-            },
+            KeyCode::Char(c) if c.is_numeric() => {
+                if let Some(val) = c.to_digit(10) {
+                    self.board.push(val as usize);
+                }
+            }
             KeyCode::Backspace => self.board.pop(),
             KeyCode::Delete => self.board.clear(),
+            KeyCode::Char('r') => self.board.reset(),
             KeyCode::Char('q') | KeyCode::Esc => return Err(Error::Exit),
             _ => return Ok(()),
         }
@@ -193,9 +195,8 @@ impl App {
     {
         let dir = dir.into();
         self.action = self.action.inverse();
-        match self.board.selected.checked_sub(dir) {
-            Some(mpos) => self.board_move(mpos, dir),
-            None => {}
+        if let Some(mpos) = self.board.selected.checked_sub(dir) {
+            self.board_move(mpos, dir);
         }
         self.action = Action::None;
     }
@@ -225,7 +226,7 @@ impl App {
                 let id = cpos.x + cpos.y * self.board.size();
                 self.board.ver_conds[id] = cond;
             }
-            _ => return,
+            _ => (),
         }
     }
 }

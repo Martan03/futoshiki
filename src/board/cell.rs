@@ -35,6 +35,11 @@ impl Cell {
     pub fn enabled(&self) -> bool {
         self.enabled
     }
+
+    /// Disables the [`Cell`]
+    pub fn disable(&mut self) {
+        self.enabled = false;
+    }
 }
 
 impl Default for Cell {

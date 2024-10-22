@@ -1,7 +1,4 @@
-use std::{
-    cmp::min,
-    ops::{Index, IndexMut},
-};
+use std::ops::{Index, IndexMut};
 
 use termint::geometry::{Rect, Vec2};
 
@@ -27,6 +24,13 @@ impl Board {
             selected: Vec2::new(0, 0),
             size,
         }
+    }
+
+    /// Resets the [`Board`] to be the same size but empty
+    pub fn reset(&mut self) {
+        self.hor_conds = vec![None; self.size * self.size.saturating_sub(1)];
+        self.ver_conds = vec![None; self.size * self.size.saturating_sub(1)];
+        self.cells = vec![Cell::empty(); self.size * self.size];
     }
 
     /// Gets the size of the [`Board`]
@@ -67,29 +71,18 @@ impl Board {
         _ = self[sel].set(0);
     }
 
-    /// Moves selected up
-    pub fn up(&mut self) {
-        self.selected.y = self.selected.y.saturating_sub(1);
-    }
-
-    /// Moves selected up
-    pub fn down(&mut self) {
-        self.selected.y = min(self.selected.y + 1, self.size - 1);
-    }
-
-    /// Moves selected up
-    pub fn left(&mut self) {
-        self.selected.x = self.selected.x.saturating_sub(1);
-    }
-
-    /// Moves selected up
-    pub fn right(&mut self) {
-        self.selected.x = min(self.selected.x + 1, self.size - 1);
-    }
-
     /// Sets selected cell to given position
     pub fn set_selected(&mut self, pos: Vec2) {
         self.selected = pos;
+    }
+
+    /// Disables all non-zero values
+    pub fn disable_vals(&mut self) {
+        for pos in Rect::new(0, 0, self.size, self.size) {
+            if self[pos].value() != 0 {
+                self[pos].disable();
+            }
+        }
     }
 }
 

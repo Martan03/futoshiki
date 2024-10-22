@@ -44,15 +44,13 @@ impl<'a> BtSolver<'a> {
 
     /// Checks if the given value can be inserted on the given coordinates
     fn is_valid(&self, val: usize, x: usize, y: usize) -> bool {
-        let mut pos = 0;
         // Checks row and column uniqueness
-        for _ in 0..self.board.size() {
-            if self.board[x + pos * self.board.size()].value() == val {
-                return false;
-            } else if self.board[pos + y * self.board.size()].value() == val {
+        for (pos, _) in (0..self.board.size()).enumerate() {
+            if self.board[x + pos * self.board.size()].value() == val
+                || self.board[pos + y * self.board.size()].value() == val
+            {
                 return false;
             }
-            pos += 1;
         }
 
         // Checks conditions
