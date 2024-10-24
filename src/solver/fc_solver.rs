@@ -21,7 +21,9 @@ impl<'a> Solver<'a> for FcSolver<'a> {
             values: vec![],
         };
         solver.board.disable_vals();
-        solver.gen_values() && solver.apply_conds() && solver.solve_inner()
+        solver.gen_values();
+        solver.apply_conds();
+        solver.solve_inner()
     }
 }
 
@@ -32,8 +34,8 @@ impl<'a> FcSolver<'a> {
         let mut cols = vec![];
 
         for y in 0..self.board.size() {
-            let mut row: HashSet<usize> = (0..self.board.size()).collect();
-            let mut col: HashSet<usize> = (0..self.board.size()).collect();
+            let mut row: HashSet<usize> = (1..=self.board.size()).collect();
+            let mut col: HashSet<usize> = (1..=self.board.size()).collect();
 
             for x in 0..self.board.size() {
                 row.remove(&self.board[x + y * self.board.size()].value());
@@ -45,8 +47,10 @@ impl<'a> FcSolver<'a> {
         }
 
         for pos in self.board.rect() {
-            let val: HashSet<usize> = match self.board[pos].enabled() {
-                true => rows[pos.y].union(&cols[pos.x]).cloned().collect(),
+            let mut val: HashSet<usize> = match self.board[pos].enabled() {
+                true => {
+                    rows[pos.y].intersection(&cols[pos.x]).cloned().collect()
+                }
                 false => {
                     let id = pos.x + pos.y * self.board.size();
                     [self.board[id].value()].iter().cloned().collect()
@@ -55,6 +59,7 @@ impl<'a> FcSolver<'a> {
             if val.is_empty() {
                 return false;
             }
+            val.shrink_to_fit();
             self.values.push(val);
         }
         true
@@ -96,17 +101,16 @@ impl<'a> FcSolver<'a> {
         let values: Vec<usize> = self.values[id].iter().cloned().collect();
         for val in values {
             let vals = self.values.clone();
-            let board = self.board.get_cells();
 
             if !self.assign(val, x, y) {
-                self.board.cells(board);
+                self.board[id].set(0);
                 self.values = vals;
                 return false;
             }
             if self.solve_inner() {
                 return true;
             }
-            self.board.cells(board);
+            self.board[id].set(0);
             self.values = vals;
         }
         false
@@ -119,7 +123,7 @@ impl<'a> FcSolver<'a> {
 
         for pos in self.board.rect() {
             let id = pos.x + pos.y * self.board.size();
-            if self.board[id].enabled() {
+            if self.board[id].value() > 0 {
                 continue;
             }
 
@@ -218,21 +222,32 @@ impl<'a> FcSolver<'a> {
         let fid = fpos.x + fpos.y * self.board.size();
         let sid = spos.x + spos.y * self.board.size();
 
-        let max = self.values[sid].iter().max().copied().unwrap_or(0);
-        let fchange = self.apply_cond_val(fid, max)?;
+        let min = self.values[sid].iter().min().copied().unwrap_or(0);
+        let fchange = self.rem_lower_vals(fid, min)?;
 
-        let min = self.values[fid].iter().min().copied().unwrap_or(0);
-        let schange = self.apply_cond_val(sid, min)?;
+        let max = self.values[fid].iter().max().copied().unwrap_or(0);
+        let schange = self.rem_greater_vals(sid, max)?;
 
         Some((fchange, schange))
     }
 
-    /// Applies the given mask to the cell, returns true when changed
-    fn apply_cond_val(&mut self, id: usize, val: usize) -> Option<bool> {
+    /// Removes values greater or equal to given value
+    fn rem_greater_vals(&mut self, id: usize, val: usize) -> Option<bool> {
         if !self.board[id].enabled() {
             return Some(false);
         }
-        let change = self.values[id].remove(&val);
-        (!self.values[id].is_empty()).then_some(change)
+        let len = self.values[id].len();
+        self.values[id].retain(|&v| v < val);
+        (!self.values[id].is_empty()).then_some(self.values[id].len() != len)
+    }
+
+    /// Removes values lower or equal to given value
+    fn rem_lower_vals(&mut self, id: usize, val: usize) -> Option<bool> {
+        if !self.board[id].enabled() {
+            return Some(false);
+        }
+        let len = self.values[id].len();
+        self.values[id].retain(|&v| v > val);
+        (!self.values[id].is_empty()).then_some(self.values[id].len() != len)
     }
 }

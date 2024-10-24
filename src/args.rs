@@ -62,6 +62,12 @@ impl Args {
             "bt" | "backtrack" | "backtracking" => {
                 self.solver = SolverType::Backtrack;
             }
+            "fcb" | "forward-check-bit" | "forward-checking-bit" => {
+                self.solver = SolverType::ForwardBitCheck;
+            }
+            "fc" | "forward-check" | "forward-checking" => {
+                self.solver = SolverType::ForwardCheck;
+            }
             _ => return Err("invalid solver option".into()),
         }
         Ok(())

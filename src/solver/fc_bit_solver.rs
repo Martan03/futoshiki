@@ -95,17 +95,16 @@ impl<'a> FcBitSolver<'a> {
             }
 
             let vals = self.values.clone();
-            let board = self.board.get_cells();
 
             if !self.assign(val + 1, x, y) {
-                self.board.cells(board);
+                self.board[id].set(0);
                 self.values = vals;
                 return false;
             };
             if self.solve_inner() {
                 return true;
             }
-            self.board.cells(board);
+            self.board[id].set(0);
             self.values = vals;
         }
         false

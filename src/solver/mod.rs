@@ -1,5 +1,6 @@
 use bt_solver::BtSolver;
 use fc_bit_solver::FcBitSolver;
+use fc_solver::FcSolver;
 
 use crate::board::board_struct::Board;
 
@@ -17,6 +18,7 @@ pub trait Solver<'a> {
 pub enum SolverType {
     Backtrack,
     ForwardBitCheck,
+    ForwardCheck,
 }
 
 impl SolverType {
@@ -25,6 +27,7 @@ impl SolverType {
         match self {
             SolverType::Backtrack => BtSolver::solve(board),
             SolverType::ForwardBitCheck => FcBitSolver::solve(board),
+            SolverType::ForwardCheck => FcSolver::solve(board),
         }
     }
 }
