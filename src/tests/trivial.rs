@@ -23,7 +23,7 @@ fn get_trivial() -> Board {
 
 #[test]
 fn bt_solver_test() {
-    let mut board = get_trivial();
+    let mut board =  get_trivial();
     assert!(BtSolver::solve(&mut board));
     assert!(Checker::check(&board));
 }

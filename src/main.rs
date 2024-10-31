@@ -16,6 +16,7 @@ mod board;
 mod error;
 mod solver;
 mod tests;
+mod tui;
 
 fn main() {
     if let Err(e) = run() {

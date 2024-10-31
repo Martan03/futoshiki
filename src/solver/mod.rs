@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use bt_solver::BtSolver;
 use fc_bit_solver::FcBitSolver;
 use fc_solver::FcSolver;
@@ -28,6 +30,31 @@ impl SolverType {
             SolverType::Backtrack => BtSolver::solve(board),
             SolverType::ForwardBitCheck => FcBitSolver::solve(board),
             SolverType::ForwardCheck => FcSolver::solve(board),
+        }
+    }
+
+    /// Gets all solvers
+    pub fn solvers() -> &'static [Self] {
+        &[Self::Backtrack, Self::ForwardBitCheck, Self::ForwardCheck]
+    }
+
+    /// Gets solver type based on the given id
+    pub fn get(id: usize) -> Self {
+        match id {
+            0 => Self::Backtrack,
+            1 => Self::ForwardBitCheck,
+            2 => Self::ForwardCheck,
+            _ => panic!("Unknown solver ID"),
+        }
+    }
+}
+
+impl Display for SolverType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            SolverType::Backtrack => write!(f, "Backtracking"),
+            SolverType::ForwardBitCheck => write!(f, "Forward bit checking"),
+            SolverType::ForwardCheck => write!(f, "Forward checking"),
         }
     }
 }

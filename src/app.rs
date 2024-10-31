@@ -1,24 +1,25 @@
 use std::{
+    cell::RefCell,
     io::{stdout, Write},
+    rc::Rc,
     time::Duration,
 };
 
 use crossterm::{
-    event::{poll, read, Event, KeyCode, KeyEvent},
+    event::{poll, read, Event, KeyEvent},
     terminal::{disable_raw_mode, enable_raw_mode},
 };
 use termint::{
-    enums::{Color, Modifier},
-    geometry::{Constraint, TextAlign, Vec2},
-    paragraph,
+    enums::Modifier,
+    geometry::{Constraint, TextAlign},
     term::Term,
-    widgets::{Layout, Paragraph, Spacer, StrSpanExtension},
+    widgets::{Layout, ListState, StrSpanExtension},
 };
 
 use crate::{board::board_struct::Board, error::Error, solver::SolverType};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-enum Action {
+pub enum Action {
     Greater,
     Lower,
     Clear,
@@ -36,12 +37,25 @@ impl Action {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum Screen {
+    Builder,
+    Game,
+    #[default]
+    ModePicker,
+    SolverPicker,
+}
+
 #[derive(Debug)]
 pub struct App {
-    board: Board,
-    action: Action,
-    solver: SolverType,
-    term: Term,
+    pub board: Board,
+    pub action: Action,
+    pub solver: SolverType,
+    pub screen: Screen,
+    pub term: Term,
+
+    pub mp_state: Rc<RefCell<ListState>>,
+    pub sp_state: Rc<RefCell<ListState>>,
 }
 
 impl App {
@@ -51,7 +65,11 @@ impl App {
             board: Board::new(size),
             action: Default::default(),
             solver,
+            screen: Default::default(),
             term: Term::new().small_screen(Self::small_screen()),
+
+            mp_state: Rc::new(RefCell::new(ListState::selected(0, 0))),
+            sp_state: Rc::new(RefCell::new(ListState::selected(0, 0))),
         }
     }
 
@@ -86,20 +104,14 @@ impl App {
     }
 
     /// Renders the [`App`]
-    fn render(&mut self) -> Result<(), Error> {
-        let mut game = Layout::vertical().center();
-        game.push(self.board.clone(), Constraint::Min(0));
-
-        let mut wrapper = Layout::horizontal().center();
-        wrapper.push(game, Constraint::Min(0));
-
-        let mut main = Layout::vertical();
-        main.push(Spacer::new(), Constraint::Fill(1));
-        main.push(wrapper, Constraint::Min(0));
-        main.push(Spacer::new(), Constraint::Fill(1));
-        main.push(self.render_help(), Constraint::Min(0));
-
-        self.term.render(main)?;
+    pub fn render(&mut self) -> Result<(), Error> {
+        let screen = match self.screen {
+            Screen::Builder => self.render_builder(),
+            Screen::Game => self.render_game(),
+            Screen::ModePicker => self.render_mp(),
+            Screen::SolverPicker => self.render_sp(),
+        };
+        self.term.render(screen)?;
         Ok(())
     }
 
@@ -114,28 +126,12 @@ impl App {
 
     /// Handles key events
     fn key_handler(&mut self, event: KeyEvent) -> Result<(), Error> {
-        match event.code {
-            KeyCode::Up | KeyCode::Char('k') => self.move_neg((0, 1)),
-            KeyCode::Down | KeyCode::Char('j') => self.move_pos((0, 1)),
-            KeyCode::Right | KeyCode::Char('l') => self.move_pos((1, 0)),
-            KeyCode::Left | KeyCode::Char('h') => self.move_neg((1, 0)),
-            KeyCode::Char('s') => _ = self.solver.solve(&mut self.board),
-            KeyCode::Char('>') => self.action = Action::Greater,
-            KeyCode::Char('<') => self.action = Action::Lower,
-            KeyCode::Char('c') => self.action = Action::Clear,
-            KeyCode::Char(c) if c.is_numeric() => {
-                if let Some(val) = c.to_digit(10) {
-                    self.board.push(val as usize);
-                }
-            }
-            KeyCode::Backspace => self.board.pop(),
-            KeyCode::Delete => self.board.clear(),
-            KeyCode::Char('r') => self.board.reset(),
-            KeyCode::Char('d') => self.board = Board::default(),
-            KeyCode::Char('q') | KeyCode::Esc => return Err(Error::Exit),
-            _ => return Ok(()),
+        match self.screen {
+            Screen::Builder => self.listen_builder(event),
+            Screen::Game => self.listen_game(event),
+            Screen::ModePicker => self.listen_mp(event),
+            Screen::SolverPicker => self.listen_sp(event),
         }
-        self.render()
     }
 
     /// Small screen to be displayed, when game can't fit
@@ -153,15 +149,6 @@ impl App {
         );
         layout
     }
-
-    /// Renders the help screen
-    fn render_help(&self) -> Paragraph {
-        paragraph!(
-            "[Arrows/hjkl]Move".fg(Color::Gray),
-            "[Esc|q]Quit".fg(Color::Gray),
-        )
-        .separator(" ")
-    }
 }
 
 impl Default for App {
@@ -170,68 +157,11 @@ impl Default for App {
             board: Default::default(),
             action: Default::default(),
             solver: SolverType::ForwardBitCheck,
+            screen: Default::default(),
             term: Term::new().small_screen(Self::small_screen()),
-        }
-    }
-}
 
-impl App {
-    /// Moves in positive direction with action check
-    fn move_pos<T>(&mut self, dir: T)
-    where
-        T: Into<Vec2>,
-    {
-        let dir = dir.into();
-        match self.board.selected + dir {
-            pos if pos.x < self.board.size() && pos.y < self.board.size() => {
-                self.board_move(pos, dir);
-            }
-            _ => {}
-        }
-        self.action = Action::None;
-    }
-
-    /// Moves in negative direction with action check
-    fn move_neg<T>(&mut self, dir: T)
-    where
-        T: Into<Vec2>,
-    {
-        let dir = dir.into();
-        self.action = self.action.inverse();
-        if let Some(mpos) = self.board.selected.checked_sub(dir) {
-            self.board_move(mpos, dir);
-        }
-        self.action = Action::None;
-    }
-
-    /// Moves selection to given position, sets the condition based on action
-    fn board_move(&mut self, mpos: Vec2, dir: Vec2) {
-        match self.action {
-            Action::Greater => self.set_cond(mpos, dir, Some(true)),
-            Action::Lower => self.set_cond(mpos, dir, Some(false)),
-            Action::Clear => self.set_cond(mpos, dir, None),
-            Action::None => {}
-        }
-        self.board.set_selected(mpos);
-    }
-
-    /// Sets the condition to given value between the two positions given
-    fn set_cond(&mut self, mpos: Vec2, dir: Vec2, cond: Option<bool>) {
-        let mut cpos = self.board.selected;
-        if mpos.x <= cpos.x && mpos.y <= cpos.y {
-            cpos = mpos;
-        }
-
-        match dir {
-            Vec2 { x, y: 0 } if x != 0 => {
-                let id = cpos.x + cpos.y * self.board.size().saturating_sub(1);
-                self.board.hor_conds[id] = cond;
-            }
-            Vec2 { x: 0, y } if y != 0 => {
-                let id = cpos.x + cpos.y * self.board.size();
-                self.board.ver_conds[id] = cond;
-            }
-            _ => (),
+            mp_state: Rc::new(RefCell::new(ListState::selected(0, 0))),
+            sp_state: Rc::new(RefCell::new(ListState::selected(0, 0))),
         }
     }
 }
