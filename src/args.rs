@@ -91,7 +91,7 @@ impl Default for Args {
     fn default() -> Self {
         Self {
             size: 4,
-            solver: SolverType::Backtrack,
+            solver: SolverType::ForwardBitCheck,
             help: false,
         }
     }

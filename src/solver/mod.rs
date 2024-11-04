@@ -47,6 +47,15 @@ impl SolverType {
             _ => panic!("Unknown solver ID"),
         }
     }
+
+    /// Gets id of the current solver
+    pub fn get_id(&self) -> usize {
+        match self {
+            SolverType::Backtrack => 0,
+            SolverType::ForwardBitCheck => 1,
+            SolverType::ForwardCheck => 2,
+        }
+    }
 }
 
 impl Display for SolverType {

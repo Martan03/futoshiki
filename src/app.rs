@@ -39,10 +39,8 @@ impl Action {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum Screen {
-    Builder,
-    Game,
     #[default]
-    ModePicker,
+    Builder,
     SolverPicker,
 }
 
@@ -51,25 +49,22 @@ pub struct App {
     pub board: Board,
     pub action: Action,
     pub solver: SolverType,
-    pub screen: Screen,
     pub term: Term,
-
-    pub mp_state: Rc<RefCell<ListState>>,
+    pub screen: Screen,
     pub sp_state: Rc<RefCell<ListState>>,
 }
 
 impl App {
     /// Creates new [`App`]
     pub fn new(size: usize, solver: SolverType) -> Self {
+        let solver_id = solver.get_id();
         Self {
             board: Board::new(size),
             action: Default::default(),
             solver,
-            screen: Default::default(),
             term: Term::new().small_screen(Self::small_screen()),
-
-            mp_state: Rc::new(RefCell::new(ListState::selected(0, 0))),
-            sp_state: Rc::new(RefCell::new(ListState::selected(0, 0))),
+            screen: Default::default(),
+            sp_state: Rc::new(RefCell::new(ListState::selected(0, solver_id))),
         }
     }
 
@@ -107,8 +102,6 @@ impl App {
     pub fn render(&mut self) -> Result<(), Error> {
         let screen = match self.screen {
             Screen::Builder => self.render_builder(),
-            Screen::Game => self.render_game(),
-            Screen::ModePicker => self.render_mp(),
             Screen::SolverPicker => self.render_sp(),
         };
         self.term.render(screen)?;
@@ -128,8 +121,6 @@ impl App {
     fn key_handler(&mut self, event: KeyEvent) -> Result<(), Error> {
         match self.screen {
             Screen::Builder => self.listen_builder(event),
-            Screen::Game => self.listen_game(event),
-            Screen::ModePicker => self.listen_mp(event),
             Screen::SolverPicker => self.listen_sp(event),
         }
     }
@@ -157,10 +148,8 @@ impl Default for App {
             board: Default::default(),
             action: Default::default(),
             solver: SolverType::ForwardBitCheck,
-            screen: Default::default(),
             term: Term::new().small_screen(Self::small_screen()),
-
-            mp_state: Rc::new(RefCell::new(ListState::selected(0, 0))),
+            screen: Default::default(),
             sp_state: Rc::new(RefCell::new(ListState::selected(0, 0))),
         }
     }

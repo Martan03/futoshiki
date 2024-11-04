@@ -1,17 +1,36 @@
 use crossterm::event::{KeyCode, KeyEvent};
-use termint::{geometry::Vec2, widgets::Element};
+use termint::{
+    enums::Color,
+    geometry::{Constraint, Vec2},
+    paragraph,
+    widgets::{Element, Layout, Paragraph, Spacer, StrSpanExtension},
+};
 
 use crate::{
     app::{Action, App, Screen},
-    board::board_struct::Board,
+    board::{board_gen::BoardGen, board_struct::Board},
     error::Error,
 };
 
 impl App {
+    /// Renders the buildren screen
     pub fn render_builder(&mut self) -> Element {
-        self.render_game()
+        let mut game = Layout::vertical().center();
+        game.push(self.board.clone(), 0..);
+
+        let mut wrapper = Layout::horizontal().center();
+        wrapper.push(game, 0..);
+
+        let mut main = Layout::vertical();
+        main.push(Spacer::new(), Constraint::Fill(1));
+        main.push(wrapper, 0..);
+        main.push(Spacer::new(), Constraint::Fill(1));
+        main.push(self.render_builder_help(), 0..);
+
+        main.into()
     }
 
+    /// Handles key events while in builder screen
     pub fn listen_builder(&mut self, event: KeyEvent) -> Result<(), Error> {
         match event.code {
             KeyCode::Up | KeyCode::Char('k') => self.move_neg((0, 1)),
@@ -29,7 +48,15 @@ impl App {
             }
             KeyCode::Backspace => self.board.pop(),
             KeyCode::Delete => self.board.clear(),
-            KeyCode::Tab => self.screen = Screen::SolverPicker,
+            KeyCode::Tab => {
+                self.sp_state.borrow_mut().selected =
+                    Some(self.solver.get_id());
+                self.screen = Screen::SolverPicker;
+            }
+            KeyCode::Enter => {
+                self.board = BoardGen::generate(self.board.size);
+                self.board.disable_vals();
+            }
             KeyCode::Char('r') => self.board.reset(),
             KeyCode::Char('d') => self.board = Board::default(),
             KeyCode::Char('q') | KeyCode::Esc => return Err(Error::Exit),
@@ -40,6 +67,19 @@ impl App {
 }
 
 impl App {
+    /// Renders the game help screen
+    fn render_builder_help(&self) -> Paragraph {
+        paragraph!(
+            "[Arrows/hjkl]Move".fg(Color::Gray),
+            "[</>+Arrows]Add cond.".fg(Color::Gray),
+            "[c+Arrows]Remove cond.".fg(Color::Gray),
+            "[Numbers]Place num.".fg(Color::Gray),
+            "[Del]Clear cell".fg(Color::Gray),
+            "[Esc|q]Quit".fg(Color::Gray),
+        )
+        .separator(" ")
+    }
+
     /// Moves in positive direction with action check
     fn move_pos<T>(&mut self, dir: T)
     where

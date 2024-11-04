@@ -2,7 +2,7 @@ use crossterm::event::{KeyCode, KeyEvent};
 use termint::{
     enums::Color,
     style::Style,
-    widgets::{Block, Element, Layout, List},
+    widgets::{Block, Element, Layout, List, Overlay, StrSpanExtension},
 };
 
 use crate::{
@@ -20,16 +20,21 @@ impl App {
             .collect();
 
         let list = List::new(solvers, self.sp_state.clone())
-            .selected_style(Style::new().fg(Color::Cyan));
-        let mut block = Block::vertical().title("Solver picker");
+            .selected_style(Style::new().fg(Color::Cyan))
+            .auto_scroll();
+        let mut block = Block::vertical()
+            .title("Solver picker".fg(Color::Default))
+            .border_style(Style::new().fg(Color::Default))
+            .style(Style::new().fg(Color::Default).bg(Color::Default));
         block.push(list, 0..);
 
-        let mut wrapper = Layout::vertical().center();
-        wrapper.push(block, 0..);
-        let mut layout = Layout::horizontal().center();
+        let mut wrapper = Layout::horizontal().center();
+        wrapper.push(block, 23);
+        let mut layout = Layout::vertical().center();
         layout.push(wrapper, 0..);
 
-        layout.into()
+        let overlay = Overlay::new(vec![self.render_builder(), layout.into()]);
+        Element::new(overlay)
     }
 
     /// Handles key events when in solver picker screens
@@ -37,10 +42,15 @@ impl App {
         match event.code {
             KeyCode::Enter => {
                 self.sp_select_screen();
+                self.screen = Screen::Builder;
                 return Ok(self.render()?);
             }
             KeyCode::Up | KeyCode::Char('k') => self.sp_checked_sub(),
             KeyCode::Down | KeyCode::Char('j') => self.sp_checked_add(),
+            KeyCode::Tab => {
+                self.screen = Screen::Builder;
+                return Ok(self.render()?);
+            }
             KeyCode::Char('q') | KeyCode::Esc => return Err(Error::Exit),
             _ => return Ok(()),
         };
@@ -57,7 +67,6 @@ impl App {
         };
 
         self.solver = SolverType::get(sel);
-        self.screen = Screen::Builder;
     }
 
     /// Sets selected mode to the next value if next exists
