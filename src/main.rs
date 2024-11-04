@@ -13,6 +13,7 @@ use termint::{
 mod app;
 mod args;
 mod board;
+mod checker;
 mod error;
 mod solver;
 mod tests;

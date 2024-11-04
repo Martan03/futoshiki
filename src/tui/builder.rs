@@ -7,8 +7,9 @@ use termint::{
 };
 
 use crate::{
-    app::{Action, App, Screen},
+    app::{Action, App, Screen, State},
     board::{board_gen::BoardGen, board_struct::Board},
+    checker::Checker,
     error::Error,
 };
 
@@ -16,6 +17,7 @@ impl App {
     /// Renders the buildren screen
     pub fn render_builder(&mut self) -> Element {
         let mut game = Layout::vertical().center();
+        game.push(self.state.to_string(), 0..);
         game.push(self.board.clone(), 0..);
 
         let mut wrapper = Layout::horizontal().center();
@@ -37,13 +39,21 @@ impl App {
             KeyCode::Down | KeyCode::Char('j') => self.move_pos((0, 1)),
             KeyCode::Right | KeyCode::Char('l') => self.move_pos((1, 0)),
             KeyCode::Left | KeyCode::Char('h') => self.move_neg((1, 0)),
-            KeyCode::Char('s') => _ = self.solver.solve(&mut self.board),
+            KeyCode::Char('s') => {
+                self.state = match self.solver.solve(&mut self.board) {
+                    true => State::Solved,
+                    false => State::Unsolvable,
+                };
+            }
             KeyCode::Char('>') => self.action = Action::Greater,
             KeyCode::Char('<') => self.action = Action::Lower,
             KeyCode::Char('c') => self.action = Action::Clear,
             KeyCode::Char(c) if c.is_numeric() => {
                 if let Some(val) = c.to_digit(10) {
                     self.board.push(val as usize);
+                    if Checker::check(&self.board) {
+                        self.state = State::Solved;
+                    }
                 }
             }
             KeyCode::Backspace => self.board.pop(),
@@ -56,6 +66,7 @@ impl App {
             KeyCode::Enter => {
                 self.board = BoardGen::generate(self.board.size);
                 self.board.disable_vals();
+                self.state = State::Playing;
             }
             KeyCode::Char('r') => self.board.reset(),
             KeyCode::Char('d') => self.board = Board::default(),

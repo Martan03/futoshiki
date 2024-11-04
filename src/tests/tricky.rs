@@ -2,11 +2,11 @@ use termint::geometry::Vec2;
 
 use crate::{
     board::{board_struct::Board, cell::Cell},
+    checker::Checker,
     solver::{
         bt_solver::BtSolver, fc_bit_solver::FcBitSolver, fc_solver::FcSolver,
         Solver,
     },
-    tests::checker::Checker,
 };
 
 /// Gets tricky futoshiki board

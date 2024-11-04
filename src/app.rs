@@ -1,5 +1,6 @@
 use std::{
     cell::RefCell,
+    fmt::Display,
     io::{stdout, Write},
     rc::Rc,
     time::Duration,
@@ -44,11 +45,30 @@ pub enum Screen {
     SolverPicker,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum State {
+    #[default]
+    Playing,
+    Solved,
+    Unsolvable,
+}
+
+impl Display for State {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            State::Playing => Ok(()),
+            State::Solved => write!(f, "Solved"),
+            State::Unsolvable => write!(f, "Unsolvable"),
+        }
+    }
+}
+
 #[derive(Debug)]
 pub struct App {
     pub board: Board,
     pub action: Action,
     pub solver: SolverType,
+    pub state: State,
     pub term: Term,
     pub screen: Screen,
     pub sp_state: Rc<RefCell<ListState>>,
@@ -62,6 +82,7 @@ impl App {
             board: Board::new(size),
             action: Default::default(),
             solver,
+            state: Default::default(),
             term: Term::new().small_screen(Self::small_screen()),
             screen: Default::default(),
             sp_state: Rc::new(RefCell::new(ListState::selected(0, solver_id))),
@@ -148,6 +169,7 @@ impl Default for App {
             board: Default::default(),
             action: Default::default(),
             solver: SolverType::ForwardBitCheck,
+            state: Default::default(),
             term: Term::new().small_screen(Self::small_screen()),
             screen: Default::default(),
             sp_state: Rc::new(RefCell::new(ListState::selected(0, 0))),

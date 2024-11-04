@@ -2,11 +2,11 @@ use termint::geometry::Vec2;
 
 use crate::{
     board::{board_struct::Board, cell::Cell},
+    checker::Checker,
     solver::{
         bt_solver::BtSolver, fc_bit_solver::FcBitSolver, fc_solver::FcSolver,
         Solver,
     },
-    tests::checker::Checker,
 };
 
 /// Gets trivial futoshiki board
@@ -23,7 +23,7 @@ fn get_trivial() -> Board {
 
 #[test]
 fn bt_solver_test() {
-    let mut board =  get_trivial();
+    let mut board = get_trivial();
     assert!(BtSolver::solve(&mut board));
     assert!(Checker::check(&board));
 }
