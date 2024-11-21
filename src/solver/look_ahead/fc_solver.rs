@@ -12,7 +12,9 @@ impl<'a> Solver<'a> for LASolver<'a, ForwardCheck> {
             _technique: ForwardCheck {},
         };
         solver.board.disable_vals();
-        solver.gen_values() && solver.apply_conds() && solver.solve_inner()
+        solver.gen_values();
+        solver.apply_conds();
+        solver.solve_inner()
     }
 }
 
@@ -31,7 +33,8 @@ impl<'a> LASolver<'a, ForwardCheck> {
             if !self.assign(val, x, y) {
                 self.board[id].set(0);
                 self.values = vals;
-                return false;
+                // TODO: I think continue is right, but why did I put return?
+                continue;
             }
             if self.solve_inner() {
                 return true;

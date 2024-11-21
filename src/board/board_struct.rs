@@ -127,23 +127,39 @@ impl IndexMut<Vec2> for Board {
 impl Default for Board {
     /// Creates a square [`Board`] with the size of 4
     fn default() -> Self {
-        let mut cells = vec![Cell::empty(); 16];
-        cells[5] = Cell::new(3);
+        // let mut cells = vec![Cell::empty(); 16];
+        // cells[5] = Cell::new(3);
 
-        let mut hor_conds = vec![None; 12];
-        hor_conds[6] = Some(true);
-        hor_conds[5] = Some(false);
+        // let mut hor_conds = vec![None; 12];
+        // hor_conds[6] = Some(true);
+        // hor_conds[5] = Some(false);
 
-        let mut ver_conds = vec![None; 12];
-        ver_conds[6] = Some(false);
-        ver_conds[9] = Some(true);
+        // let mut ver_conds = vec![None; 12];
+        // ver_conds[6] = Some(false);
+        // ver_conds[9] = Some(true);
 
-        Self {
-            cells,
-            hor_conds,
-            ver_conds,
+        // Self {
+        //     cells,
+        //     hor_conds,
+        //     ver_conds,
+        //     selected: Vec2::new(0, 0),
+        //     size: 4,
+        // }
+
+        let mut board = Board {
+            cells: vec![Cell::empty(); 16],
+            hor_conds: vec![None; 12],
+            ver_conds: vec![None; 12],
             selected: Vec2::new(0, 0),
             size: 4,
-        }
+        };
+        board.hor_conds[1] = Some(true);
+        board.hor_conds[2] = Some(true);
+        board.hor_conds[11] = Some(true);
+        board.ver_conds[0] = Some(false);
+        board.ver_conds[4] = Some(true);
+        board.ver_conds[5] = Some(false);
+        board.ver_conds[6] = Some(false);
+        board
     }
 }

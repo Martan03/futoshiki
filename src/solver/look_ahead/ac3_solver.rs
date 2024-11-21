@@ -31,7 +31,8 @@ impl<'a> LASolver<'a, ArcConsistency3> {
             if !self.assign(val, x, y) {
                 self.board[id].set(0);
                 self.values = vals;
-                return false;
+                // TODO: I think continue is right, but why did I put return?
+                continue;
             }
             if self.solve_inner() {
                 return true;
