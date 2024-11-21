@@ -14,93 +14,99 @@ automatech, které budou využití pro vytovření automatu řešitele hlavolamu
 
 \chapter{Futoshiki a algoritmy pro řešení}
 
-V této kapitole jsou podrobně popsány pravidla hry Futoshiki společně s
-algoritmy, které jsou využívány pro řešení hlavolamu. Začneme podrobným popisem
-pravidel, které je nezbytné znát pro pochopení mechanismů hry a následného
-pochopení řešících algoritmů.
+Tato kapitola se podrobně zaměřuje na pravidla hry Futoshiki a algoritmy, které
+jsou používány k jejímu řešení. Nejprve se seznámíme s pravidly, která jsou
+nezbytná pro pochopení herních mechanismů, což nám umožní lépe porozumět
+následně popsaným algoritmům pro řešení hlavolamu.
 
-Prvním a také základním algoritmem je algoritmus Backtracking. Ten funguje na
-principu systematického prozkoumávání všech možných řešení metodou pokus-omyl.
-Přestože toto řešení není nejvíce efektivní, je však klíčový pro pochopení
-dalších sofistikovanějších metod řešení hry Futoshiki.
+Prvním a základním algoritmem, který budeme zkoumat, je algoritmus
+Backtracking. Tento algoritmus využívá princip systematického prozkoumávání
+všech možných řešení metodou pokus-omyl. Ačkoli není nejefektivnější, poskytuje
+klíčový základ pro pochopení dalších sofistikovanějších metod, které lze využít
+k řešení hlavolamu Futoshiki.
 
-Následně se zaměříme na algoritmus Forward Checking a dvě jeho možné
-implementace. Tento algoritmus vylepšuje princip systematického procházení
-Backtrackingu o snižování počtu zkoušených kombinací pomocí předběžné kontroly.
+Následně se zaměříme na algoritmus Forward Checking a jeho dvě možné
+implementace. Tento algoritmus vylepšuje základní princip Backtrackingu tím, že
+předběžně kontroluje možné hodnoty, což vede ke snížení počtu zkoušených
+kombinací.
 
-Zároveň veškeré popsané algoritmu jsou i implementovány v programu, který
-umožnuje vyřešit libovolnou přížku Futoshiki, což nám umožní demonstrovat
-jejich účinnost v různých scénářích hry.
+Všechny popsané algoritmy byly implementovány v programu, který umožňuje řešení
+libovolné mřížky hlavolamu Futoshiki. Tato implementace nám poskytuje
+příležitost demonstrovat účinnost jednotlivých algoritmů v různých herních
+scénářích.
 
 \section{Pravidla hry}
 
-Futoshiki \cite{FutoshikiWiki}, také známá jako větší/menší (More or Less), je
-logická hra pocházející z Japonska a je postavena na stejném principu jako
-sudoku. Hlavolam se skládá ze čtvercové mřížky, typicky o velikosti 4x4, může
-však být i větší. Pro úspešné vyřešení musí být každé hrací pole vyplněno
-číslem od 1 do velikosti mřížky. Tato herní pole musí být vyplněna tak, aby se
-v každém řádku i sloupci čísla neopakovala. Dále také musí platit nerovnosti,
-které jsou umístěny mezi libovolné dvě hrací pole. Hra začíná s libovolným
-množstvím vyplněných herních polí a nerovností tak, aby nebyla porušena
-pravidla a aby existovalo alespoň jedno řešení. Následně hráč vyplňuje
-zbývající herní pole, podmínky však již nemění a ani netvoří nové.
+Futoshiki \cite{FutoshikiWiki}, známá také jako hra "větší/menší" (More or
+Less), je logický hlavolam pocházející z Japonska, který je založen na podobném
+principu jako sudoku. Hlavolam se skládá ze čtvercové mřížky, obvykle o
+velikosti 4x4, přičemž může být i větší. Pro úspěšné vyřešení je třeba každé
+pole v mřížce vyplnit číslem od 1 do velikosti mřížky. Dále musí platit
+pravidlo, že v každém řádku a sloupci se čísla nesmí opakovat. Kromě toho jsou
+na mřížce umístěny nerovnosti mezi některými poli, které určují vztah mezi
+dvěma čísly. Hra začíná s libovolným počtem již vyplněných polí a nerovností,
+přičemž toto počáteční rozmístění musí být v souladu s pravidly a zaručovat
+existenci alespoň jednoho řešení. Následně hráč vyplňuje zbývající pole,
+zatímco podmínky se již nemění a nepřidávají se žádné nové nerovnosti.
 
 \section{Backtracking}
 
-Backtracking \cite{PrednaskyIZU} je jednoduchý a často používaný algoritmus pro
-nalezení řešení problémů. Funguje na principu systematického prozkoumávání
-všech možných řešení metodou pokus-omyl. Začíná s jednou možností a pokračuje
-do hloubky. V případě, že aktuálně prohledávaná cesta nefunguje (nesplňuje
-podmínky,...), se vrací a zkouší jinou cestu. Takto se cyklus hledání cesty
-opakuje, dokud není nalezena cesta splňující řešení nebo nejsou projity všechny
-možné cesty.
+Backtracking \cite{PrednaskyIZU} je jednoduchý a často využívaný algoritmus pro
+řešení problémů, které vyžadují prozkoumání velkého množství možných řešení.
+Algoritmus pracuje na principu systematického prohledávání prostoru řešení
+metodou pokus-omyl. Proces začíná s jednou možnou cestou a postupuje do
+hloubky. Pokud aktuálně prohledávaná cesta nesplňuje zadané podmínky (například
+porušuje pravidla problému), algoritmus se vrací zpět k předchozímu bodu
+rozhodnutí a zkouší jinou možnost. Tento cyklus se opakuje, dokud není nalezeno
+řešení splňující všechny podmínky, nebo dokud nejsou vyčerpány všechny možné
+cesty.
 
 \subsection{Backtracking v praxi}
 
-Tento algoritmus je velmi jednoduchý na implementaci, avšak to vede k
-nevýhodám. Backtracking zkouší všechny možnosti, i když je z počátku jasné, že
-daná cesta nebude vést k řešení. Z důvodu tohoto problému se backtracking hodí
-pro řešení menších problémů, například při mřížce Futoshiki o velikosti 4x4.
-Jakmile se však velikost mřížky zvyšuje, efektivita algoritmu rapidně klesá.
+Algoritmus backtracking se vyznačuje jednoduchou implementací, což však přináší
+i určité nevýhody. Mezi hlavní slabiny patří neefektivita při prohledávání
+prostoru řešení - algoritmus zkouší všechny možnosti, včetně těch, které je
+zjevně možné vyloučit již na počátku. Tento nedostatek způsobuje, že
+backtracking je vhodný především pro řešení problémů menšího rozsahu, jako je
+například mřížka Futoshiki o velikosti 4×4.
+
+S rostoucí velikostí mřížky se však počet možných kombinací exponenciálně
+zvyšuje, což vede k rapidnímu poklesu efektivity. Pro větší problémy se proto
+backtracking obvykle kombinuje s dalšími technikami, které umožňují zúžení
+prostoru řešení a tím i zlepšení výpočetní náročnosti.
 
 \subsection{Backtracking a Futoshiki}
 
-Pro řešení Futoshiki backtracking postupně zkouší dosazovat čísla do mřížky,
-dokud neobjeví řešení, které splňuje všechna pravidla. Algoritmus postupuje
-zleva doprava a zhora dolů v mřížce. Jakmile objeví prázdné herní pole, dosadí
-do něj nějaké z čísel od 1 do velikosti hracího pole a ověří platnost pravidel.
-Jestliže pravidla jsou splněna, algoritmus pokračuje na další pole. V opačném
-případě se vrací na předchozí pole a zkouší se jiná čísla. Takto se algoritmus
-opakuje, dokud nenalezne platné řešení nebo nevyzkouší všechny kombinace čísel.
+Algoritmus backtracking při řešení hlavolamu Futoshiki systematicky dosazuje
+čísla do mřížky a hledá řešení splňující všechna pravidla hry (viz podsekce
+2.1). Postupuje přitom zleva doprava a shora dolů v rámci mřížky.
+
+Při objevení prázdného pole zkouší algoritmus postupně všechna čísla v rozmezí
+od 1 do velikosti hrací mřížky. Po každém dosazení ověří, zda zadaná hodnota
+splňuje pravidla hry. Pokud ano, pokračuje k dalšímu poli. V případě, že žádné
+číslo z rozsahu pravidla nesplňuje, algoritmus se vrátí na předchozí pole a
+znovu zkouší jiná čísla. Tento proces se opakuje, dokud není nalezeno validní
+řešení nebo dokud nejsou vyzkoušeny všechny možné kombinace čísel.
 
 \section{Forward Checking}
 
-Forward checking \cite{PrednaskyIZU} vylepšuje princip systematického
-prohledávání Backtrackingu o snižování počtu zkoušených kombinací. Na počátku
-algoritmu se pro každé hrací pole vygeneruje doména, což je množina všech
-hodnot, kterých může dané pole nabývat. Následně se na základě zvolené
-strategie vybere jedno z polí, vyplní se jednou z hodnot v jeho doméně a upraví
-se domény ostatních polí tak, aby byly vyloučeny hodnoty, které vedly k
-porušení pravidel. Tento postup se opakuje, dokud se nenalezne řešení.
+Forward checking \cite{PrednaskyIZU} rozšiřuje základní princip systematického
+prohledávání Backtrackingu a zvyšuje jeho efektivitu tím, že snižuje počet
+zkoušených kombinací. Na začátku algoritmu se pro každé hrací pole vytvoří jeho
+doména, což je množina všech hodnot, které dané pole může nabývat bez porušení
+pravidel.
 
-\subsection{Variace Forward Checkingu}
+Algoritmus poté na základě zvolené strategie (heuristiky) vybere jedno z polí k
+vyplnění. Do tohoto pole je dosazena hodnota z jeho domény, načež jsou upraveny
+domény ostatních polí. Z těchto domén se vyloučí hodnoty, které by v kombinaci
+s dosazenou hodnotou porušily pravidla hry.
 
-Uložení domén může probíhat několika způsoby. Mezi klasické způsoby patří
-ukládání hodnot do pole, kde je však problematické vyloučení hodnoty z domény
-nebo také ověření, zda se hodnota v doméně vyskytuje, z důvodu nutnosti projití
-celého pole. Tento problém lze vyřešit pomocí hašovací množiny, která je
-postavena na základě hašovací tabulky. Pro ověření, zda se daná hodnota v
-doméně vyskytuje, není třeba procházet celé pole a při mazání se jednotlivé
-prvky nepřeskupují. Jelikož se však pro každé hrací pole musí uložit doména, s
-rostoucí velikostí mřížky se i navyšuje využití paměti. Z tohoto důvodu se
-využívá bitmap, které vylepšují využití paměti tím, že je doména reprezentována
-pouze jako jedno číslo, místo pole čísel. U bitmap jsme však omezeni velikostí
-čísla.
-
-Já jsem tento algoritmus implementoval dvěma způsoby: pomocí hašovacích množin
-a pomocí bitmap. Implementace samotná je velice podobná, u hašovacích množin se
-však využívají funkce nad množinou, zatímco u bitmap se využívají bitové
-operace.
+Tento postup se iterativně opakuje, přičemž algoritmus přechází k dalšímu poli,
+pokud jsou stále platné hodnoty v jeho doméně. V případě, že některé pole
+vyčerpá všechny možnosti (jeho doména se stane prázdnou), algoritmus se vrací
+zpět k předchozímu kroku (backtracking) a zvolí jinou hodnotu. Proces
+pokračuje, dokud není nalezeno platné řešení nebo dokud nejsou vyčerpány
+všechny možnosti.
 
 \subsection{Heuristiky Forward Checkingu}
 
@@ -111,29 +117,138 @@ doménou, nejvíce omezující proměnná - hrací pole s největším vlivem na
 zbývajících hracích polí. Mezi heuristiky výběru hodnoty z domény patří nejméně
 omezující hodnota - vybere se hodnota, která nejméně ovlivňuje ostatní domény.
 
+Heuristika určuje strategii výběru hracího pole a hodnoty, která bude dosazena
+do tohoto pole. Existují dvě hlavní kategorie heuristik: heuristiky pro výběr
+hracího pole a heuristiky pro výběr hodnoty z domény.
+
+\subsubsection{Heuristiky výběru hracího pole}
+
+Mezi heuristiky pro výběr hracího pole patří:
+
+\begin{itemize}
+    \item Nejvíce omezená proměnná: Tato heuristika vybírá hrací pole, které má
+        nejmenší doménu, tedy pole, pro které je nejvíce omezený výběr možných
+        hodnot.
+    \item Nejvíce omezující proměnná: Heuristika volí hrací pole, které má
+        největší vliv na omezení ostatních polí, tedy pole, které ovlivňuje
+        nejvíce ostatních hodnot v mřížce.
+\end{itemize}
+
+\subsubsection{Heuristiky výběru hodnoty z domény}
+
+Mezi heuristiky pro výběr hodnoty z domény patří:
+
+\begin{itemize}
+    \item Nejméně omezující hodnota: Tato heuristika vybírá hodnotu, která má
+        nejmenší vliv na ostatní domény. Tímto způsobem se minimalizuje riziko,
+        že se algoritmus dostane do slepé uličky, když později dojdou možnosti
+        pro jiná pole.
+    \item Nejvíce omezující hodnota: Tento přístup naopak vybírá hodnotu, která
+        má největší vliv na ostatní domény. To znamená, že se vybere hodnota,
+        která omezuje možnosti ostatních polí co nejvíce. Tento přístup může
+        být užitečný pro rychlé zúžení možností.
+\end{itemize}
+
+\subsection{Variace Forward Checkingu}
+
+Uložení domén může probíhat několika způsoby. Mezi klasické způsoby patří
+ukládání hodnot do pole nebo seznamu, což však může být problematické, pokud
+je potřeba efektivně vylučovat hodnoty z domény nebo ověřovat, zda se hodnota
+v doméně nachází. Tento problém je způsoben nutností projít celé pole nebo
+seznam, což je časově náročné. Tento problém lze vyřešit pomocí hašovacích
+množin, které využívají hašovací tabulky. Ověření, zda se hodnota nachází v
+doméně, je efektivní s průměrnou časovou složitostí O(1), a při mazání hodnoty
+není třeba přeskupovat prvky, na rozdíl od běžného pole.
+
+S rostoucí velikostí mřížky se zvyšuje i využití paměti. Efektivnější způsob
+ukládání domén je možný pomocí bitmap, které vylepšují využití paměti tím, že
+doménu reprezentují jako jedno číslo místo celého pole čísel. V tomto případě
+každé číslo v doméně je reprezentováno jedním bitem. Bitmapy jsou velmi
+efektivní pro menší domény, ale s rostoucí velikostí domény se může velikost
+bitmapy stát problematická, protože jsou omezeny velikostí čísla a počtem bitů,
+které mohou být použity.
+
+Pro implementaci tohoto algoritmu jsem využil dva způsoby: pomocí hašovacích
+množin a bitmap. Implementace je podobná, u hašovacích množin se využívají
+funkce pro práci s množinami, zatímco u bitmap se používají bitové operace.
+
 \subsection{Forward Checking a Futoshiki}
 
-Forward Checking si pro řešení Futoshiki nejprve vygeneruje domény pro každé
-hrací pole. Generacování jsem implementoval tak, že nejdříve zjistím, které
-hodnoty byly již v každém řádku a v každém sloupci použity. Následně si
-vytvořím doménu pro každé hrací pole tak, aby obsahovala všechny možné hodnoty
-a odeberu hodnoty, které se vyskytly v daném řádku a sloupci. Nakonec také
-projdu všechny nerovnosti a zaručím, aby hodnoty v doménách ovlivněných
-nerovností nebyly hodnoty, které by porušily toto pravidlo. Tedy z pole, které
-má být menší, musím odebrat všechny hodnoty, které jsou větší nebo rovny
-maximální hodnotě z domény sousedícího pole. U opačné podmínky je třeba oddělat
-hodnoty, které jsou menší nebo rovny minimální hodnotě z domény sousedícího
-pole.
+Forward Checking pro řešení Futoshiki nejprve vygeneruje domény pro každé hrací
+pole. Generování jsem implementoval tak, že nejprve zjistím, které hodnoty byly
+již v každém řádku a sloupci použity. Poté vytvořím doménu pro každé pole,
+která obsahuje všechny možné hodnoty, a odeberu hodnoty, které se vyskytly v
+daném řádku a sloupci, čímž zajistím, že nebudou opakovány. Dále projdu všechny
+nerovnosti a zajistím, aby hodnoty v doménách ovlivněných těmito nerovnostmi
+nebyly v rozporu s pravidly. Konkrétně z domény pole, které má být menší,
+odstraním hodnoty, které jsou větší nebo rovné maximální hodnotě sousedícího
+pole, a z domény pole, které má být větší, odstraním hodnoty menší nebo rovné
+minimální hodnotě sousedícího pole.
 
-Po vygenerování se přejde do fáze zapisování hodnot. Pro zvolení pole jsem
-zvolil heuristiku nejvíce omezená proměnná. Z domény tohoto pole poté vyberu
-a dosadím první hodnotu a upravím domény ovlivněných hracích polí tak, aby
-platila pravidla. Tento postup se opakuje, dokud není nalezeno řešení nebo
-projity všechny možné cesty.
+Po vygenerování domén počíná fáze zapisování hodnot. Pro zvolení hracího pole
+používám heuristiku nejvíce omezená proměnná, což znamená, že vybírám pole s
+nejmenší doménou. Z domény tohoto pole pak vyberu hodnotu podle heuristiky
+nejméně omezující hodnota, tedy hodnotu, která má co nejmenší vliv na ostatní
+domény. Po dosazení hodnoty upravím domény všech ovlivněných polí tak, aby
+stále platila pravidla. Tento postup se opakuje, dokud není nalezeno řešení
+nebo dokud nejsou vyzkoušeny všechny možné cesty.
 
-\section{Arc Consistency}
+\section{Arc Consistency \#3}
 
-Moje implementace Forward Checkingu je vlastně AC-3...
+Algoritmus Arc Consistency \#3, známý také jako AC-3, rozšiřuje techniky
+snižování počtu zkoušených kombinací Forward Checkingu tím, že zajišťuje, aby
+během celého běhu algoritmu byly všechny domény konzistentní vzhledem ke všem
+omezením. Tento stav se nazývá Arc Consistency.
+
+AC-3 pracuje iterativně s množinou takzvaných oblouků (arcs), kde každý oblouk
+reprezentuje vztah mezi dvěma proměnnými a jejich doménami. Na začátku
+algoritmu se všechny oblouky reprezentující omezení (například nerovnosti ve
+Futoshiki) zařadí do fronty. Algoritmus poté iterativně vybírá oblouky z fronty
+a provádí následující kroky:
+\begin{enumerate}
+    \item Revize oblouku: Pro každý oblouk \((X,Y)\), kde \(X\) a \(Y\) jsou
+        proměnné, se kontroluje, zda každá hodnota v doméně \(X\) má alespoň
+        jednu odpovídající hodnotu v doméně \(Y\), která splňuje omezení mezi
+        \(X\) a \(Y\). Pokud ne, hodnoty, které toto omezení porušují, jsou z
+        domény \(X\) odstraněny.
+    \item Aktualizace fronty: Pokud se doména \(X\) změní, všechny oblouky
+        ovlivněné \(X\) jsou přidány zpět do fronty pro další kontrolu.
+\end{enumerate}
+
+Tento proces pokračuje, dokud není fronta prázdná, což znamená, že všechny
+domény jsou konzistentní s ohledem na daná omezení.
+
+Na rozdíl od Forward Checkingu, který kontroluje konzistenci pouze lokálně při
+dosazení hodnoty, AC-3 zajišťuje globální konzistenci na úrovni všech
+proměnných a omezení.
+
+\subsection{AC-3 a Futoshiki}
+
+V implementaci AC-3 pro Futoshiki je nejprve nutné vygenerovat domény pro
+všechna hrací pole tak, aby splňovaly stav Arc Consistency. Tento proces
+zahrnuje odstranění hodnot, které porušují pravidla Futoshiki, a to nejen na
+základě řádků a sloupců, ale také podle zadaných nerovností mezi sousedními
+poli. Po vygenerování domén následuje fáze postupného dosazování hodnot.
+
+Při zapisování hodnot je hrací pole vybráno pomocí heuristiky (například
+nejvíce omezená proměnná), stejně jako v Forward Checkingu. Z jeho domény se
+pak zvolí hodnota pomocí heuristiky výběru hodnoty (například nejméně omezující
+hodnota). Po dosazení hodnoty se upraví domény všech polí ve stejném řádku a
+sloupci a také všech polí ovlivněných nerovnostmi.
+
+Pokud se doména některého pole změní, ověřují se všechny oblouky, ve kterých
+toto pole figuruje. V případě nekonzistence (tj. kdyby některé hodnoty v
+doménách porušovaly omezení) se doména druhého pole v oblouku upraví tak, aby
+konzistence byla obnovena. Tento proces je implementován rekurzivně: jakmile
+dojde ke změně domény druhého pole, jsou znovu ověřeny všechny oblouky, kde
+toto pole figuruje. Tento postup se opakuje, dokud se žádná doména již nezmění,
+což znamená, že byl zajištěn stav Arc Consistency.
+
+Na rozdíl od klasické implementace AC-3, která používá frontu pro správu
+oblouků, je zde použit rekurzivní přístup. Tento přístup přímo upravuje
+navázané oblouky při každé změně domény a rekurzivně zajišťuje konzistenci,
+dokud není dosaženo stabilního stavu. Tento způsob odstraňuje potřebu
+explicitní fronty a přirozeně zohledňuje všechny závislosti mezi poli.
 
 \chapter{Existující formy konečných automatů}
 
