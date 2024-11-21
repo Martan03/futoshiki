@@ -200,7 +200,7 @@ snižování počtu zkoušených kombinací Forward Checkingu tím, že zajišť
 během celého běhu algoritmu byly všechny domény konzistentní vzhledem ke všem
 omezením. Tento stav se nazývá Arc Consistency.
 
-AC-3 pracuje iterativně s množinou takzvaných oblouků (arcs), kde každý oblouk
+AC-3 pracuje iterativně s množinou takzvaných oblouků, kde každý oblouk
 reprezentuje vztah mezi dvěma proměnnými a jejich doménami. Na začátku
 algoritmu se všechny oblouky reprezentující omezení (například nerovnosti ve
 Futoshiki) zařadí do fronty. Algoritmus poté iterativně vybírá oblouky z fronty
@@ -226,31 +226,112 @@ proměnných a omezení.
 
 V implementaci AC-3 pro Futoshiki je nejprve nutné vygenerovat domény pro
 všechna hrací pole tak, aby splňovaly stav Arc Consistency. Tento proces
-zahrnuje odstranění hodnot, které porušují pravidla Futoshiki, a to nejen na
-základě řádků a sloupců, ale také podle zadaných nerovností mezi sousedními
-poli. Po vygenerování domén následuje fáze postupného dosazování hodnot.
+zahrnuje odstranění hodnot, které porušují pravidla Futoshiki. Pro generování
+domén využívám stejný algoritmus jako u Forward Checkingu. Po vygenerování
+domén následuje fáze postupného dosazování hodnot.
 
-Při zapisování hodnot je hrací pole vybráno pomocí heuristiky (například
-nejvíce omezená proměnná), stejně jako v Forward Checkingu. Z jeho domény se
-pak zvolí hodnota pomocí heuristiky výběru hodnoty (například nejméně omezující
-hodnota). Po dosazení hodnoty se upraví domény všech polí ve stejném řádku a
-sloupci a také všech polí ovlivněných nerovnostmi.
+Při zapisování hodnot jsou hrací pole a hodnota z jeho domény vybírány pomocí
+heuristik, stejně jako ve Forward Checkingu. Konkrétně používám heuristiku
+nejvíce omezená proměnná pro zvolení pole a heristiku nejméně omezující hodnota
+pro volbu hodnoty z domény zvoleného pole. Po dosazení hodnoty se upraví domény
+všech polí ve stejném řádku, sloupci a také všech polí ovlivněných nerovnostmi.
 
 Pokud se doména některého pole změní, ověřují se všechny oblouky, ve kterých
-toto pole figuruje. V případě nekonzistence (tj. kdyby některé hodnoty v
-doménách porušovaly omezení) se doména druhého pole v oblouku upraví tak, aby
-konzistence byla obnovena. Tento proces je implementován rekurzivně: jakmile
-dojde ke změně domény druhého pole, jsou znovu ověřeny všechny oblouky, kde
-toto pole figuruje. Tento postup se opakuje, dokud se žádná doména již nezmění,
-což znamená, že byl zajištěn stav Arc Consistency.
-
-Na rozdíl od klasické implementace AC-3, která používá frontu pro správu
-oblouků, je zde použit rekurzivní přístup. Tento přístup přímo upravuje
-navázané oblouky při každé změně domény a rekurzivně zajišťuje konzistenci,
-dokud není dosaženo stabilního stavu. Tento způsob odstraňuje potřebu
-explicitní fronty a přirozeně zohledňuje všechny závislosti mezi poli.
+toto pole figuruje. V případě nekonzistence (výskyt hodnoty, která porušuje
+omezení) se doména druhého pole v oblouku upraví tak, aby konzistence byla
+obnovena. Tento proces jsem implementoval rekurzivně: jakmile dojde ke změně
+domény druhého pole, jsou znovu ověřeny všechny oblouky, kde toto pole
+figuruje. Tento postup se opakuje, dokud se žádná doména již nezmění, což
+znamená, že byl zajištěn stav Arc Consistency. Díky rekurzivní implementaci je
+odstraněna potřeba využití fronty, která je u klasické implementace AC-3
+využita.
 
 \chapter{Existující formy konečných automatů}
+
+\section{Konečný automat}
+
+Konečné automaty jsou základní matematické modely sloužící k popisu a analýze
+regulárních jazyků. Reprezentují abstraktní stroje, které zpracovávají vstupní
+řetězce symbolů a rozhodují, zda patří do jazyka, který automat popisuje.
+Rozlišujeme dva hlavní typy konečných automatů: deterministický konečný automat
+(DKA), v němž každý stav má jednoznačně definovaný přechod pro každý symbol, a
+nedeterministický konečný automat (NKA), jenž umožňuje více přechodů nebo i
+jejich absenci pro konkrétní symbol. Oba typy mají stejný vyjadřovací
+potenciál, protože každý nedeterministický konečný automat lze převést na
+ekvivalentní deterministický.
+
+\subsection{Deterministický konečný automat}
+
+Deterministický konečný automat je pětice \((Q, \Sigma, \delta, q_0, F)\), kde:
+\begin{itemize}
+    \item \(Q\) je konečná neprázdná množina stavů.
+    \item \(\Sigma\) je vstupní abeceda, konečná množina vstupních symbolů.
+    \item \(\delta\) je přechodová funkce ve tvaru
+        \(Q \times \Sigma \rightarrow Q\).
+    \item \(q_0\) je počáteční stav, kde \(q_0 \in Q\).
+    \item \(F\) je množina koncových nebo přijímacích stavů, kde
+        \(F \subseteq Q\).
+\end{itemize}
+
+\subsection{Nedeterministický konečný automat}
+
+Nedeterministický konečný automat je pětice \((Q, \Sigma,\delta, q_0, F)\),
+kde:
+\begin{itemize}
+    \item \(Q\) je konečná neprázdná množina stavů.
+    \item \(\Sigma\) je vstupní abeceda, konečná množina vstupních symbolů.
+    \item \(\delta\) je přechodová funkce ve tvaru
+        \(Q \times \Sigma \rightarrow Q\), kde \(\Sigma \cup \{\varepsilon\}\).
+    \item \(q_0\) je počáteční stav, kde \(q_0 \in Q\).
+    \item \(F\) je množina koncových nebo přijímacích stavů, kde
+        \(F \subseteq Q\).
+\end{itemize}
+
+\subsection{Dvojcestný konečný automat}
+
+Dvojcestné konečné automaty rozšiřují klasické konečné automaty tím, že čtecí
+hlava se může pohybovat po vstupní pásce nejen zleva doprava, ale také zpět,
+tedy doprava i doleva. To jim umožňuje prozkoumávat části vstupu vícekrát.
+Stejně jako klasické konečné automaty se i dvojcestné konečné automaty dělí na
+deterministické a nedeterministické.
+
+I když dvojcestné automaty působí výkonněji než jednocestné automaty, mají
+stejnou vyjadřovací sílu: přijímají pouze regulární jazyky. Tento výsledek
+vychází z faktu, že každý dvojcestný konečný automat může být převeden na
+ekvivalentní jednocestný automat (za cenu možného zvýšení počtu stavů).
+
+Vstupní řetězec je ohraničen z obou stran speciálními symboly \{ |-, -| \},
+které nejsou součástí vstupní abecedy \(\Sigma\). Tyto symboly slouží k
+indikaci začátku a konce vstupu a čtecí hlava se za ně nesmí dostat. Pokud by
+čtecí hlava narazila na jeden z těchto symbolů, automat zůstane na stejném
+místě nebo přejde do koncového stavu.
+
+\subsubsection*{Definice}
+
+Dvojcestné konečné automaty jsou definované jako osmice
+\((Q, \Sigma, |-, -|, \delta, s, t, r)\), kde:
+\begin{itemize}
+    \item \(Q\) je konečná množina stavů.
+    \item \(\Sigma\) je konečná množina vstupních symbolů.
+    \item |- je levý koncový symbol, přičemž platí \(|- \notin \Sigma\).
+    \item -| je pravý koncový symbol, přičemž platí \(-| \notin \Sigma\).
+    \item \(\delta\) je přechodová funkce ve tvaru \(Q \times (\Sigma \cup \{
+        |-, -| \}) \rightarrow (Q \times \{ L, R \})\), přičemž \(L\) a \(R\)
+        jsou směry pohybu čtecí hlavice.
+    \item \(s\) je počáteční stav, kde \(s \in Q\).
+    \item \(t\) je akceptující stav, kde \(t \in Q\).
+    \item \(r\) je neakceptující stav, kde \(r \in Q\).
+\end{itemize}
+
+\subsection{Skákající automaty}
+
+Skákající automat umožňuje čtecí hlavě skákat po vstupní pásce. Vstupní páska
+je rozdělena do buněk, přičemž každá buňka obsahuje jeden symbol vstupního
+řetězce. Automat čte symbol z buňky, na kterou ukazuje čtecí hlava, a na
+základě aktuálního stavu a tohoto symbolu určuje, do jakého stavu přejde. Na
+rozdíl od klasických konečných automatů, které se pohybují po pásce pouze zleva
+doprava, může skákající automat přeskakovat mezi libovolnými buňkami. Pokud je
+symbol již přečten, nemůže být přečten znovu.
 
 \chapter{Dvojdimenzionální automaty}
 
