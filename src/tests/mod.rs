@@ -1,4 +1,6 @@
 #[cfg(test)]
+mod board_gen;
+#[cfg(test)]
 mod checker;
 /// Easy difficulty board test generated on futoshiki.com
 #[cfg(test)]

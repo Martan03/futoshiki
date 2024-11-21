@@ -68,6 +68,9 @@ impl Args {
             "fc" | "forward-check" | "forward-checking" => {
                 self.solver = SolverType::ForwardCheck;
             }
+            "ac3" | "arc-cons3" | "arc-consistency3" => {
+                self.solver = SolverType::ArcConsistency3Bit;
+            }
             _ => return Err("invalid solver option".into()),
         }
         Ok(())
@@ -91,7 +94,7 @@ impl Default for Args {
     fn default() -> Self {
         Self {
             size: 4,
-            solver: SolverType::ForwardBitCheck,
+            solver: SolverType::ArcConsistency3Bit,
             help: false,
         }
     }

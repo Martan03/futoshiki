@@ -29,11 +29,12 @@ impl App {
         block.push(list, 0..);
 
         let mut wrapper = Layout::horizontal().center();
-        wrapper.push(block, 23);
+        wrapper.push(block, 25);
         let mut layout = Layout::vertical().center();
         layout.push(wrapper, 0..);
 
-        let overlay = Overlay::new(vec![self.render_builder(), layout.into()]);
+        // let overlay = Overlay::new(vec![self.render_builder(), layout.into()]);
+        let overlay = Overlay::new(vec![layout.into()]);
         Element::new(overlay)
     }
 

@@ -1,31 +1,16 @@
 use termint::geometry::{Rect, Vec2};
 
-use crate::board::board_struct::Board;
+use crate::{board::board_struct::Board, solver::ArcConsistency3};
 
-use super::Solver;
-
-/// Forward checking solver that uses bitmaps for available numbers (domains).
-/// Supports boards smaller then 64
-#[derive(Debug, PartialEq)]
-pub struct FcBitSolver<'a> {
-    board: &'a mut Board,
-    values: Vec<usize>,
+pub struct LABitSolver<'a, T = ArcConsistency3> {
+    pub(super) board: &'a mut Board,
+    pub(super) values: Vec<usize>,
+    pub(super) _technique: T,
 }
 
-impl<'a> Solver<'a> for FcBitSolver<'a> {
-    fn solve(board: &'a mut Board) -> bool {
-        let mut solver = Self {
-            board,
-            values: vec![],
-        };
-        solver.board.disable_vals();
-        solver.gen_values() && solver.apply_conds() && solver.solve_inner()
-    }
-}
-
-impl<'a> FcBitSolver<'a> {
+impl<'a, T> LABitSolver<'a, T> {
     /// Generates the cell domains (possible values for each cell)
-    fn gen_values(&mut self) -> bool {
+    pub(super) fn gen_values(&mut self) -> bool {
         let mut rows = vec![];
         let mut cols = vec![];
 
@@ -57,7 +42,7 @@ impl<'a> FcBitSolver<'a> {
     }
 
     /// Applies all the conditions
-    fn apply_conds(&mut self) -> bool {
+    pub(super) fn apply_conds(&mut self) -> bool {
         let lsize = self.board.size().saturating_sub(1);
         for pos in Rect::new(0, 0, lsize, self.board.size()) {
             let mut changed = false;
@@ -82,36 +67,8 @@ impl<'a> FcBitSolver<'a> {
         true
     }
 
-    /// Solves the board using the forward checking, returns true on success
-    fn solve_inner(&mut self) -> bool {
-        let Some(Vec2 { x, y }) = self.find_min() else {
-            return true;
-        };
-
-        let id = x + y * self.board.size();
-        for val in 0..self.board.size() {
-            if (self.values[id] & (1 << val)) == 0 {
-                continue;
-            }
-
-            let vals = self.values.clone();
-
-            if !self.assign(val + 1, x, y) {
-                self.board[id].set(0);
-                self.values = vals;
-                return false;
-            };
-            if self.solve_inner() {
-                return true;
-            }
-            self.board[id].set(0);
-            self.values = vals;
-        }
-        false
-    }
-
     /// Finds unassigned cell with the smallest domain (least possible values)
-    fn find_min(&self) -> Option<Vec2> {
+    pub(super) fn find_min(&self) -> Option<Vec2> {
         let mut min_val = u32::MAX;
         let mut min = None;
 
@@ -129,59 +86,8 @@ impl<'a> FcBitSolver<'a> {
         min
     }
 
-    /// Assigns given value to cell on given coordinates and removes the value
-    /// from the neighbor domains
-    fn assign(&mut self, val: usize, x: usize, y: usize) -> bool {
-        let id = x + y * self.board.size();
-        self.board[id].set(val);
-        let bval = 1 << (val - 1);
-
-        for pos in 0..self.board.size() {
-            if !self.rem_val(id, bval, x, pos)
-                || !self.rem_val(id, bval, pos, y)
-            {
-                return false;
-            }
-        }
-        true
-    }
-
-    /// Removes the given value from the domain on given coordinates and
-    /// checks/applies the conditions
-    fn rem_val(&mut self, cid: usize, val: usize, x: usize, y: usize) -> bool {
-        let id = x + y * self.board.size();
-        if self.board[id].value() != 0 || self.values[id] & val == 0 {
-            return true;
-        }
-        self.values[id] &= !val;
-        self.check_conds(x, y) && (cid == id || self.values[id] != 0)
-    }
-
-    /// Unassignes the given value from given coordinates and adds it to
-    /// neighbor domains which were affected
-    fn _unassign_to(
-        &mut self,
-        val: usize,
-        x: usize,
-        y: usize,
-        to: usize,
-        changed: Vec<usize>,
-    ) {
-        let id = x + y * self.board.size();
-        self.board[id].set(0);
-
-        for pos in 0..=to.min(changed.len() - 1) {
-            if changed[pos] & (1 << pos) != 0 {
-                self.values[x + pos * self.board.size()] |= 1 << (val - 1);
-            }
-            if changed[y] & (1 << pos) != 0 {
-                self.values[pos + y * self.board.size()] |= 1 << (val - 1);
-            }
-        }
-    }
-
     /// Good idea, but have to differentiate horizontal conds and vertical
-    fn check_conds(&mut self, x: usize, y: usize) -> bool {
+    pub(super) fn check_conds(&mut self, x: usize, y: usize) -> bool {
         let pos = Vec2::new(x, y);
         let lsize = self.board.size().saturating_sub(1);
 
@@ -220,7 +126,7 @@ impl<'a> FcBitSolver<'a> {
     }
 
     /// Checks condition on given positions and with given condition
-    fn check_cond(
+    pub(super) fn check_cond(
         &mut self,
         fpos: Vec2,
         spos: Vec2,
@@ -238,7 +144,11 @@ impl<'a> FcBitSolver<'a> {
     }
 
     /// Applies the condition, return whether the cells changed
-    fn apply_cond(&mut self, fpos: Vec2, spos: Vec2) -> Option<(bool, bool)> {
+    pub(super) fn apply_cond(
+        &mut self,
+        fpos: Vec2,
+        spos: Vec2,
+    ) -> Option<(bool, bool)> {
         let fid = fpos.x + fpos.y * self.board.size();
         let sid = spos.x + spos.y * self.board.size();
 
@@ -248,7 +158,11 @@ impl<'a> FcBitSolver<'a> {
     }
 
     /// Applies the given mask to the cell, returns true when changed
-    fn apply_cond_mask(&mut self, sid: usize, mask: usize) -> Option<bool> {
+    pub(super) fn apply_cond_mask(
+        &mut self,
+        sid: usize,
+        mask: usize,
+    ) -> Option<bool> {
         if !self.board[sid].enabled() {
             return Some(false);
         }
@@ -259,19 +173,19 @@ impl<'a> FcBitSolver<'a> {
     }
 
     /// Gets max value mask
-    fn get_max_mask(&self, id: usize) -> usize {
+    pub(super) fn get_max_mask(&self, id: usize) -> usize {
         let max_bit = usize::BITS - self.values[id].leading_zeros();
         (1 << max_bit.saturating_sub(1)) - 1
     }
 
     /// Gets min value mask
-    fn get_min_mask(&self, id: usize) -> usize {
+    pub(super) fn get_min_mask(&self, id: usize) -> usize {
         let min_bit = self.values[id].trailing_zeros();
         !((1 << (min_bit.min(self.board.size() as u32) + 1)) - 1)
     }
 
     /// Converts cell on given coordinates to bitmap value
-    fn cell_to_bit(&self, x: usize, y: usize) -> usize {
+    pub(super) fn cell_to_bit(&self, x: usize, y: usize) -> usize {
         let val = self.board[x + y * self.board.size()].value();
         (val > 0).then(|| 1 << (val - 1)).unwrap_or(0)
     }

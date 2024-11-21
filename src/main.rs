@@ -2,7 +2,9 @@ use app::App;
 use args::Args;
 use board::{board_struct::Board, cell::Cell};
 use error::Error;
-use solver::{fc_solver::FcSolver, Solver};
+use solver::{
+    look_ahead_bit::la_bit_solver::LABitSolver, ArcConsistency3, Solver,
+};
 use termint::{
     buffer::Buffer,
     enums::Color,
@@ -53,7 +55,7 @@ fn test_solver() -> Result<(), Error> {
     board.ver_conds[5] = Some(false);
     board.ver_conds[6] = Some(false);
 
-    if FcSolver::solve(&mut board) {
+    if LABitSolver::<ArcConsistency3>::solve(&mut board) {
         println!("Solved!");
         let mut buffer = Buffer::empty(Rect::new(1, 1, 20, 10));
         board.render(&mut buffer);

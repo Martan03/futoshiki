@@ -2,34 +2,17 @@ use std::collections::HashSet;
 
 use termint::geometry::{Rect, Vec2};
 
-use crate::board::board_struct::Board;
+use crate::{board::board_struct::Board, solver::ArcConsistency3};
 
-use super::Solver;
-
-/// Forward checking solver that uses 2D array for the available numbers
-/// (domains).
-#[allow(unused)]
-pub struct FcSolver<'a> {
-    board: &'a mut Board,
-    values: Vec<HashSet<usize>>,
+pub struct LASolver<'a, T = ArcConsistency3> {
+    pub(super) board: &'a mut Board,
+    pub(super) values: Vec<HashSet<usize>>,
+    pub(super) _technique: T,
 }
 
-impl<'a> Solver<'a> for FcSolver<'a> {
-    fn solve(board: &'a mut Board) -> bool {
-        let mut solver = Self {
-            board,
-            values: vec![],
-        };
-        solver.board.disable_vals();
-        solver.gen_values();
-        solver.apply_conds();
-        solver.solve_inner()
-    }
-}
-
-impl<'a> FcSolver<'a> {
+impl<'a, T> LASolver<'a, T> {
     /// Generates the cell domains (possible values for each cell)
-    fn gen_values(&mut self) -> bool {
+    pub(super) fn gen_values(&mut self) -> bool {
         let mut rows = vec![];
         let mut cols = vec![];
 
@@ -66,7 +49,7 @@ impl<'a> FcSolver<'a> {
     }
 
     /// Applies all the conditions
-    fn apply_conds(&mut self) -> bool {
+    pub(super) fn apply_conds(&mut self) -> bool {
         let lsize = self.board.size().saturating_sub(1);
         for pos in Rect::new(0, 0, lsize, self.board.size()) {
             let mut changed = false;
@@ -91,33 +74,8 @@ impl<'a> FcSolver<'a> {
         true
     }
 
-    /// Solves the board using the forward checking, returns true on success
-    fn solve_inner(&mut self) -> bool {
-        let Some(Vec2 { x, y }) = self.find_min() else {
-            return true;
-        };
-
-        let id = x + y * self.board.size();
-        let values: Vec<usize> = self.values[id].iter().cloned().collect();
-        for val in values {
-            let vals = self.values.clone();
-
-            if !self.assign(val, x, y) {
-                self.board[id].set(0);
-                self.values = vals;
-                return false;
-            }
-            if self.solve_inner() {
-                return true;
-            }
-            self.board[id].set(0);
-            self.values = vals;
-        }
-        false
-    }
-
     /// Finds unassigned cell with the smallest domain (least possible values)
-    fn find_min(&self) -> Option<Vec2> {
+    pub(super) fn find_min(&self) -> Option<Vec2> {
         let mut min_val = usize::MAX;
         let mut min = None;
 
@@ -136,32 +94,7 @@ impl<'a> FcSolver<'a> {
         min
     }
 
-    /// Assigns given value to cell on given coordinates and removes the value
-    /// from the neighbor domains
-    fn assign(&mut self, val: usize, x: usize, y: usize) -> bool {
-        let id = x + y * self.board.size();
-        self.board[id].set(val);
-
-        for pos in 0..self.board.size() {
-            if !self.rem_val(id, val, x, pos) || !self.rem_val(id, val, pos, y)
-            {
-                return false;
-            }
-        }
-        true
-    }
-
-    /// Removes the given value from the domain on given coordinates and
-    /// checks/applies the conditions
-    fn rem_val(&mut self, cid: usize, val: usize, x: usize, y: usize) -> bool {
-        let id = x + y * self.board.size();
-        if self.board[id].value() != 0 || !self.values[id].remove(&val) {
-            return true;
-        }
-        self.check_conds(x, y) && (cid == id || !self.values[id].is_empty())
-    }
-
-    fn check_conds(&mut self, x: usize, y: usize) -> bool {
+    pub(super) fn check_conds(&mut self, x: usize, y: usize) -> bool {
         let pos = Vec2::new(x, y);
         let lsize = self.board.size().saturating_sub(1);
 
@@ -200,7 +133,7 @@ impl<'a> FcSolver<'a> {
     }
 
     /// Checks condition on given positions and with given condition
-    fn check_cond(
+    pub(super) fn check_cond(
         &mut self,
         fpos: Vec2,
         spos: Vec2,
@@ -218,7 +151,11 @@ impl<'a> FcSolver<'a> {
     }
 
     /// Applies the condition, return whether the cells changed
-    fn apply_cond(&mut self, fpos: Vec2, spos: Vec2) -> Option<(bool, bool)> {
+    pub(super) fn apply_cond(
+        &mut self,
+        fpos: Vec2,
+        spos: Vec2,
+    ) -> Option<(bool, bool)> {
         let fid = fpos.x + fpos.y * self.board.size();
         let sid = spos.x + spos.y * self.board.size();
 
@@ -232,7 +169,11 @@ impl<'a> FcSolver<'a> {
     }
 
     /// Removes values greater or equal to given value
-    fn rem_greater_vals(&mut self, id: usize, val: usize) -> Option<bool> {
+    pub(super) fn rem_greater_vals(
+        &mut self,
+        id: usize,
+        val: usize,
+    ) -> Option<bool> {
         if !self.board[id].enabled() {
             return Some(false);
         }
@@ -242,7 +183,11 @@ impl<'a> FcSolver<'a> {
     }
 
     /// Removes values lower or equal to given value
-    fn rem_lower_vals(&mut self, id: usize, val: usize) -> Option<bool> {
+    pub(super) fn rem_lower_vals(
+        &mut self,
+        id: usize,
+        val: usize,
+    ) -> Option<bool> {
         if !self.board[id].enabled() {
             return Some(false);
         }
