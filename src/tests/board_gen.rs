@@ -1,8 +1,6 @@
 use crate::{
     board::board_gen::BoardGen,
-    solver::{
-        look_ahead_bit::la_bit_solver::LABitSolver, ArcConsistency3, Solver,
-    },
+    solver::look_ahead_bit::ac3_bit_solver::Ac3BitSolver,
 };
 
 const REP_CNT: usize = 10;
@@ -10,7 +8,7 @@ const REP_CNT: usize = 10;
 fn board_gen_n_times(size: usize) {
     for _ in 0..REP_CNT {
         let mut board = BoardGen::generate(size);
-        assert!(LABitSolver::<ArcConsistency3>::solve(&mut board));
+        assert!(Ac3BitSolver::solve(&mut board));
     }
 }
 

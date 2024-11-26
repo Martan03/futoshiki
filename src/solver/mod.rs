@@ -1,17 +1,16 @@
 use std::fmt::Display;
 
 use bt_solver::BtSolver;
-use look_ahead::la_solver::LASolver;
-use look_ahead_bit::la_bit_solver::LABitSolver;
+use look_ahead::{ac3_solver::Ac3Solver, fc_solver::FcSolver};
+use look_ahead_bit::{
+    ac3_bit_solver::Ac3BitSolver, fc_bit_solver::FcBitSolver,
+};
 
 use crate::board::board_struct::Board;
 
 pub mod bt_solver;
 pub mod look_ahead;
 pub mod look_ahead_bit;
-
-pub struct ForwardCheck;
-pub struct ArcConsistency3;
 
 pub trait Solver<'a> {
     /// Solves given board and returns Some(board) when solvable, else None
@@ -33,16 +32,10 @@ impl SolverType {
     pub fn solve(&self, board: &mut Board) -> bool {
         match self {
             SolverType::Backtrack => BtSolver::solve(board),
-            SolverType::ForwardBitCheck => {
-                LABitSolver::<ForwardCheck>::solve(board)
-            }
-            SolverType::ForwardCheck => LASolver::<ForwardCheck>::solve(board),
-            SolverType::ArcConsistency3Bit => {
-                LABitSolver::<ArcConsistency3>::solve(board)
-            }
-            SolverType::ArcConsistency => {
-                LASolver::<ArcConsistency3>::solve(board)
-            }
+            SolverType::ForwardBitCheck => FcBitSolver::solve(board),
+            SolverType::ForwardCheck => FcSolver::solve(board),
+            SolverType::ArcConsistency3Bit => Ac3BitSolver::solve(board),
+            SolverType::ArcConsistency => Ac3Solver::solve(board),
         }
     }
 

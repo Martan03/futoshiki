@@ -1,72 +1,47 @@
-use termint::geometry::Vec2;
+use std::collections::HashSet;
 
-use crate::solver::{ArcConsistency3, Solver};
+use crate::board::board_struct::Board;
 
 use super::la_solver::LASolver;
 
-impl<'a> Solver<'a> for LASolver<'a, ArcConsistency3> {
-    fn solve(board: &'a mut crate::board::board_struct::Board) -> bool {
+pub struct Ac3Solver<'a> {
+    board: &'a mut Board,
+    values: Vec<HashSet<usize>>,
+}
+
+impl<'a> Ac3Solver<'a> {
+    pub fn solve(board: &'a mut crate::board::board_struct::Board) -> bool {
         let mut solver = Self {
             board,
             values: vec![],
-            _technique: ArcConsistency3 {},
         };
         solver.board.disable_vals();
         solver.gen_values() && solver.apply_conds() && solver.solve_inner()
     }
 }
 
-impl<'a> LASolver<'a, ArcConsistency3> {
-    /// Solves the board using the ac3, returns true on success
-    pub(super) fn solve_inner(&mut self) -> bool {
-        let Some(Vec2 { x, y }) = self.find_min() else {
-            return true;
-        };
-
-        let id = x + y * self.board.size();
-        let values: Vec<usize> = self.values[id].iter().cloned().collect();
-        for val in values {
-            let vals = self.values.clone();
-
-            if !self.assign(val, x, y) {
-                self.board[id].set(0);
-                self.values = vals;
-                // TODO: I think continue is right, but why did I put return?
-                continue;
-            }
-            if self.solve_inner() {
-                return true;
-            }
-            self.board[id].set(0);
-            self.values = vals;
-        }
-        false
+impl<'a> LASolver for Ac3Solver<'a> {
+    fn board(&self) -> &Board {
+        &self.board
     }
 
-    /// Assigns given value to cell on given coordinates and removes the value
-    /// from the neighbor domains
-    pub(super) fn assign(&mut self, val: usize, x: usize, y: usize) -> bool {
-        let id = x + y * self.board.size();
-        self.board[id].set(val);
-
-        for pos in 0..self.board.size() {
-            if !self.rem_val(id, val, x, pos) || !self.rem_val(id, val, pos, y)
-            {
-                return false;
-            }
-        }
-        self.check_conds(x, y)
+    fn board_mut(&mut self) -> &mut Board {
+        &mut self.board
     }
 
-    /// Removes the given value from the domain on given coordinates and
-    /// checks/applies the conditions
-    pub(super) fn rem_val(
-        &mut self,
-        cid: usize,
-        val: usize,
-        x: usize,
-        y: usize,
-    ) -> bool {
+    fn values(&self) -> &Vec<HashSet<usize>> {
+        &self.values
+    }
+
+    fn values_mut(&mut self) -> &mut Vec<HashSet<usize>> {
+        &mut self.values
+    }
+
+    fn set_values(&mut self, values: Vec<HashSet<usize>>) {
+        self.values = values;
+    }
+
+    fn rem_val(&mut self, cid: usize, val: usize, x: usize, y: usize) -> bool {
         let id = x + y * self.board.size();
         if self.board[id].value() != 0 || !self.values[id].remove(&val) {
             return true;

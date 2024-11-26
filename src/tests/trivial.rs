@@ -4,9 +4,12 @@ use crate::{
     board::{board_struct::Board, cell::Cell},
     checker::Checker,
     solver::{
-        bt_solver::BtSolver, look_ahead::la_solver::LASolver,
-        look_ahead_bit::la_bit_solver::LABitSolver, ArcConsistency3,
-        ForwardCheck, Solver,
+        bt_solver::BtSolver,
+        look_ahead::{ac3_solver::Ac3Solver, fc_solver::FcSolver},
+        look_ahead_bit::{
+            ac3_bit_solver::Ac3BitSolver, fc_bit_solver::FcBitSolver,
+        },
+        Solver,
     },
 };
 
@@ -32,27 +35,27 @@ fn bt_solver_test() {
 #[test]
 fn fc_bit_solver_test() {
     let mut board = get_trivial();
-    assert!(LABitSolver::<ForwardCheck>::solve(&mut board));
+    assert!(FcBitSolver::solve(&mut board));
     assert!(Checker::check(&board));
 }
 
 #[test]
 fn fc_solver_test() {
     let mut board = get_trivial();
-    assert!(LASolver::<ForwardCheck>::solve(&mut board));
+    assert!(FcSolver::solve(&mut board));
     assert!(Checker::check(&board));
 }
 
 #[test]
 fn ac3_bit_solver_test() {
     let mut board = get_trivial();
-    assert!(LABitSolver::<ArcConsistency3>::solve(&mut board));
+    assert!(Ac3BitSolver::solve(&mut board));
     assert!(Checker::check(&board));
 }
 
 #[test]
 fn ac3_solver_test() {
     let mut board = get_trivial();
-    assert!(LASolver::<ArcConsistency3>::solve(&mut board));
+    assert!(Ac3Solver::solve(&mut board));
     assert!(Checker::check(&board));
 }
