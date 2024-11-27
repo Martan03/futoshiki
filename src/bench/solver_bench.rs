@@ -1,29 +1,41 @@
 use termint::enums::Color;
 
-use crate::{board::board_gen::BoardGen, solver::SolverType};
+use crate::{
+    args::bench_args::BenchArgs, board::board_gen::BoardGen,
+    solver::SolverType,
+};
 
 use super::{bench_stat::BenchStat, bench_struct::Bench};
 
 pub struct SolverBench {
     repeats: usize,
-    board_size: usize,
+    solvers: Vec<SolverType>,
 }
 
 impl SolverBench {
-    pub fn run(board_size: usize, repeats: usize) {
+    pub fn run(args: BenchArgs) {
+        let mut solvers: Vec<SolverType> =
+            args.solvers.iter().copied().collect();
+        if solvers.is_empty() {
+            solvers = SolverType::solvers().to_vec();
+        }
+
         let bench = Self {
-            repeats,
-            board_size,
+            repeats: args.repeats,
+            solvers,
         };
 
-        bench.test_board();
+        for size in args.sizes {
+            println!("{size}x{size} board, {} repeats", bench.repeats);
+            bench.test_board(size);
+        }
     }
 
-    fn test_board(&self) {
-        let board = BoardGen::generate(self.board_size);
+    fn test_board(&self, size: usize) {
+        let board = BoardGen::generate(size);
 
         let mut stats = vec![];
-        for solver in SolverType::solvers() {
+        for solver in self.solvers.iter() {
             let stat = Bench::run(
                 || _ = solver.solve(&mut board.clone()),
                 self.repeats,

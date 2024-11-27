@@ -18,13 +18,14 @@ pub trait Solver<'a> {
 }
 
 /// Enum containing all available solver types
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Hash)]
 pub enum SolverType {
     Backtrack,
     ForwardBitCheck,
     ForwardCheck,
+    #[default]
     ArcConsistency3Bit,
-    ArcConsistency,
+    ArcConsistency3,
 }
 
 impl SolverType {
@@ -35,7 +36,7 @@ impl SolverType {
             SolverType::ForwardBitCheck => FcBitSolver::solve(board),
             SolverType::ForwardCheck => FcSolver::solve(board),
             SolverType::ArcConsistency3Bit => Ac3BitSolver::solve(board),
-            SolverType::ArcConsistency => Ac3Solver::solve(board),
+            SolverType::ArcConsistency3 => Ac3Solver::solve(board),
         }
     }
 
@@ -46,7 +47,7 @@ impl SolverType {
             Self::ForwardBitCheck,
             Self::ForwardCheck,
             Self::ArcConsistency3Bit,
-            Self::ArcConsistency,
+            Self::ArcConsistency3,
         ]
     }
 
@@ -57,7 +58,7 @@ impl SolverType {
             1 => Self::ForwardBitCheck,
             2 => Self::ForwardCheck,
             3 => Self::ArcConsistency3Bit,
-            4 => Self::ArcConsistency,
+            4 => Self::ArcConsistency3,
             _ => panic!("Unknown solver ID"),
         }
     }
@@ -69,7 +70,7 @@ impl SolverType {
             SolverType::ForwardBitCheck => 1,
             SolverType::ForwardCheck => 2,
             SolverType::ArcConsistency3Bit => 3,
-            SolverType::ArcConsistency => 4,
+            SolverType::ArcConsistency3 => 4,
         }
     }
 }
@@ -83,7 +84,7 @@ impl Display for SolverType {
             SolverType::ArcConsistency3Bit => {
                 write!(f, "Bit Arc Consistency #3")
             }
-            SolverType::ArcConsistency => write!(f, "Arc Consistency #3"),
+            SolverType::ArcConsistency3 => write!(f, "Arc Consistency #3"),
         }
     }
 }

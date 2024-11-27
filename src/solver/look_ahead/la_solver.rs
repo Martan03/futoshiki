@@ -84,7 +84,7 @@ pub trait LASolver {
 
     /// Solves the board using the forward checking, returns true on success
     fn solve_inner(&mut self) -> bool {
-        let Some(Vec2 { x, y }) = self.find_min() else {
+        let Some(Vec2 { x, y }) = self.find_cell() else {
             return true;
         };
 
@@ -124,7 +124,7 @@ pub trait LASolver {
     }
 
     /// Finds unassigned cell with the smallest domain (least possible values)
-    fn find_min(&self) -> Option<Vec2> {
+    fn find_cell(&self) -> Option<Vec2> {
         let mut min_val = usize::MAX;
         let mut min = None;
 

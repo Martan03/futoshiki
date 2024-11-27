@@ -20,11 +20,11 @@ impl<'a> FcBitSolver<'a> {
 
 impl<'a> LABitSolver for FcBitSolver<'a> {
     fn board(&self) -> &Board {
-        &self.board
+        self.board
     }
 
     fn board_mut(&mut self) -> &mut Board {
-        &mut self.board
+        self.board
     }
 
     fn values(&self) -> &Vec<usize> {

@@ -1,5 +1,8 @@
 use app::App;
-use args::Args;
+use args::{
+    action::Action, args_struct::Args, bench_args::BenchArgs,
+    game_args::GameArgs,
+};
 use bench::solver_bench::SolverBench;
 use board::{board_struct::Board, cell::Cell};
 use error::Error;
@@ -31,19 +34,22 @@ fn main() {
 fn run() -> Result<(), Error> {
     let args = Args::parse(std::env::args())?;
     match args.action {
-        args::Action::Game => run_app(args),
-        args::Action::Benchmark(size) => run_benchmark(size),
-        args::Action::Help => Ok(Args::help()),
+        Action::Game(game_args) => run_app(game_args),
+        Action::Benchmark(bench_args) => run_benchmark(bench_args),
+        Action::Help => {
+            Args::help();
+            Ok(())
+        }
     }
 }
 
-fn run_app(args: Args) -> Result<(), Error> {
+fn run_app(args: GameArgs) -> Result<(), Error> {
     let mut app = App::new(args.size, args.solver);
     app.run()
 }
 
-fn run_benchmark(size: usize) -> Result<(), Error> {
-    SolverBench::run(size, 10);
+fn run_benchmark(args: BenchArgs) -> Result<(), Error> {
+    SolverBench::run(args);
     Ok(())
 }
 

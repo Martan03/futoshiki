@@ -1,4 +1,4 @@
-use std::{fmt::Display, time::Duration, u64};
+use std::{fmt::Display, time::Duration};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct BenchStat {

@@ -24,11 +24,11 @@ impl<'a> FcSolver<'a> {
 
 impl<'a> LASolver for FcSolver<'a> {
     fn board(&self) -> &Board {
-        &self.board
+        self.board
     }
 
     fn board_mut(&mut self) -> &mut Board {
-        &mut self.board
+        self.board
     }
 
     fn values(&self) -> &Vec<HashSet<usize>> {
