@@ -6,12 +6,19 @@ use termint::{
 
 use crate::{error::Error, solver::SolverType};
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Action {
+    Game,
+    Benchmark,
+    Help,
+}
+
 /// Parses given arguments and checks for arguments conditions
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Args {
     pub size: usize,
     pub solver: SolverType,
-    pub help: bool,
+    pub action: Action,
 }
 
 impl Args {
@@ -27,7 +34,10 @@ impl Args {
                     parsed.size = Self::get_num(&mut args_iter)?
                 }
                 "--solver" => parsed.parse_solver(&mut args_iter)?,
-                "-h" | "--help" => parsed.help = true,
+                "-h" | "--help" => parsed.action = Action::Help,
+                "-b" | "--bench" | "--benchmark" => {
+                    parsed.action = Action::Benchmark
+                }
                 arg => Err(format!("unexpected argument: '{arg}'"))?,
             }
         }
@@ -95,7 +105,7 @@ impl Default for Args {
         Self {
             size: 4,
             solver: SolverType::ArcConsistency3Bit,
-            help: false,
+            action: Action::Game,
         }
     }
 }

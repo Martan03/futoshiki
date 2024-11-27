@@ -12,6 +12,7 @@ use termint::{
 
 mod app;
 mod args;
+mod bench;
 mod board;
 mod checker;
 mod error;
@@ -28,12 +29,20 @@ fn main() {
 
 fn run() -> Result<(), Error> {
     let args = Args::parse(std::env::args())?;
-    if args.help {
-        Args::help();
-        return Ok(());
+    match args.action {
+        args::Action::Game => run_app(args),
+        args::Action::Benchmark => run_benchmark(),
+        args::Action::Help => Ok(Args::help()),
     }
+}
+
+fn run_app(args: Args) -> Result<(), Error> {
     let mut app = App::new(args.size, args.solver);
     app.run()
+}
+
+fn run_benchmark() -> Result<(), Error> {
+    todo!()
 }
 
 #[allow(unused)]
