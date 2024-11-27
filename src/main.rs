@@ -1,5 +1,6 @@
 use app::App;
 use args::Args;
+use bench::solver_bench::SolverBench;
 use board::{board_struct::Board, cell::Cell};
 use error::Error;
 use solver::look_ahead_bit::ac3_bit_solver::Ac3BitSolver;
@@ -31,7 +32,7 @@ fn run() -> Result<(), Error> {
     let args = Args::parse(std::env::args())?;
     match args.action {
         args::Action::Game => run_app(args),
-        args::Action::Benchmark => run_benchmark(),
+        args::Action::Benchmark(size) => run_benchmark(size),
         args::Action::Help => Ok(Args::help()),
     }
 }
@@ -41,8 +42,9 @@ fn run_app(args: Args) -> Result<(), Error> {
     app.run()
 }
 
-fn run_benchmark() -> Result<(), Error> {
-    todo!()
+fn run_benchmark(size: usize) -> Result<(), Error> {
+    SolverBench::run(size, 10);
+    Ok(())
 }
 
 #[allow(unused)]

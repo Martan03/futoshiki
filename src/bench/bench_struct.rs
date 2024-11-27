@@ -26,6 +26,6 @@ impl Bench {
     {
         let start = Instant::now();
         func();
-        self.stat.times.push(start.elapsed());
+        self.stat.add(start.elapsed());
     }
 }

@@ -9,7 +9,7 @@ use crate::{error::Error, solver::SolverType};
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Action {
     Game,
-    Benchmark,
+    Benchmark(usize),
     Help,
 }
 
@@ -36,7 +36,8 @@ impl Args {
                 "--solver" => parsed.parse_solver(&mut args_iter)?,
                 "-h" | "--help" => parsed.action = Action::Help,
                 "-b" | "--bench" | "--benchmark" => {
-                    parsed.action = Action::Benchmark
+                    let size = Self::get_num(&mut args_iter)?;
+                    parsed.action = Action::Benchmark(size);
                 }
                 arg => Err(format!("unexpected argument: '{arg}'"))?,
             }
