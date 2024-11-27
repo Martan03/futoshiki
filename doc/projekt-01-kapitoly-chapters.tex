@@ -110,13 +110,6 @@ všechny možnosti.
 
 \subsection{Heuristiky Forward Checkingu}
 
-Heuristika určuje strategii, kterou se vybírá hrací pole. Jsou dva typy
-heuristik a to zvolení hracího pole a zvolení hodnoty z domény. Mezi heuristiky
-výběru hracího pole patří: nejvíce omezená proměnná - hrací pole s nejmenší
-doménou, nejvíce omezující proměnná - hrací pole s největším vlivem na omezení
-zbývajících hracích polí. Mezi heuristiky výběru hodnoty z domény patří nejméně
-omezující hodnota - vybere se hodnota, která nejméně ovlivňuje ostatní domény.
-
 Heuristika určuje strategii výběru hracího pole a hodnoty, která bude dosazena
 do tohoto pole. Existují dvě hlavní kategorie heuristik: heuristiky pro výběr
 hracího pole a heuristiky pro výběr hodnoty z domény.
@@ -143,10 +136,7 @@ Mezi heuristiky pro výběr hodnoty z domény patří:
         nejmenší vliv na ostatní domény. Tímto způsobem se minimalizuje riziko,
         že se algoritmus dostane do slepé uličky, když později dojdou možnosti
         pro jiná pole.
-    \item Nejvíce omezující hodnota: Tento přístup naopak vybírá hodnotu, která
-        má největší vliv na ostatní domény. To znamená, že se vybere hodnota,
-        která omezuje možnosti ostatních polí co nejvíce. Tento přístup může
-        být užitečný pro rychlé zúžení možností.
+    \item Náhodná hodnota: Tento přístup vybírá hodnotu z domény náhodně.
 \end{itemize}
 
 \subsection{Variace Forward Checkingu}
@@ -188,9 +178,8 @@ minimální hodnotě sousedícího pole.
 Po vygenerování domén počíná fáze zapisování hodnot. Pro zvolení hracího pole
 používám heuristiku nejvíce omezená proměnná, což znamená, že vybírám pole s
 nejmenší doménou. Z domény tohoto pole pak vyberu hodnotu podle heuristiky
-nejméně omezující hodnota, tedy hodnotu, která má co nejmenší vliv na ostatní
-domény. Po dosazení hodnoty upravím domény všech ovlivněných polí tak, aby
-stále platila pravidla. Tento postup se opakuje, dokud není nalezeno řešení
+náhodné hodnoty. Po dosazení hodnoty upravím domény všech ovlivněných polí tak,
+aby stále platila pravidla. Tento postup se opakuje, dokud není nalezeno řešení
 nebo dokud nejsou vyzkoušeny všechny možné cesty.
 
 \section{Arc Consistency \#3}
@@ -232,9 +221,9 @@ domén následuje fáze postupného dosazování hodnot.
 
 Při zapisování hodnot jsou hrací pole a hodnota z jeho domény vybírány pomocí
 heuristik, stejně jako ve Forward Checkingu. Konkrétně používám heuristiku
-nejvíce omezená proměnná pro zvolení pole a heristiku nejméně omezující hodnota
-pro volbu hodnoty z domény zvoleného pole. Po dosazení hodnoty se upraví domény
-všech polí ve stejném řádku, sloupci a také všech polí ovlivněných nerovnostmi.
+nejvíce omezená proměnná pro zvolení pole a heristiku náhodná hodnota pro volbu
+hodnoty z domény zvoleného pole. Po dosazení hodnoty se upraví domény všech
+polí ve stejném řádku, sloupci a také všech polí ovlivněných nerovnostmi.
 
 Pokud se doména některého pole změní, ověřují se všechny oblouky, ve kterých
 toto pole figuruje. V případě nekonzistence (výskyt hodnoty, která porušuje
