@@ -338,51 +338,62 @@ Vývoj probíhal na operačním systému Linux.
 
 \chapter{Testování}
 
-Tato kapitola je věnována testování aplikace, hlavně tedy testování
-implementovaných algoritmů. Testuje se jak správnost algoritmů, tak i jejich
-časová náročnost, která je navzájem porovnána při různých velikostech hrací
-mřížky.
+Tato kapitola se zaměřuje na testování aplikace, především na ověření
+správnosti a výkonnosti implementovaných algoritmů. Testování zahrnuje kontrolu
+správnosti výsledků algoritmů, aby byla zajištěna jejich funkčnost při řešení
+hry Futoshiki. Současně je hodnocena časová náročnost algoritmů, přičemž jejich
+výkonnost je porovnána při různých velikostech hrací mřížky.
 
 \section{Správnost řešení}
 
-Při testování správnosti řešení testuji několik částí aplikace - algoritmy
-samotné, ověřovač složení a generování mřížky.
+Při testování správnosti řešení se zaměřuji na několik klíčových částí
+aplikace: samotné algoritmy, ověřovač složení a proces generování mřížky.
 
 \subsection*{Testování algoritmů}
 
-Pro testování jsem si vygeneroval čtyři různé mřížky pro různé obtížnosti, dle
-stránky futoshiki.com\cite{FutoshikiCom}. Následně jsem všechny algoritmy
-tuto mřížku nechal složit a využil ověřovač složení pro otestování, zda je
-mřížka opravdu složena.
+Pro testování algoritmů jsem vygeneroval čtyři různé mřížky s různými úrovněmi
+obtížnosti ze stránky futoshiki.com \cite{FutoshikiCom}. Každý algoritmus tyto
+mřížky vyřešil a výsledky byly následně zkontrolovány pomocí ověřovače složení,
+který zajišťuje, že výsledná mřížka splňuje pravidla Futoshiki.
 
 \subsection*{Testování ověřovače složení}
 
-Na stránce futoshiki.com\cite{FutoshikiCom} jsem si opět vygeneroval několik
-mřížek a nechal je složit. Tyto složené mřížky jsem poté využil pro testování
-ověřovače. U některých mřížek jsem řešení pozměnil a tím testoval, zda tato
-chyba bude opravdu odhalena.
+Ověřovač složení byl testován na mřížkách vygenerovaných ze stránky
+futoshiki.com \cite{FutoshikiCom}, které byly předem složeny. Pro ověření
+správnosti jsem u některých mřížek pozměnil jejich řešení tak, aby obsahovaly
+chyby. Tímto způsobem jsem testoval schopnost ověřovače určit, zda je mřížka
+správně složena či nikoli.
 
 \subsection*{Testování generování mřížky}
 
-U tohoto testu jsem se rozhodl vygenerovat několik mřížek, které jsou poté
-složeny. Složená mřížka se následně otestuje ověřovačem složení, čímž se
-zajistí, že je vygenerovaná mřížka složitelná.
+V testovacím procesu generování mřížek bylo nejdříve vytvořeno několik
+náhodných mřížek, které byly následně složeny pomocí jednoho z algoritmů.
+Výsledné složené mřížky byly zkontrolovány ověřovačem složení, což zajišťuje,
+že každá vygenerovaná mřížka je řešitelná a splňuje pravidla hry.
 
 \section{Časová náročnost}
 
-Časová náročnost se testuje, jestliže byla aplikace spuštěna s argumentem
-\texttt{bench}, která poté testuje zvolené algoritmy (při výchozím nastavení
-všechny) na zvolených velikostech mřížky. Pro každou velikost se náhodně
-vygeneruje mřížka, kterou poté každý algoritmus složí. Aby se předešlo různým
-časovým výkyvům, je tento test prováděn nastaveným počtem (výchozí nastavení je
-10). Aplikace do terminálu vytiskne nejlepší, průměrný a nejhorčí čas pro každý
-algoritmus a pro každou velikost mřížky. Automaticky se také vygeneruje graf,
-který využívá průměrných časů.
+Testování časové náročnosti je prováděno po spuštění aplikace s argumentem
+\texttt{bench}. Tento režim umožňuje měřit výkonnost zvolených algoritmů (při
+výchozím nastavení všech algoritmů) na různých velikostech mřížek.
+
+Pro každou velikost mřížky je náhodně vygenerována mřížka, kterou následně
+vyřeší každý algoritmus. Aby se minimalizoval vliv náhodných výkyvů, je test
+opakován předem nastaveným počtem iterací (výchozí hodnota je 10). Po dokončení
+testování aplikace zobrazí v terminálu výsledky obsahující nejlepší, průměrný a
+nejhorší naměřený čas pro každý algoritmus a velikost mřížky.
+
+Kromě textového výstupu aplikace automaticky generuje graf, který vizualizuje
+průměrné časy jednotlivých algoritmů pro různé velikosti mřížek. Tento graf
+usnadňuje porovnání efektivity algoritmů při řešení s různě velkými mřížkami.
 
 \begin{figure}[hbt]
 	\centering
 	\includegraphics[width=1\textwidth]{obrazky-figures/benchmark.png}
-	\caption{Benchmark všech algoritmů při velikostech 4-8}
+	\caption{
+        Srovnání časové náročnosti všech algoritmů při různých velikostech
+        mřížky (4×4 až 8×8).
+    }
 	\label{benchmark}
 \end{figure}
 
