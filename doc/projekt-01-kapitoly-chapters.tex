@@ -338,7 +338,53 @@ Vývoj probíhal na operačním systému Linux.
 
 \chapter{Testování}
 
+Tato kapitola je věnována testování aplikace, hlavně tedy testování
+implementovaných algoritmů. Testuje se jak správnost algoritmů, tak i jejich
+časová náročnost, která je navzájem porovnána při různých velikostech hrací
+mřížky.
 
+\section{Správnost řešení}
+
+Při testování správnosti řešení testuji několik částí aplikace - algoritmy
+samotné, ověřovač složení a generování mřížky.
+
+\subsection*{Testování algoritmů}
+
+Pro testování jsem si vygeneroval čtyři různé mřížky pro různé obtížnosti, dle
+stránky futoshiki.com\cite{FutoshikiCom}. Následně jsem všechny algoritmy
+tuto mřížku nechal složit a využil ověřovač složení pro otestování, zda je
+mřížka opravdu složena.
+
+\subsection*{Testování ověřovače složení}
+
+Na stránce futoshiki.com\cite{FutoshikiCom} jsem si opět vygeneroval několik
+mřížek a nechal je složit. Tyto složené mřížky jsem poté využil pro testování
+ověřovače. U některých mřížek jsem řešení pozměnil a tím testoval, zda tato
+chyba bude opravdu odhalena.
+
+\subsection*{Testování generování mřížky}
+
+U tohoto testu jsem se rozhodl vygenerovat několik mřížek, které jsou poté
+složeny. Složená mřížka se následně otestuje ověřovačem složení, čímž se
+zajistí, že je vygenerovaná mřížka složitelná.
+
+\section{Časová náročnost}
+
+Časová náročnost se testuje, jestliže byla aplikace spuštěna s argumentem
+\texttt{bench}, která poté testuje zvolené algoritmy (při výchozím nastavení
+všechny) na zvolených velikostech mřížky. Pro každou velikost se náhodně
+vygeneruje mřížka, kterou poté každý algoritmus složí. Aby se předešlo různým
+časovým výkyvům, je tento test prováděn nastaveným počtem (výchozí nastavení je
+10). Aplikace do terminálu vytiskne nejlepší, průměrný a nejhorčí čas pro každý
+algoritmus a pro každou velikost mřížky. Automaticky se také vygeneruje graf,
+který využívá průměrných časů.
+
+\begin{figure}[hbt]
+	\centering
+	\includegraphics[width=1\textwidth]{obrazky-figures/benchmark.png}
+	\caption{Benchmark všech algoritmů při velikostech 4-8}
+	\label{benchmark}
+\end{figure}
 
 \chapter{Závěr}
 
