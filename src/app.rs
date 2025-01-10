@@ -17,7 +17,10 @@ use termint::{
     widgets::{Layout, ListState, StrSpanExtension},
 };
 
-use crate::{board::board_struct::Board, error::Error, solver::SolverType};
+use crate::{
+    args::game_args::GameArgs, board::board_struct::Board, error::Error,
+    solver::SolverType, tui::Theme,
+};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum Action {
@@ -71,20 +74,22 @@ pub struct App {
     pub state: State,
     pub term: Term,
     pub screen: Screen,
+    pub theme: Theme,
     pub sp_state: Rc<RefCell<ListState>>,
 }
 
 impl App {
     /// Creates new [`App`]
-    pub fn new(size: usize, solver: SolverType) -> Self {
-        let solver_id = solver.get_id();
+    pub fn new(args: GameArgs) -> Self {
+        let solver_id = args.solver.get_id();
         Self {
-            board: Board::new(size),
+            board: Board::new(args.size),
             action: Default::default(),
-            solver,
+            solver: args.solver,
             state: Default::default(),
             term: Term::new().small_screen(Self::small_screen()),
             screen: Default::default(),
+            theme: args.theme,
             sp_state: Rc::new(RefCell::new(ListState::selected(0, solver_id))),
         }
     }
@@ -172,6 +177,7 @@ impl Default for App {
             state: Default::default(),
             term: Term::new().small_screen(Self::small_screen()),
             screen: Default::default(),
+            theme: Theme::Dark,
             sp_state: Rc::new(RefCell::new(ListState::selected(0, 0))),
         }
     }

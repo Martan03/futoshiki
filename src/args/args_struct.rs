@@ -1,10 +1,11 @@
+use pareg::Pareg;
 use termint::{
     enums::Color,
     help,
     widgets::{Grad, StrSpanExtension},
 };
 
-use crate::{error::Error, solver::SolverType};
+use crate::error::Result;
 
 use super::{action::Action, bench_args::BenchArgs, game_args::GameArgs};
 
@@ -16,24 +17,22 @@ pub struct Args {
 
 impl Args {
     /// Parses arguments
-    pub fn parse(args: std::env::Args) -> Result<Args, Error> {
+    pub fn parse(mut args: Pareg) -> Result<Args> {
         let mut parsed = Self::default();
 
-        let mut args_iter = args.into_iter().peekable();
-        args_iter.next();
-        while let Some(arg) = args_iter.peek() {
-            match arg.as_str() {
+        while let Some(arg) = args.peek() {
+            match arg {
                 "bench" => {
-                    args_iter.next();
-                    let bench_args = BenchArgs::parse(&mut args_iter)?;
+                    args.next();
+                    let bench_args = BenchArgs::parse(&mut args)?;
                     parsed.action = Action::Benchmark(bench_args);
                 }
                 "-h" | "--help" => {
-                    args_iter.next();
+                    args.next();
                     parsed.action = Action::Help;
                 }
                 _ => {
-                    let game_args = GameArgs::parse(&mut args_iter)?;
+                    let game_args = GameArgs::parse(&mut args)?;
                     parsed.action = Action::Game(game_args);
                 }
             }
@@ -81,41 +80,5 @@ impl Args {
             "ac3b  arc-cons3-bit  arc-consistency3-bit" =>
                 "Arc Consistency #3 solver implementation using bitmaps"
         );
-    }
-
-    /// Parses the solver from the given arguments
-    pub fn parse_solver<T>(args: &mut T) -> Result<SolverType, Error>
-    where
-        T: Iterator<Item = String>,
-    {
-        match args.next().ok_or("missing arguments for solver")?.as_str() {
-            "bt" | "backtrack" | "backtracking" => Ok(SolverType::Backtrack),
-            "fcb" | "forward-check-bit" | "forward-checking-bit" => {
-                Ok(SolverType::ForwardBitCheck)
-            }
-            "fc" | "forward-check" | "forward-checking" => {
-                Ok(SolverType::ForwardCheck)
-            }
-            "ac3" | "arc-cons3" | "arc-consistency3" => {
-                Ok(SolverType::ArcConsistency3)
-            }
-            "ac3b" | "arc-cons3-bit" | "arc-consistency3-bit" => {
-                Ok(SolverType::ArcConsistency3Bit)
-            }
-            _ => Err("invalid solver option".into()),
-        }
-    }
-
-    /// Gets number (usize) from args
-    pub fn get_num<T>(args: &mut T) -> Result<usize, Error>
-    where
-        T: Iterator<Item = String>,
-    {
-        let Some(val) = args.next() else {
-            return Err(Error::Msg("missing argument parameter".into()));
-        };
-
-        val.parse::<usize>()
-            .map_err(|_| Error::Msg(format!("number expected, got '{val}'")))
     }
 }

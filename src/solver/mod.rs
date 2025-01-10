@@ -5,6 +5,7 @@ use look_ahead::{ac3_solver::Ac3Solver, fc_solver::FcSolver};
 use look_ahead_bit::{
     ac3_bit_solver::Ac3BitSolver, fc_bit_solver::FcBitSolver,
 };
+use pareg::FromArg;
 
 use crate::board::board_struct::Board;
 
@@ -18,13 +19,18 @@ pub trait Solver<'a> {
 }
 
 /// Enum containing all available solver types
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Hash, FromArg)]
 pub enum SolverType {
+    #[arg("bt" | "backtracking")]
     Backtrack,
+    #[arg("fcb" | "forward-check-bit" | "forward-checking-bit")]
     ForwardBitCheck,
+    #[arg("fc" | "forwarch-check" | "forward-checking")]
     ForwardCheck,
+    #[arg("ac3" | "arc-cons3" | "arc-consistency3")]
     #[default]
     ArcConsistency3Bit,
+    #[arg("ac3b" | "arc-cons3-bit" | "arc-consistency3-bit")]
     ArcConsistency3,
 }
 

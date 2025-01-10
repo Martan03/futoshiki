@@ -1,21 +1,22 @@
-use crate::{args::args_struct::Args, error::Error, solver::SolverType};
+use pareg::Pareg;
+
+use crate::{error::Result, solver::SolverType, tui::Theme};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct GameArgs {
     pub size: usize,
     pub solver: SolverType,
+    pub theme: Theme,
 }
 
 impl GameArgs {
-    pub fn parse<T>(args: &mut T) -> Result<GameArgs, Error>
-    where
-        T: Iterator<Item = String>,
-    {
+    pub fn parse(args: &mut Pareg) -> Result<GameArgs> {
         let mut parsed = Self::default();
         while let Some(arg) = args.next() {
-            match arg.as_str() {
-                "-s" | "--size" => parsed.size = Args::get_num(args)?,
-                "--solver" => parsed.solver = Args::parse_solver(args)?,
+            match arg {
+                "-s" | "--size" => parsed.size = args.next_arg()?,
+                "--solver" => parsed.solver = args.next_arg()?,
+                "-t" | "--theme" => parsed.theme = args.next_arg()?,
                 arg => Err(format!("unexpected argument: '{arg}'"))?,
             }
         }
@@ -28,6 +29,7 @@ impl Default for GameArgs {
         Self {
             size: 4,
             solver: Default::default(),
+            theme: Theme::Dark,
         }
     }
 }

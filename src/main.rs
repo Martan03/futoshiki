@@ -6,6 +6,7 @@ use args::{
 use bench::solver_bench::SolverBench;
 use board::{board_struct::Board, cell::Cell};
 use error::Error;
+use pareg::Pareg;
 use solver::look_ahead_bit::ac3_bit_solver::Ac3BitSolver;
 use termint::{
     buffer::Buffer,
@@ -32,7 +33,7 @@ fn main() {
 }
 
 fn run() -> Result<(), Error> {
-    let args = Args::parse(std::env::args())?;
+    let args = Args::parse(Pareg::args())?;
     match args.action {
         Action::Game(game_args) => run_app(game_args),
         Action::Benchmark(bench_args) => run_benchmark(bench_args),
@@ -44,7 +45,7 @@ fn run() -> Result<(), Error> {
 }
 
 fn run_app(args: GameArgs) -> Result<(), Error> {
-    let mut app = App::new(args.size, args.solver);
+    let mut app = App::new(args);
     app.run()
 }
 

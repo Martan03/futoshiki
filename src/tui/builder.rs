@@ -23,7 +23,7 @@ impl App {
         let mut wrapper = Layout::horizontal().center();
         wrapper.push(game, 0..);
 
-        let mut main = Layout::vertical();
+        let mut main = Layout::vertical().bg(self.theme.get_color());
         main.push(Spacer::new(), Constraint::Fill(1));
         main.push(wrapper, 0..);
         main.push(Spacer::new(), Constraint::Fill(1));

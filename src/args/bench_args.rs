@@ -1,6 +1,8 @@
 use std::collections::HashSet;
 
-use crate::{args::args_struct::Args, error::Error, solver::SolverType};
+use pareg::Pareg;
+
+use crate::{error::Result, solver::SolverType};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct BenchArgs {
@@ -10,20 +12,13 @@ pub struct BenchArgs {
 }
 
 impl BenchArgs {
-    pub fn parse<T>(args: &mut T) -> Result<BenchArgs, Error>
-    where
-        T: Iterator<Item = String>,
-    {
+    pub fn parse(args: &mut Pareg) -> Result<BenchArgs> {
         let mut parsed = Self::default();
         while let Some(arg) = args.next() {
-            match arg.as_str() {
-                "-s" | "--size" => {
-                    _ = parsed.sizes.insert(Args::get_num(args)?)
-                }
-                "--solver" => {
-                    _ = parsed.solvers.insert(Args::parse_solver(args)?)
-                }
-                "-r" | "--repeats" => parsed.repeats = Args::get_num(args)?,
+            match arg {
+                "-s" | "--size" => _ = parsed.sizes.insert(args.next_arg()?),
+                "--solver" => _ = parsed.solvers.insert(args.next_arg()?),
+                "-r" | "--repeats" => parsed.repeats = args.next_arg()?,
                 arg => Err(format!("unexpected argument: '{arg}'"))?,
             }
         }

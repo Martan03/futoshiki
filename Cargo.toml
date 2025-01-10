@@ -5,6 +5,8 @@ edition = "2021"
 
 [dependencies]
 crossterm = "0.28.1"
+pareg = "0.7.0"
 plotters = "0.3.7"
 rand = "0.8.5"
 termint = "0.5.2"
+thiserror = "2.0.11"

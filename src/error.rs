@@ -1,15 +1,17 @@
-use std::fmt::Display;
+use thiserror::Error;
 
+pub type Result<T> = std::result::Result<T, Error>;
+
+#[derive(Debug, Error)]
 pub enum Error {
-    IO(std::io::Error),
+    #[error(transparent)]
+    IO(#[from] std::io::Error),
+    #[error(transparent)]
+    Pareg(#[from] pareg::ArgError),
+    #[error("{0}")]
     Msg(String),
+    #[error("exit")]
     Exit,
-}
-
-impl From<std::io::Error> for Error {
-    fn from(value: std::io::Error) -> Self {
-        Self::IO(value)
-    }
 }
 
 impl From<&str> for Error {
@@ -21,15 +23,5 @@ impl From<&str> for Error {
 impl From<String> for Error {
     fn from(value: String) -> Self {
         Self::Msg(value)
-    }
-}
-
-impl Display for Error {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Error::IO(e) => write!(f, "{e}"),
-            Error::Msg(msg) => write!(f, "{msg}"),
-            Error::Exit => write!(f, "exit"),
-        }
     }
 }

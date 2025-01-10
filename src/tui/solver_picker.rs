@@ -30,7 +30,8 @@ impl App {
 
         let mut wrapper = Layout::horizontal().center();
         wrapper.push(block, 25);
-        let mut layout = Layout::vertical().center();
+        let mut layout =
+            Layout::vertical().center().bg(self.theme.get_color());
         layout.push(wrapper, 0..);
 
         // let overlay = Overlay::new(vec![self.render_builder(), layout.into()]);
