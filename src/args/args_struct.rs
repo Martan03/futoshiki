@@ -68,6 +68,7 @@ impl Args {
             }
             "-r  --repeats" ["num"] =>
                 "Sets repeats of the benchmark (default 10)\n"
+            "-b  --boards" ["num"] => "Number of boards tested (default 1)\n"
             "Solver types":
             "bt  backtrack  backtracking" =>
                 "Backtracking solver implementation"

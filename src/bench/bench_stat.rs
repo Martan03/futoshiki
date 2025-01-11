@@ -1,4 +1,8 @@
-use std::{fmt::Display, time::Duration};
+use std::{
+    fmt::Display,
+    ops::{Add, AddAssign},
+    time::Duration,
+};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct BenchStat {
@@ -16,8 +20,30 @@ impl BenchStat {
         self.max_time = self.max_time.max(time);
     }
 
+    pub fn join(&mut self, other: Self) {
+        self.total_time += other.total_time;
+        self.cnt += other.cnt;
+        self.min_time = self.min_time.min(other.min_time);
+        self.max_time = self.max_time.min(other.max_time);
+    }
+
     pub fn avg_time(&self) -> Duration {
         self.total_time / self.cnt
+    }
+}
+
+impl Add for BenchStat {
+    type Output = BenchStat;
+
+    fn add(mut self, rhs: Self) -> Self::Output {
+        self.join(rhs);
+        self
+    }
+}
+
+impl AddAssign for BenchStat {
+    fn add_assign(&mut self, rhs: Self) {
+        self.join(rhs)
     }
 }
 

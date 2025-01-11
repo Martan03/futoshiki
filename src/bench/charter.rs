@@ -1,7 +1,7 @@
 use std::{collections::HashMap, ops::Range};
 
 use plotters::{
-    chart::ChartBuilder,
+    chart::{ChartBuilder, SeriesLabelPosition},
     prelude::{BitMapBackend, IntoDrawingArea, IntoLogRange, PathElement},
     series::LineSeries,
     style::{Color, IntoFont, Palette, Palette99, BLACK, WHITE},
@@ -36,7 +36,7 @@ impl Charter {
         filename: &str,
     ) -> Result<(), Box<dyn std::error::Error>> {
         let root =
-            BitMapBackend::new(filename, (768, 576)).into_drawing_area();
+            BitMapBackend::new(filename, (600, 470)).into_drawing_area();
         root.fill(&WHITE)?;
 
         let (x_range, y_range) = self.get_range();
@@ -67,6 +67,7 @@ impl Charter {
             .configure_series_labels()
             .background_style(WHITE.mix(0.8))
             .border_style(BLACK)
+            .position(SeriesLabelPosition::UpperLeft)
             .draw()?;
 
         Ok(())

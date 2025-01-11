@@ -9,6 +9,7 @@ pub struct BenchArgs {
     pub sizes: HashSet<usize>,
     pub solvers: HashSet<SolverType>,
     pub repeats: usize,
+    pub boards: usize,
 }
 
 impl BenchArgs {
@@ -19,6 +20,7 @@ impl BenchArgs {
                 "-s" | "--size" => _ = parsed.sizes.insert(args.next_arg()?),
                 "--solver" => _ = parsed.solvers.insert(args.next_arg()?),
                 "-r" | "--repeats" => parsed.repeats = args.next_arg()?,
+                "-b" | "--boards" => parsed.boards = args.next_arg()?,
                 arg => Err(format!("unexpected argument: '{arg}'"))?,
             }
         }
@@ -32,6 +34,7 @@ impl Default for BenchArgs {
             sizes: HashSet::new(),
             solvers: HashSet::new(),
             repeats: 10,
+            boards: 1,
         }
     }
 }

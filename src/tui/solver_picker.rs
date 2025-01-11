@@ -2,7 +2,7 @@ use crossterm::event::{KeyCode, KeyEvent};
 use termint::{
     enums::Color,
     style::Style,
-    widgets::{Block, Element, Layout, List, Overlay, StrSpanExtension},
+    widgets::{Block, Element, Layout, List, StrSpanExtension},
 };
 
 use crate::{
@@ -23,9 +23,9 @@ impl App {
             .selected_style(Style::new().fg(Color::Cyan))
             .auto_scroll();
         let mut block = Block::vertical()
-            .title("Solver picker".fg(Color::Default))
-            .border_style(Style::new().fg(Color::Default))
-            .style(Style::new().fg(Color::Default).bg(Color::Default));
+            .title("Solver picker".fg(Color::Gray))
+            .border_style(Style::new().fg(Color::Gray))
+            .style(Style::new().fg(Color::Gray));
         block.push(list, 0..);
 
         let mut wrapper = Layout::horizontal().center();
@@ -34,9 +34,7 @@ impl App {
             Layout::vertical().center().bg(self.theme.get_color());
         layout.push(wrapper, 0..);
 
-        // let overlay = Overlay::new(vec![self.render_builder(), layout.into()]);
-        let overlay = Overlay::new(vec![layout.into()]);
-        Element::new(overlay)
+        Element::new(layout)
     }
 
     /// Handles key events when in solver picker screens

@@ -20,7 +20,7 @@ impl Bench {
         bench.stat
     }
 
-    pub fn run_one<F>(&mut self, func: &F)
+    fn run_one<F>(&mut self, func: &F)
     where
         F: Fn(),
     {
