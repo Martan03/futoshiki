@@ -336,6 +336,158 @@ Aplikace je implementována v programovacím jazyce Rust za využití knihovny
 \texttt{termint}, která zjednodušuje tvorbu uživatelského rozhraní v terminálu.
 Vývoj probíhal na operačním systému Linux.
 
+\section{Spuštění aplikace}
+
+Při spouštění aplikace si může uživatel pomocí argumentů přizpůsobit nastavení
+hry, například zvolit algoritmus, který bude Futoshiki řešit, velikost mřížky
+nebo spustit benchmark.
+
+\subsection*{Argumenty pro spuštění hry}
+\begin{itemize}
+    \item -s, --size [číslo]: Velikost mřížky (výchozí je 4)
+    \item --solver [typ]: Algoritmus pro řešení Futoshiki (více popsáno
+        později)
+    \item -t, --theme [téma]: Téma aplikace
+    \begin{itemize}
+        \item light: Světlé téma
+        \item dark: Tmavé téma
+    \end{itemize}
+\end{itemize}
+
+\subsection*{Argumenty pro benchmark}
+V případě že by chtěl uživatel spustit benchmark, musí využít argument
+\texttt{bench}, za kterým mohou následovat tyto argumenty:
+\begin{itemize}
+    \item -s, --size [číslo]: Velikost testované mřížky (lze zadat vícekrát)
+    \item --solver [typ]: Testovaný algoritmus (lze zadat vícekrát)
+    \item -r, --repeats [číslo]: Počet opakování testu
+    \item -b, --boards [číslo]: Počet testovaných mřížek
+\end{itemize}
+
+\subsection*{Dostupné typy algoritmů}
+\begin{itemize}
+    \item bt, backtract, backtracking: Backtracking
+    \item fc, forward-check, forward-checking: Forward Checking
+    \item fcb, forward-check-bit, forward-checking-bit: Forward Checking s
+        bitovými operacemi
+    \item ac3, arc-cons3, arc-consistency3: Arc Consistency \#3
+    \item ac3b, arc-cons3-bit, arc-consistency3-bit: Arc Consistency \#3 s
+        bitovými operacemi
+\end{itemize}
+
+\section{Vzhled a možnosti aplikace}
+
+Po spuštění hry se zobrazí mřížka Futoshiki, která má čtvercový tvar s předem
+nastavenou velikostí. V této mřížce je jedno z~polí zvýrazněno, to značí právě
+označené pole. Pro změnu označeného pole lze využít klávesy šipek nebo klávesy
+\texttt{hjkl}, které využívá textový editor \texttt{Vim} pro navigaci v textu.
+Aplikaci lze kdykoliv ukončit stiskem kláves \texttt{Q} a~\texttt{Esc}.
+Aplikace obsahuje tři obrazovky:
+\begin{enumerate}
+    \item Vytváření mřížky
+    \item Řešení mřížky
+    \item Změna řešícího algoritmu
+\end{enumerate}
+
+\begin{figure}[hbt]
+	\centering
+	\includegraphics[width=0.4\textwidth]{obrazky-figures/futoshiki.png}
+	\caption{Vzhled aplikace po spuštění hry se světlým režimem}
+	\label{futoshiki}
+\end{figure}
+
+\subsection{Vytváření mřížky}
+
+Tento řežim umožňuje uživateli vytvořit vlastní mřížku, kterou lze následně
+nechat složit jedním z algoritmů.
+
+\subsection*{Funkcionalita}
+\begin{enumerate}
+    \item Přidání hodnoty:
+    \begin{itemize}
+        \item Napsáním číselné hodnoty na klávesnici se hodnota přidá do
+            označeného pole.
+        \item Pokud hodnota přesáhne maximální povolenou hodnotu, odstraní
+            se číslice z vyšších řádů.
+    \end{itemize}
+    \item Smazání hodnoty:
+    \begin{itemize}
+        \item Hodnotu lze smazat zapsáním čísla nula nebo klávesou
+            \texttt{Delete}.
+    \end{itemize}
+    \item Přidání nerovnosti:
+    \begin{itemize}
+        \item Právě označené pole bude prvním prvek nerovnosti.
+        \item Stisknutím klávesy \texttt{>} (větší) nebo \texttt{<} (menší) se
+            vybere typ nerovnosti.
+        \item Zvolením sousedního pole se nastaví druhý prvek nerovnosti
+            a~přidá se samotná nerovnost.
+    \end{itemize}
+    \item Smazání nerovnosti:
+    \begin{itemize}
+        \item Postup je stejný jako při přidávání nerovnosti, pouze místo
+        kláves \texttt{>} nebo \texttt{<} se použije klávesa \texttt{C}.
+    \end{itemize}
+\end{enumerate}
+
+\subsection*{Spuštění řešení}
+
+Po dokončení vytváření mřížky lze stisknutím klávesy \texttt{S} aktivovat
+aktuálně zvolený algoritmus, který následně mřížku vyřeší. V případě úspěchu
+se do mřížky doplní zbývající hodnoty a vypíše se zpráva, že mřížka byla
+složena.
+
+\subsection{Řešení mřížky}
+
+V tomto režimu může uživatel mřížku manuálně řešit.
+
+\subsection*{Funkcionalita}
+\begin{enumerate}
+    \item Generování mřížky:
+    \begin{itemize}
+        \item Stisknutím klávesy \texttt{Enter} se vygeneruje náhodná mřížka.
+    \end{itemize}
+    \item Řešení mřížky:
+    \begin{itemize}
+        \item Hodnoty lze do polí zapisovat stejným způsobem jako při vytváření
+            mřížky.
+        \item Nelze přepisovat hodnoty, které byly vygenerovány a nelze měnit
+            nerovnosti.
+    \end{itemize}
+\end{enumerate}
+
+\subsection*{Dokončení řešení}
+
+Pokud je mřížka vyřešena správně, zobrazí se zpráva o úspěšném složení. Pokuď
+uživateli mřížka nejde složit, lze opět využít nastaveného algoritmu stisknutím
+klávesy \texttt{S}.
+
+\subsection{Změna řešícího algoritmu}
+
+Uživatel má také možnost algorimus použitý pro řešení Futoshiki změnit, aniž
+by musel hry spouštět znovu za pomocí odpovídajících argumentů
+
+\begin{enumerate}
+    \item Přechod mezi stránkou výběru a stránkou hry:
+    \begin{itemize}
+        \item Stisknutím klávesy \texttt{Tab} se přepne stránka.
+        \item Pokud je aktuální stránka hry, přepne se na stránku výběru,
+            v~opačném případě se přejde na stránku hry.
+    \end{itemize}
+    \item Výběr algoritmu:
+    \begin{itemize}
+        \item Výběr lze měnit pomocí kláves šipka nahoru a šipka dolů.
+        \item Pro potvrzení výběru je třeba stisknout klávesu \texttt{Enter}.
+    \end{itemize}
+\end{enumerate}
+
+\begin{figure}[hbt]
+	\centering
+	\includegraphics[width=0.6\textwidth]{obrazky-figures/solvers.png}
+	\caption{Stránka výběru řešícího algoritmu}
+	\label{solvers}
+\end{figure}
+
 \chapter{Testování}
 
 Tato kapitola se zaměřuje na testování aplikace, především na ověření
@@ -392,10 +544,24 @@ usnadňuje porovnání efektivity algoritmů při řešení s různě velkými m
 	\includegraphics[width=1\textwidth]{obrazky-figures/benchmark.png}
 	\caption{
         Srovnání časové náročnosti všech algoritmů při různých velikostech
-        mřížky (4×4 až 8×8).
+        mřížky (4×4 až 10×10).
     }
 	\label{benchmark}
 \end{figure}
+
+\subsection{Zhodnocení}
+
+Jak ukazuje graf, menší mřížky zvládnou všechny algoritmy rychle. Backtracking
+je však nejrychlejší a to díky své jednoduchosti a absenci režie, jako je
+generování domén polí. S rostoucí velikostí mřížky však jeho výkon výrazně
+klesá, což je dáno jeho systematickým prohledáváním všech možností, kdy počet
+možností, které je třeba vyzkoušet, exponenciálně roste.
+
+Na větších mřížkách jsou rozdíly mezi algoritmy výraznější. Je také důležité
+zmínit, že osa \texttt{y} je logaritmická, což může zkreslovat reálně rozdíly.
+Backtracking je při velikosti 10×10 pomalejší přibližně o deset sekund než
+další nejpomalejší algoritmus. Nejlépe si vedly algoritmy Forward Checking
+a~Arc Consistency \#3 a~to v jejich implementace s~bitmapami.
 
 \chapter{Závěr}
 
