@@ -322,6 +322,30 @@ rozdíl od klasických konečných automatů, které se pohybují po pásce pouz
 doprava, může skákající automat přeskakovat mezi libovolnými buňkami. Pokud je
 symbol již přečten, nemůže být přečten znovu.
 
+\subsection{Skákající automat s opakovaným čtením}
+
+\subsubsection*{Definice}
+
+Skákající automas s opakovaným čtením lze definovat jako pětice
+\(M = (Q, \Sigma, R, s F)\), kde:
+\begin{itemize}
+    \item \(Q\) je konečná množina stavů
+    \item \(\Sigma\) je konečná množina vstupních symbolů
+    \item \(R \subseteq Q \times \Sigma^* \times Q\) je konečná ternární
+        relace, nazývaná množinou pravidel
+        \begin{itemize}
+            \item Každé pravidlo \((p, y, q) \in R\) je zapsáno jako
+                \(py \implies q\)
+            \item Jestliže je aktuální stav automatu \(q\) a na vstupu je
+                symbol odpovídající symbolu \(y\), automat přejde do stavu
+                \(q\)
+            \item Vstupní ukazatel zůstane na stejné pozici a nepřečte vstupní
+                symbol
+        \end{itemize}
+    \item \(s \in Q\) je počáteční stav
+    \item \(F \subseteq Q\) je množina konečných stavů
+\end{itemize}
+
 \chapter{Dvojdimenzionální automaty}
 
 \chapter{Implementace}
