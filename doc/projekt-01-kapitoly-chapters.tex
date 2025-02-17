@@ -326,7 +326,7 @@ symbol již přečten, nemůže být přečten znovu.
 
 \subsubsection*{Definice}
 
-Skákající automas s opakovaným čtením lze definovat jako pětice
+Skákající automat s opakovaným čtením lze definovat jako pětice
 \(M = (Q, \Sigma, R, s F)\), kde:
 \begin{itemize}
     \item \(Q\) je konečná množina stavů
@@ -346,7 +346,36 @@ Skákající automas s opakovaným čtením lze definovat jako pětice
     \item \(F \subseteq Q\) je množina konečných stavů
 \end{itemize}
 
+\subsubsection*{S podporou nerovností}
+
+TEMP: definice stejná jako u skájícího automatu s opakovaným čtením. Změní se
+pouze množina pravidel:
+
+\begin{itemize}
+    \item \(R \subseteq Q \times C(\Sigma^*) \times Q\)
+    \begin{itemize}
+        \item \(C\) je predikát, který musí být splněn aby proběhl přechod
+        \item \(p[c] \implies q\)
+        \item \(p[x < 10] \implies q\)
+    \end{itemize}
+\end{itemize}
+
 \chapter{Dvojdimenzionální automaty}
+
+\section{Dvojdimenzionální skákající automat}
+
+Sedmice \((Q, \Sigma, \Delta, R_1, R_2, s, F)\), kde:
+\begin{itemize}
+    \item \(Q\) je konečná množina stavů
+    \item \(\Sigma\) je konečná množina vstupních symbolů
+    \item \(\Delta\) je množina povolených směrů
+    \item \(R_1\) množina pravidel pro pohyb ve tvaru
+        \((Q \times \Sigma^* \times \Delta) \implies Q\)
+    \item \(R_2\) množina pravidel pro skoky ve tvaru
+        \((Q \times \Sigma^*) \implies Q\)
+    \item \(s \in Q\) je počáteční stav
+    \item \(F \subseteq Q\) je množina konečných stavů
+\end{itemize}
 
 \chapter{Implementace}
 
