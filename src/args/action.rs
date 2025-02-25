@@ -4,6 +4,7 @@ use super::{bench_args::BenchArgs, game_args::GameArgs};
 pub enum Action {
     Game(GameArgs),
     Benchmark(BenchArgs),
+    Config,
     Help,
 }
 

@@ -27,6 +27,10 @@ impl Args {
                     let bench_args = BenchArgs::parse(&mut args)?;
                     parsed.action = Action::Benchmark(bench_args);
                 }
+                "config" => {
+                    args.next();
+                    parsed.action = Action::Config;
+                }
                 "-h" | "--help" => {
                     args.next();
                     parsed.action = Action::Help;

@@ -6,6 +6,7 @@ use look_ahead_bit::{
     ac3_bit_solver::Ac3BitSolver, fc_bit_solver::FcBitSolver,
 };
 use pareg::FromArg;
+use serde::{Deserialize, Serialize};
 
 use crate::board::board_struct::Board;
 
@@ -19,7 +20,18 @@ pub trait Solver<'a> {
 }
 
 /// Enum containing all available solver types
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Hash, FromArg)]
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    Default,
+    Hash,
+    FromArg,
+    Serialize,
+    Deserialize,
+)]
 pub enum SolverType {
     #[arg("bt" | "backtracking")]
     Backtrack,
