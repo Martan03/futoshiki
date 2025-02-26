@@ -1,12 +1,12 @@
 use pareg::Pareg;
 
-use crate::{error::Result, solver::SolverType, tui::Theme};
+use crate::{error::Result, solver::SolverType, tui::ThemeType};
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct GameArgs {
     pub size: Option<usize>,
     pub solver: Option<SolverType>,
-    pub theme: Option<Theme>,
+    pub theme: Option<ThemeType>,
 }
 
 impl GameArgs {

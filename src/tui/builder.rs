@@ -1,6 +1,5 @@
 use crossterm::event::{KeyCode, KeyEvent};
 use termint::{
-    enums::Color,
     geometry::{Constraint, Vec2},
     paragraph,
     widgets::{Element, Layout, Paragraph, Spacer, StrSpanExtension},
@@ -14,7 +13,7 @@ use crate::{
 };
 
 impl App {
-    /// Renders the buildren screen
+    /// Renders the builder screen
     pub fn render_builder(&mut self) -> Element {
         let mut game = Layout::vertical().center();
         game.push(self.state.to_string(), 0..);
@@ -23,7 +22,7 @@ impl App {
         let mut wrapper = Layout::horizontal().center();
         wrapper.push(game, 0..);
 
-        let mut main = Layout::vertical().bg(self.theme.get_color());
+        let mut main = Layout::vertical().bg(self.theme.background);
         main.push(Spacer::new(), Constraint::Fill(1));
         main.push(wrapper, 0..);
         main.push(Spacer::new(), Constraint::Fill(1));
@@ -65,6 +64,7 @@ impl App {
             }
             KeyCode::Enter => {
                 self.board = BoardGen::generate(self.board.size);
+                self.board.theme = self.theme.clone();
                 self.board.disable_vals();
                 self.state = State::Playing;
             }
@@ -81,12 +81,12 @@ impl App {
     /// Renders the game help screen
     fn render_builder_help(&self) -> Paragraph {
         paragraph!(
-            "[Arrows/hjkl]Move".fg(Color::Gray),
-            "[</>+Arrows]Add cond.".fg(Color::Gray),
-            "[c+Arrows]Remove cond.".fg(Color::Gray),
-            "[Numbers]Place num.".fg(Color::Gray),
-            "[Del]Clear cell".fg(Color::Gray),
-            "[Esc|q]Quit".fg(Color::Gray),
+            "[Arrows/hjkl]Move".fg(self.theme.help),
+            "[</>+Arrows]Add cond.".fg(self.theme.help),
+            "[c+Arrows]Remove cond.".fg(self.theme.help),
+            "[Numbers]Place num.".fg(self.theme.help),
+            "[Del]Clear cell".fg(self.theme.help),
+            "[Esc|q]Quit".fg(self.theme.help),
         )
         .separator(" ")
     }

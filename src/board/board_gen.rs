@@ -1,5 +1,7 @@
 use rand::{rngs::ThreadRng, seq::SliceRandom, Rng};
 
+use crate::tui::theme::Theme;
+
 use super::board_struct::Board;
 
 pub struct BoardGen {
@@ -12,7 +14,7 @@ impl BoardGen {
     pub fn generate(size: usize) -> Board {
         let mut bgen = Self {
             rng: rand::thread_rng(),
-            board: Board::new(size),
+            board: Board::new(size, Theme::dark()),
         };
 
         bgen.generate_board(0, 0);

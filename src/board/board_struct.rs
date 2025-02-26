@@ -2,6 +2,8 @@ use std::ops::{Index, IndexMut};
 
 use termint::geometry::{Rect, Vec2};
 
+use crate::tui::theme::Theme;
+
 use super::cell::Cell;
 
 /// Represents the game board of Futoshiki
@@ -12,17 +14,19 @@ pub struct Board {
     pub ver_conds: Vec<Option<bool>>,
     pub selected: Vec2,
     pub size: usize,
+    pub theme: Theme,
 }
 
 impl Board {
     /// Creates a square [`Board`] with given size
-    pub fn new(size: usize) -> Self {
+    pub fn new(size: usize, theme: Theme) -> Self {
         Self {
             cells: vec![Cell::empty(); size * size],
             hor_conds: vec![None; size * size.saturating_sub(1)],
             ver_conds: vec![None; size * size.saturating_sub(1)],
             selected: Vec2::new(0, 0),
             size,
+            theme,
         }
     }
 
@@ -152,6 +156,7 @@ impl Default for Board {
             ver_conds: vec![None; 12],
             selected: Vec2::new(0, 0),
             size: 4,
+            theme: Theme::default(),
         };
         board.hor_conds[1] = Some(true);
         board.hor_conds[2] = Some(true);

@@ -19,7 +19,7 @@ use termint::{
 
 use crate::{
     args::game_args::GameArgs, board::board_struct::Board, config::Config,
-    error::Error, solver::SolverType, tui::Theme,
+    error::Error, solver::SolverType, tui::theme::Theme,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
@@ -83,14 +83,19 @@ impl App {
     pub fn new(config: Config, args: GameArgs) -> Self {
         let solver = args.solver.unwrap_or(config.default_solver);
         let solver_id = solver.get_id();
+
+        let theme = args.theme.unwrap_or(config.default_theme).get_theme();
         Self {
-            board: Board::new(args.size.unwrap_or(config.default_size)),
+            board: Board::new(
+                args.size.unwrap_or(config.default_size),
+                theme.clone(),
+            ),
             action: Default::default(),
             solver: solver,
             state: Default::default(),
             term: Term::new().small_screen(Self::small_screen()),
             screen: Default::default(),
-            theme: args.theme.unwrap_or(config.default_theme),
+            theme,
             sp_state: Rc::new(RefCell::new(ListState::selected(0, solver_id))),
         }
     }
@@ -178,7 +183,7 @@ impl Default for App {
             state: Default::default(),
             term: Term::new().small_screen(Self::small_screen()),
             screen: Default::default(),
-            theme: Theme::Dark,
+            theme: Theme::default(),
             sp_state: Rc::new(RefCell::new(ListState::selected(0, 0))),
         }
     }

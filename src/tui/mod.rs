@@ -1,26 +1,27 @@
 use pareg::FromArg;
 use serde::{Deserialize, Serialize};
-use termint::enums::Color;
+use theme::Theme;
 
 pub mod builder;
 pub mod solver_picker;
+pub mod theme;
 
 #[derive(
     Debug, Clone, PartialEq, Eq, FromArg, Serialize, Deserialize, Default,
 )]
-pub enum Theme {
+pub enum ThemeType {
     Dark,
     Light,
     #[default]
     Default,
 }
 
-impl Theme {
-    pub fn get_color(&self) -> Color {
+impl ThemeType {
+    pub fn get_theme(&self) -> Theme {
         match self {
-            Theme::Dark => Color::Default,
-            Theme::Light => Color::White,
-            Theme::Default => Color::Default,
+            ThemeType::Dark => Theme::dark(),
+            ThemeType::Light => Theme::light(),
+            ThemeType::Default => Theme::default(),
         }
     }
 }

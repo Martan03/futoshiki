@@ -6,7 +6,7 @@ use std::{
 
 use serde::{Deserialize, Serialize};
 
-use crate::{error::Error, solver::SolverType, tui::Theme};
+use crate::{error::Error, solver::SolverType, tui::ThemeType};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Config {
@@ -15,7 +15,7 @@ pub struct Config {
     #[serde(default, rename = "defaultSolver")]
     pub default_solver: SolverType,
     #[serde(default, rename = "defaultTheme")]
-    pub default_theme: Theme,
+    pub default_theme: ThemeType,
 }
 
 impl Config {

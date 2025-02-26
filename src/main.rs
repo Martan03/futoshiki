@@ -24,6 +24,7 @@ use termint::{
     geometry::{Rect, Vec2},
     widgets::{StrSpanExtension, Widget},
 };
+use tui::theme::Theme;
 
 mod app;
 mod args;
@@ -105,6 +106,7 @@ fn test_solver() -> Result<(), Error> {
         ver_conds: vec![None; 12],
         selected: Vec2::new(0, 0),
         size: 4,
+        theme: Theme::dark(),
     };
     board.hor_conds[1] = Some(true);
     board.hor_conds[2] = Some(true);

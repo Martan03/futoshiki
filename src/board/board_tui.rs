@@ -1,8 +1,5 @@
 use termint::{
-    buffer::Buffer,
-    enums::{Color, Modifier},
-    geometry::Vec2,
-    style::Style,
+    buffer::Buffer, enums::Modifier, geometry::Vec2, style::Style,
     widgets::Widget,
 };
 
@@ -61,14 +58,18 @@ impl Board {
                 let cell = self[id];
                 match cell.value() {
                     0 => {}
-                    val if cell.enabled() => {
-                        buffer.set_str(val.to_string(), &coords)
-                    }
+                    val if cell.enabled() => buffer.set_str_styled(
+                        val.to_string(),
+                        &coords,
+                        Style::new().fg(self.theme.foreground),
+                    ),
                     val => {
                         buffer.set_str_styled(
                             val.to_string(),
                             &coords,
-                            Style::new().modifier(Modifier::BOLD),
+                            Style::new()
+                                .fg(self.theme.foreground)
+                                .modifier(Modifier::BOLD),
                         );
                     }
                 }
@@ -88,36 +89,36 @@ impl Board {
         buffer.set_str_styled(
             "───┬".repeat(self.size()),
             &Vec2::new(buffer.x() + 1, buffer.y()),
-            Style::new().fg(Color::Gray),
+            Style::new().fg(self.theme.border),
         );
         buffer.set_str_styled(
             "───┴".repeat(self.size()),
             &Vec2::new(buffer.x() + 1, buffer.y() + bottom),
-            Style::new().fg(Color::Gray),
+            Style::new().fg(self.theme.border),
         );
 
         let mut leftc = Vec2::new(buffer.x(), buffer.y() + 1);
         let mut rightc = Vec2::new(buffer.x() + right, buffer.y() + 1);
         for _ in buffer.y()..buffer.y() + self.size() {
-            Board::border_part('│', buffer, &leftc);
+            self.border_part('│', buffer, &leftc);
             leftc.y += 1;
-            Board::border_part('├', buffer, &leftc);
+            self.border_part('├', buffer, &leftc);
             leftc.y += 1;
 
-            Board::border_part('│', buffer, &rightc);
+            self.border_part('│', buffer, &rightc);
             rightc.y += 1;
-            Board::border_part('┤', buffer, &rightc);
+            self.border_part('┤', buffer, &rightc);
             rightc.y += 1;
         }
 
         let mut pos = *buffer.pos();
-        Board::border_part('┌', buffer, &pos);
+        self.border_part('┌', buffer, &pos);
         pos.x += right;
-        Board::border_part('┐', buffer, &pos);
+        self.border_part('┐', buffer, &pos);
         pos.y += bottom;
-        Board::border_part('┘', buffer, &pos);
+        self.border_part('┘', buffer, &pos);
         pos.x -= right;
-        Board::border_part('└', buffer, &pos);
+        self.border_part('└', buffer, &pos);
     }
 
     /// Renders inner borders
@@ -127,7 +128,7 @@ impl Board {
             buffer.set_str_styled(
                 &line,
                 &Vec2::new(buffer.x() + 1, buffer.y() + y * 2),
-                Style::new().fg(Color::Gray),
+                Style::new().fg(self.theme.border),
             );
         }
 
@@ -136,7 +137,7 @@ impl Board {
             buffer.set_str_styled(
                 &line,
                 &Vec2::new(buffer.x() + 1, buffer.y() + y * 2 + 1),
-                Style::new().fg(Color::Gray),
+                Style::new().fg(self.theme.border),
             )
         }
     }
@@ -150,10 +151,10 @@ impl Board {
                     Some(false) => '<',
                     _ => continue,
                 };
-                buffer.set_val(
-                    c,
-                    &Vec2::new(buffer.x() + x * 4 + 4, buffer.y() + y * 2 + 1),
-                );
+                let pos =
+                    Vec2::new(buffer.x() + x * 4 + 4, buffer.y() + y * 2 + 1);
+                buffer.set_val(c, &pos);
+                buffer.set_fg(self.theme.select, &pos);
             }
         }
     }
@@ -167,18 +168,18 @@ impl Board {
                     Some(false) => '∧',
                     _ => continue,
                 };
-                buffer.set_val(
-                    c,
-                    &Vec2::new(buffer.x() + x * 4 + 2, buffer.y() + y * 2 + 2),
-                );
+                let pos =
+                    Vec2::new(buffer.x() + x * 4 + 2, buffer.y() + y * 2 + 2);
+                buffer.set_val(c, &pos);
+                buffer.set_fg(self.theme.select, &pos);
             }
         }
     }
 
     /// Renders part of the border
-    fn border_part(val: char, buffer: &mut Buffer, pos: &Vec2) {
+    fn border_part(&self, val: char, buffer: &mut Buffer, pos: &Vec2) {
         buffer.set_val(val, pos);
-        buffer.set_fg(Color::Gray, pos);
+        buffer.set_fg(self.theme.border, pos);
     }
 }
 

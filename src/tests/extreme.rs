@@ -11,6 +11,7 @@ use crate::{
         },
         Solver,
     },
+    tui::theme::Theme,
 };
 
 /// Gets tricky futoshiki board
@@ -21,6 +22,7 @@ fn get_extreme() -> Board {
         ver_conds: vec![None; 12],
         selected: Vec2::new(0, 0),
         size: 4,
+        theme: Theme::dark(),
     };
     board.hor_conds[1] = Some(true);
     board.hor_conds[2] = Some(true);

@@ -11,6 +11,7 @@ use crate::{
         },
         Solver,
     },
+    tui::theme::Theme,
 };
 
 /// Gets easy futoshiki board
@@ -22,6 +23,7 @@ fn get_easy() -> Board {
         ver_conds: vec![None; 12],
         selected: Vec2::new(0, 0),
         size: 4,
+        theme: Theme::dark(),
     };
     board.ver_conds[0] = Some(true);
     board.ver_conds[8] = Some(true);

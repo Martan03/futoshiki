@@ -3,6 +3,7 @@ use termint::geometry::Vec2;
 use crate::{
     board::{board_struct::Board, cell::Cell},
     checker::Checker,
+    tui::theme::Theme,
 };
 
 fn create_board<I>(cells: I, size: usize) -> Board
@@ -17,6 +18,7 @@ where
         ver_conds: vec![None; size * lsize],
         selected: Vec2::new(0, 0),
         size,
+        theme: Theme::dark(),
     }
 }
 

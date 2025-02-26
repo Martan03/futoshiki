@@ -11,6 +11,7 @@ use crate::{
         },
         Solver,
     },
+    tui::theme::Theme,
 };
 
 /// Gets trivial futoshiki board
@@ -22,6 +23,7 @@ fn get_trivial() -> Board {
         ver_conds: vec![None; 12],
         selected: Vec2::new(0, 0),
         size: 4,
+        theme: Theme::dark(),
     }
 }
 

@@ -1,6 +1,5 @@
 use crossterm::event::{KeyCode, KeyEvent};
 use termint::{
-    enums::Color,
     style::Style,
     widgets::{Block, Element, Layout, List, StrSpanExtension},
 };
@@ -20,18 +19,17 @@ impl App {
             .collect();
 
         let list = List::new(solvers, self.sp_state.clone())
-            .selected_style(Style::new().fg(Color::Cyan))
+            .selected_style(Style::new().fg(self.theme.select))
             .auto_scroll();
         let mut block = Block::vertical()
-            .title("Solver picker".fg(Color::Gray))
-            .border_style(Style::new().fg(Color::Gray))
-            .style(Style::new().fg(Color::Gray));
+            .title("Solver picker".fg(self.theme.border))
+            .border_style(Style::new().fg(self.theme.border))
+            .style(Style::new().fg(self.theme.foreground));
         block.push(list, 0..);
 
         let mut wrapper = Layout::horizontal().center();
         wrapper.push(block, 25);
-        let mut layout =
-            Layout::vertical().center().bg(self.theme.get_color());
+        let mut layout = Layout::vertical().center().bg(self.theme.background);
         layout.push(wrapper, 0..);
 
         Element::new(layout)
