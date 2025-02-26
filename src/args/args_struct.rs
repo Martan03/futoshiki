@@ -58,9 +58,12 @@ impl Args {
                 "Starts TUI game according to options\n"
             "futoshiki bench" ["bench_options"] =>
                 "Starts the benchmark according to options\n"
+            "futoshiki config" =>
+                "Opens config.json file in default editor\n"
             "Game options":
             "-s  --size" ["num"] => "Sets size of the game (default 4)\n"
             "--solver" ["solver_type"] => "Sets the solver to be used\n"
+            "-t  --theme" ["dark|light|default"] => "Sets the app theme\n"
             "Bench options":
             "-s  --size" ["num"] => {
                 "Sets size of the game (default 4)",
