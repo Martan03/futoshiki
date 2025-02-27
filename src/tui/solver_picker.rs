@@ -40,13 +40,13 @@ impl App {
         match event.code {
             KeyCode::Enter => {
                 self.sp_select_screen();
-                self.screen = Screen::Builder;
+                self.screen = Screen::Solver;
                 return self.render();
             }
             KeyCode::Up | KeyCode::Char('k') => self.sp_checked_sub(),
             KeyCode::Down | KeyCode::Char('j') => self.sp_checked_add(),
             KeyCode::Tab => {
-                self.screen = Screen::Builder;
+                self.screen = Screen::Solver;
                 return self.render();
             }
             KeyCode::Char('q') | KeyCode::Esc => return Err(Error::Exit),

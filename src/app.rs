@@ -43,8 +43,9 @@ impl Action {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum Screen {
-    #[default]
     Builder,
+    #[default]
+    Solver,
     SolverPicker,
 }
 
@@ -134,6 +135,7 @@ impl App {
     pub fn render(&mut self) -> Result<(), Error> {
         let screen = match self.screen {
             Screen::Builder => self.render_builder(),
+            Screen::Solver => self.render_solver(),
             Screen::SolverPicker => self.render_sp(),
         };
         self.term.render(screen)?;
@@ -153,6 +155,7 @@ impl App {
     fn key_handler(&mut self, event: KeyEvent) -> Result<(), Error> {
         match self.screen {
             Screen::Builder => self.listen_builder(event),
+            Screen::Solver => self.listen_solver(event),
             Screen::SolverPicker => self.listen_sp(event),
         }
     }

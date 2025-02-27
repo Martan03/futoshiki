@@ -80,6 +80,13 @@ impl Board {
         self.selected = pos;
     }
 
+    /// Enables all board values
+    pub fn enable_vals(&mut self) {
+        for pos in Rect::new(0, 0, self.size, self.size) {
+            self[pos].enable();
+        }
+    }
+
     /// Disables all non-zero values
     pub fn disable_vals(&mut self) {
         for pos in Rect::new(0, 0, self.size, self.size) {

@@ -2,7 +2,7 @@ use pareg::FromArg;
 use serde::{Deserialize, Serialize};
 use theme::Theme;
 
-pub mod builder;
+pub mod game;
 pub mod solver_picker;
 pub mod theme;
 
