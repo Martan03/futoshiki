@@ -3,7 +3,16 @@
 Futoshiki TUI implementation in Rust 🦀
 
 ## Table of Contents
-{{ mdcon }}
+- [Installation](#installation)
+- [Usage](#usage)
+- [Detailed description](#detailed-description)
+    - [What is Futoshiki?](#what-is-futoshiki)
+    - [Game](#game)
+    - [Benchmark](#benchmark)
+        - [Running](#running)
+        - [Result](#result)
+    - [Config](#config)
+- [Links](#links)
 
 ## Installation
 
@@ -35,6 +44,29 @@ All the usage and options can be seen in the help:
 ```
 
 ## Detailed description
+
+### What is Futoshiki?
+
+It's a board-based puzzle game which is quite similar to Sudoku. It is also
+known as Unequal. It's played on the square board of any size
+*(4×4 is common)*. The goal is to fill the board with missing numbers so each
+row and column contains every number from 1 to board size exactly once, plus
+all the inequalities must be satisfied.
+
+### Game
+
+Game is implemented using TUI. When you start a game, you get put into game
+screen in **solver** mode. In this mode you can solve board, generate new once
+or let an algorithm to solve the board for you. To change selected cells you
+can use `Arrow` keys, place number by typing the desired `digit`.
+
+You can also switch to **builder** mode *(by pressing `b` key)*, where you can
+create your own board. You can add digits the same way as in **solver** mode,
+but you can also add conditions. To add condition, you have to press
+corresponding condition *(`<` or `>`)* and `Arrow` in which direction the
+condition should be placed.
+
+All other keybinds are listed in the help on the bottom of each page.
 
 ### Benchmark
 

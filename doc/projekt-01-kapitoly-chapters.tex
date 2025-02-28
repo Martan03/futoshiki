@@ -377,16 +377,107 @@ Sedmice \((Q, \Sigma, \Delta, R_1, R_2, s, F)\), kde:
     \item \(F \subseteq Q\) je množina konečných stavů
 \end{itemize}
 
+\chapter{Pravidla dvojdimenzionálního skákajícího automatu}
+
+V této kapitole se podrobně zaměříme na pravidla přechodů dvojdimenzionálního
+skákajícího automatu, který je navrhnut pro řešení hlavolamu Futoshiki.
+
+\section{Základní značení}
+
+\begin{itemize}
+    \item \(\#\#\) - hranice hrací mřížky
+    \item \(\#\) - hranice mezi hracími poli
+    \item \(N\) - nerovnosti mezi poli
+    \item \(F\) - vyplněné herní pole
+    \item \(X\) - nevyplněné herní pole
+    \item \({X}\) - pole s neprázdnou doménou
+    \item \({}\) - pole s prázdnou doménou
+    \item \(E\) - pole bez domény
+    \item \(R\), \(L\), \(U\), \(D\) - směry pohybu v mřížce
+\end{itemize}
+
+\section{Vytvoření domén polí}
+
+\subsection*{Pravidla}
+
+\begin{tabular}{@{}p{4cm} p{10.5cm}@{}}
+    \(Q_0\#\#\ \rightarrow Q_{10}D\) & Posun dolů pro vynechání okraje
+        mřížky \\
+
+    & \\
+    \(Q_{10}\#\# \rightarrow Q_{19}R\) & Posun doprava a přesun do stavu
+        ověření konce mřížky \\
+    \(Q_{11}\#\# \rightarrow Q_{12}R\) & Posun doprava pro vynechání okraje
+        mřížky \\
+    \(Q_{12}F \rightarrow Q_{12}R\) & Odstranění hodnoty z domény řádku a
+        sloupce a posun doprava \\
+    \(Q_{12}\#\# \rightarrow Q_{20}D\) & Posun dolů pokud hranice mřížky \\
+    \(Q_{12} \rightarrow Q_{12}R\) & Jinak posun doprava \\
+    \(Q_{19}\#\# \rightarrow Q_{39}U\) & Konec mřížky, přesun do stavu
+        vytvoření domén polí \\
+    \(Q_{19} \rightarrow Q_{11}L\) & Jinak posun zpět a úprava domén \\
+
+    & \\
+    \(Q_{20}\#\# \rightarrow Q_{29}L\) & Posun doleva a přesun do stavu
+        ověření konce mřížky \\
+    \(Q_{21}\#\# \rightarrow Q_{22}L\) & Posun doleva pro vynechání okraje
+        mřížky \\
+    \(Q_{22}F \rightarrow Q_{22}L\) & Odstranění hodnoty z domény řádku a
+        sloupce a posun doleva \\
+    \(Q_{22}\#\# \rightarrow Q_{10}D\) & Posun dolů pokud hranice mřížky \\
+    \(Q_{22} \rightarrow Q_{22}L\) & Jinak posun doleva \\
+    \(Q_{29}\#\# \rightarrow Q_{49}U\) & Konec mřížky, přesun do stavu
+        vytvoření domén polí \\
+    \(Q_{29} \rightarrow Q_{21}R\) & Jinak posun zpět a úprava domén \\
+
+    & \\
+    \(Q_{30}\#\# \rightarrow Q_{39}R\) & Posun doprava a přesun do stavu
+        ověření konce mřížky \\
+    \(Q_{31}\#\# \rightarrow Q_{32}R\) & Posun doprava pro vynechání okraje
+        mřížky \\
+    \(Q_{32}E \rightarrow Q_{32}R\) & Vytvoření domény na základě domén řádku
+        a sloupce \\
+    \(Q_{32}\#\# \rightarrow Q_{40}U\) & Posun nahoru pokud hranice mřížky \\
+    \(Q_{32} \rightarrow Q_{32}R\) & Jinak posun doprava \\
+    \(Q_{39}\#\# \rightarrow Q_5\) & Konec mřížky \\
+    \(Q_{39} \rightarrow Q_{31}L\) & Jinak posun zpět a úprava domén \\
+
+    & \\
+    \(Q_{40}\#\# \rightarrow Q_{49}L\) & Posun doleva a přesun do stavu
+        ověření konce mřížky \\
+    \(Q_{41}\#\# \rightarrow Q_{42}L\) & Posun doleva pro vynechání okraje
+        mřížky \\
+    \(Q_{42}E \rightarrow Q_{42}L\) & Vytvoření domény na základě domén řádku
+        a sloupce \\
+    \(Q_{42}\#\# \rightarrow Q_{30}U\) & Posun nahoru pokud hranice mřížky \\
+    \(Q_{42} \rightarrow Q_{42}L\) & Jinak posun doleva \\
+    \(Q_{49}\#\# \rightarrow Q_5\) & Konec mřížky \\
+    \(Q_{49} \rightarrow Q_{41}R\) & Jinak posun zpět a úprava domén \\
+
+    & \\
+    \(Q_{5} \rightarrow\) TODO & pravidla pro nerovnosti\\
+\end{tabular}
+
+\section{Řešení hry}
+
+Pravidla pro řešení hry
+
+\subsection*{Pravidla}
+
+\begin{tabular}{@{}p{4cm} p{10.5cm}@{}}
+
+\end{tabular}
+
 \chapter{Implementace}
 
 Tato kapitola podrobně popisuje implementaci aplikace pro řešení hry Futoshiki.
-V rámci řešení jsou využity algoritmy uvedené v předchozích kapitolách. Také je
+V~rámci řešení jsou využity algoritmy uvedené v~předchozích kapitolách. Také je
 detailně popsáno uživatelské prostředí aplikace, která je vytvořena jako
 terminálová aplikace, tedy veškeré prvky rozhraní jsou zobrazeny pomocí textu
 vytištěného do terminálu.
 
-Aplikace je implementována v programovacím jazyce Rust za využití knihovny
-\texttt{termint}, která zjednodušuje tvorbu uživatelského rozhraní v terminálu.
+Aplikace je implementována v~programovacím jazyce Rust za využití knihovny
+\texttt{termint}, která zjednodušuje tvorbu uživatelského rozhraní v~terminálu.
 Vývoj probíhal na operačním systému Linux.
 
 \section{Spuštění aplikace}
@@ -397,43 +488,52 @@ nebo spustit benchmark.
 
 \subsection*{Argumenty pro spuštění hry}
 \begin{itemize}
-    \item -s, --size [číslo]: Velikost mřížky (výchozí je 4)
-    \item --solver [typ]: Algoritmus pro řešení Futoshiki (více popsáno
-        později)
-    \item -t, --theme [téma]: Téma aplikace
+    \item \texttt{-s, --size [číslo]}: Velikost mřížky (výchozí je 4)
+    \item \texttt{--solver [typ]}: Algoritmus pro řešení Futoshiki (více
+        popsáno později)
+    \item \texttt{-t, --theme [téma]}: Téma aplikace
     \begin{itemize}
-        \item light: Světlé téma
-        \item dark: Tmavé téma
+        \item \texttt{light}: Světlé téma
+        \item \texttt{dark}: Tmavé téma
+        \item \texttt{default}: Výchozí téma
     \end{itemize}
 \end{itemize}
 
 \subsection*{Argumenty pro benchmark}
-V případě že by chtěl uživatel spustit benchmark, musí využít argument
+V~případě že by chtěl uživatel spustit benchmark, musí využít argument
 \texttt{bench}, za kterým mohou následovat tyto argumenty:
 \begin{itemize}
-    \item -s, --size [číslo]: Velikost testované mřížky (lze zadat vícekrát)
-    \item --solver [typ]: Testovaný algoritmus (lze zadat vícekrát)
-    \item -r, --repeats [číslo]: Počet opakování testu
-    \item -b, --boards [číslo]: Počet testovaných mřížek
+    \item \texttt{-s, --size [číslo]}: Velikost testované mřížky (lze zadat
+        vícekrát)
+    \item \texttt{--solver [typ]}: Testovaný algoritmus (lze zadat vícekrát)
+    \item \texttt{-r, --repeats [číslo]}: Počet opakování testu
+    \item \texttt{-b, --boards [číslo]}: Počet testovaných mřížek
 \end{itemize}
 
 \subsection*{Dostupné typy algoritmů}
 \begin{itemize}
-    \item bt, backtract, backtracking: Backtracking
-    \item fc, forward-check, forward-checking: Forward Checking
-    \item fcb, forward-check-bit, forward-checking-bit: Forward Checking s
-        bitovými operacemi
-    \item ac3, arc-cons3, arc-consistency3: Arc Consistency \#3
-    \item ac3b, arc-cons3-bit, arc-consistency3-bit: Arc Consistency \#3 s
-        bitovými operacemi
+    \item \texttt{bt, backtract, backtracking}: Backtracking
+    \item \texttt{fc, forward-check, forward-checking}: Forward Checking
+    \item \texttt{fcb, forward-check-bit, forward-checking-bit}: Forward
+        Checking s~bitovými operacemi
+    \item \texttt{ac3, arc-cons3, arc-consistency3}: Arc Consistency \#3
+    \item \texttt{ac3b, arc-cons3-bit, arc-consistency3-bit}: Arc Consistency
+        \#3 s~bitovými operacemi
 \end{itemize}
+
+\subsection*{Konfigurace aplikace}
+
+Pokud je aplikace spuštěna s~argumentem \texttt{config}, otevře se konfigurační
+soubor ve výchozím textovém editoru. Jestliže soubor neexistuje, automaticky se
+vytvoří. Uživatel si v~něm může nastavit výchozí hodnoty pro velikost mřížky,
+použitý algoritmus pro nalezení řešení a~téma aplikace.
 
 \section{Vzhled a možnosti aplikace}
 
-Po spuštění hry se zobrazí mřížka Futoshiki, která má čtvercový tvar s předem
-nastavenou velikostí. V této mřížce je jedno z~polí zvýrazněno, to značí právě
+Po spuštění hry se zobrazí mřížka Futoshiki, která má čtvercový tvar s~předem
+nastavenou velikostí. V~této mřížce je jedno z~polí zvýrazněno, to značí právě
 označené pole. Pro změnu označeného pole lze využít klávesy šipek nebo klávesy
-\texttt{hjkl}, které využívá textový editor \texttt{Vim} pro navigaci v textu.
+\texttt{hjkl}, které využívá textový editor \texttt{Vim} pro navigaci v~textu.
 Aplikaci lze kdykoliv ukončit stiskem kláves \texttt{Q} a~\texttt{Esc}.
 Aplikace obsahuje tři obrazovky:
 \begin{enumerate}
@@ -445,14 +545,14 @@ Aplikace obsahuje tři obrazovky:
 \begin{figure}[hbt]
 	\centering
 	\includegraphics[width=0.4\textwidth]{obrazky-figures/futoshiki.png}
-	\caption{Vzhled aplikace po spuštění hry se světlým režimem}
+	\caption{Vzhled aplikace po spuštění hry se světlým tématem}
 	\label{futoshiki}
 \end{figure}
 
 \subsection{Vytváření mřížky}
 
 Tento řežim umožňuje uživateli vytvořit vlastní mřížku, kterou lze následně
-nechat složit jedním z algoritmů.
+nechat složit jedním z~algoritmů.
 
 \subsection*{Funkcionalita}
 \begin{enumerate}
@@ -487,12 +587,12 @@ nechat složit jedním z algoritmů.
 
 Po dokončení vytváření mřížky lze stisknutím klávesy \texttt{S} aktivovat
 aktuálně zvolený algoritmus, který následně mřížku vyřeší. V případě úspěchu
-se do mřížky doplní zbývající hodnoty a vypíše se zpráva, že mřížka byla
+se do mřížky doplní zbývající hodnoty a~vypíše se zpráva, že mřížka byla
 složena.
 
 \subsection{Řešení mřížky}
 
-V tomto režimu může uživatel mřížku manuálně řešit.
+V~tomto režimu může uživatel mřížku řešit manuálně.
 
 \subsection*{Funkcionalita}
 \begin{enumerate}
@@ -504,21 +604,21 @@ V tomto režimu může uživatel mřížku manuálně řešit.
     \begin{itemize}
         \item Hodnoty lze do polí zapisovat stejným způsobem jako při vytváření
             mřížky.
-        \item Nelze přepisovat hodnoty, které byly vygenerovány a nelze měnit
+        \item Nelze přepisovat hodnoty, které byly vygenerovány a~nelze měnit
             nerovnosti.
     \end{itemize}
 \end{enumerate}
 
 \subsection*{Dokončení řešení}
 
-Pokud je mřížka vyřešena správně, zobrazí se zpráva o úspěšném složení. Pokuď
-uživateli mřížka nejde složit, lze opět využít nastaveného algoritmu stisknutím
-klávesy \texttt{S}.
+Jestliže je mřížka úspěšně vyřešena, zobrazí se zpráva o~úspěšném složení.
+Pokud má uživatel problém se složením mřížky, lze opět využít nastaveného
+algoritmu stisknutím klávesy \texttt{S} a~tím zobrazit správné řešení.
 
 \subsection{Změna řešícího algoritmu}
 
 Uživatel má také možnost algorimus použitý pro řešení Futoshiki změnit, aniž
-by musel hry spouštět znovu za pomocí odpovídajících argumentů
+by musel hru spouštět znovu za pomocí odpovídajících argumentů.
 
 \begin{enumerate}
     \item Přechod mezi stránkou výběru a stránkou hry:
@@ -544,7 +644,7 @@ by musel hry spouštět znovu za pomocí odpovídajících argumentů
 \chapter{Testování}
 
 Tato kapitola se zaměřuje na testování aplikace, především na ověření
-správnosti a výkonnosti implementovaných algoritmů. Testování zahrnuje kontrolu
+správnosti a~výkonnosti implementovaných algoritmů. Testování zahrnuje kontrolu
 správnosti výsledků algoritmů, aby byla zajištěna jejich funkčnost při řešení
 hry Futoshiki. Současně je hodnocena časová náročnost algoritmů, přičemž jejich
 výkonnost je porovnána při různých velikostech hrací mřížky.
@@ -552,45 +652,47 @@ výkonnost je porovnána při různých velikostech hrací mřížky.
 \section{Správnost řešení}
 
 Při testování správnosti řešení se zaměřuji na několik klíčových částí
-aplikace: samotné algoritmy, ověřovač složení a proces generování mřížky.
+aplikace: samotné algoritmy, ověřovač složení a~proces generování mřížky.
 
 \subsection*{Testování algoritmů}
 
-Pro testování algoritmů jsem vygeneroval čtyři různé mřížky s různými úrovněmi
+Pro testování algoritmů jsem vygeneroval čtyři různé mřížky s~různými úrovněmi
 obtížnosti ze stránky futoshiki.com \cite{FutoshikiCom}. Každý algoritmus tyto
-mřížky vyřešil a výsledky byly následně zkontrolovány pomocí ověřovače složení,
+mřížky vyřešil a~výsledky byly následně zkontrolovány pomocí ověřovače složení,
 který zajišťuje, že výsledná mřížka splňuje pravidla Futoshiki.
 
 \subsection*{Testování ověřovače složení}
 
 Ověřovač složení byl testován na mřížkách vygenerovaných ze stránky
 futoshiki.com \cite{FutoshikiCom}, které byly předem složeny. Pro ověření
-správnosti jsem u některých mřížek pozměnil jejich řešení tak, aby obsahovaly
+správnosti jsem u~některých mřížek pozměnil jejich řešení tak, aby obsahovaly
 chyby. Tímto způsobem jsem testoval schopnost ověřovače určit, zda je mřížka
 správně složena či nikoli.
 
 \subsection*{Testování generování mřížky}
 
-V testovacím procesu generování mřížek bylo nejdříve vytvořeno několik
-náhodných mřížek, které byly následně složeny pomocí jednoho z algoritmů.
+V~testovacím procesu generování mřížek bylo nejdříve vytvořeno několik
+náhodných mřížek, které byly následně složeny pomocí jednoho z~algoritmů.
 Výsledné složené mřížky byly zkontrolovány ověřovačem složení, což zajišťuje,
-že každá vygenerovaná mřížka je řešitelná a splňuje pravidla hry.
+že každá vygenerovaná mřížka je řešitelná a~splňuje pravidla hry.
 
 \section{Časová náročnost}
 
-Testování časové náročnosti je prováděno po spuštění aplikace s argumentem
+Testování časové náročnosti je prováděno po spuštění aplikace s~argumentem
 \texttt{bench}. Tento režim umožňuje měřit výkonnost zvolených algoritmů (při
 výchozím nastavení všech algoritmů) na různých velikostech mřížek.
 
 Pro každou velikost mřížky je náhodně vygenerována mřížka, kterou následně
 vyřeší každý algoritmus. Aby se minimalizoval vliv náhodných výkyvů, je test
-opakován předem nastaveným počtem iterací (výchozí hodnota je 10). Po dokončení
-testování aplikace zobrazí v terminálu výsledky obsahující nejlepší, průměrný a
-nejhorší naměřený čas pro každý algoritmus a velikost mřížky.
+opakován předem nastaveným počtem iterací (výchozí hodnota je 10). Pro každou
+velikost mřížky je navíc test proveden na nastaveném počtu mřížek (výchozí
+hodnota je 1). Po dokončení testování aplikace zobrazí v~terminálu výsledky
+obsahující nejlepší, průměrný a~nejhorší naměřený čas pro každý algoritmus
+a~velikost mřížky.
 
 Kromě textového výstupu aplikace automaticky generuje graf, který vizualizuje
 průměrné časy jednotlivých algoritmů pro různé velikosti mřížek. Tento graf
-usnadňuje porovnání efektivity algoritmů při řešení s různě velkými mřížkami.
+usnadňuje porovnání efektivity algoritmů při řešení s~různě velkými mřížkami.
 
 \begin{figure}[hbt]
 	\centering
@@ -605,16 +707,16 @@ usnadňuje porovnání efektivity algoritmů při řešení s různě velkými m
 \subsection{Zhodnocení}
 
 Jak ukazuje graf, menší mřížky zvládnou všechny algoritmy rychle. Backtracking
-je však nejrychlejší a to díky své jednoduchosti a absenci režie, jako je
-generování domén polí. S rostoucí velikostí mřížky však jeho výkon výrazně
+je však nejrychlejší a~to díky své jednoduchosti a~absenci režie, jako je
+generování domén polí. S~rostoucí velikostí mřížky však jeho výkon výrazně
 klesá, což je dáno jeho systematickým prohledáváním všech možností, kdy počet
 možností, které je třeba vyzkoušet, exponenciálně roste.
 
 Na větších mřížkách jsou rozdíly mezi algoritmy výraznější. Je také důležité
-zmínit, že osa \texttt{y} je logaritmická, což může zkreslovat reálně rozdíly.
-Backtracking je při velikosti 10×10 pomalejší přibližně o deset sekund než
+zmínit, že osa \texttt{y}~je logaritmická, což může zkreslovat reálně rozdíly.
+Backtracking je při velikosti 10×10 pomalejší přibližně o~deset sekund než
 další nejpomalejší algoritmus. Nejlépe si vedly algoritmy Forward Checking
-a~Arc Consistency \#3 a~to v jejich implementace s~bitmapami.
+a~Arc Consistency \#3 a~to v~jejich implementaci s~bitmapami.
 
 \chapter{Závěr}
 
