@@ -7,7 +7,7 @@ use std::{
 };
 
 use crossterm::{
-    event::{poll, read, Event, KeyEvent},
+    event::{poll, read, Event, KeyEvent, KeyEventKind},
     terminal::{disable_raw_mode, enable_raw_mode},
 };
 use termint::{
@@ -153,6 +153,10 @@ impl App {
 
     /// Handles key events
     fn key_handler(&mut self, event: KeyEvent) -> Result<(), Error> {
+        if event.kind == KeyEventKind::Release {
+            return Ok(());
+        }
+
         match self.screen {
             Screen::Builder => self.listen_builder(event),
             Screen::Solver => self.listen_solver(event),
