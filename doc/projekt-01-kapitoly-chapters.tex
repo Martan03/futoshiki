@@ -370,13 +370,9 @@ Sedmice \((Q, \Sigma, \Delta, R_1, R_2, s, F)\), kde:
     \item \(\Sigma\) je konečná množina vstupních symbolů
     \item \(\Delta\) je množina povolených směrů
     \item \(R_1\) množina pravidel pro pohyb ve tvaru
-        \((Q \times \Sigma^* \times \Delta) \implies Q\)
+        \((Q \times \Sigma) \implies (Q \times \Delta)\)
     \item \(R_2\) množina pravidel pro skoky ve tvaru
-        \((Q \times \Sigma^*) \implies Q\)
-        \begin{itemize}
-            \item Nechť \(a \in \Sigma\); \(u, v \in \Sigma^*\). Pak
-            \(upayv \implies uaqyv\), právě když \(py \implies q \in R\).
-        \end{itemize}
+        \(Q \implies (Q \times \Sigma)\)
     \item \(s \in Q\) je počáteční stav
     \item \(F \subseteq Q\) je množina konečných stavů
 \end{itemize}
@@ -391,7 +387,9 @@ skákajícího automatu, který je navrhnut pro řešení hlavolamu Futoshiki.
 \begin{itemize}
     \item \(\#\#\) - hranice hrací mřížky
     \item \(\#\) - hranice mezi hracími poli
-    \item \(N\) - nerovnosti mezi poli
+    \item \(N\) - nerovnost mezi poli
+    \item \(N_-\) - horizontální nerovnost mezi poli
+    \item \(N_|\) - vertikální nerovnost mezi poli
     \item \(F\) - vyplněné herní pole
     \item \(X\) - nevyplněné herní pole
     \item \(\{X\}\) - pole s~neprázdnou doménou
@@ -408,61 +406,87 @@ skákajícího automatu, který je navrhnut pro řešení hlavolamu Futoshiki.
 \subsubsection*{Vytvoření domén řádků a sloupců}
 
 \begin{tabular}{@{}p{4cm} p{10.5cm}@{}}
-    \(Q_0\#\#R \implies Q_{01}\) & Posun doprava pro vynechání okraje
+    \(Q_0\#\# \implies Q_{01}R\) & Posun doprava pro vynechání okraje
         mřížky \\
-    \(Q_{01}\#\#D \implies Q_{11}\) & Posun dolů pro vynechání okraje mřížky \\
+    \(Q_{01}\#\# \implies Q_{11}D\) & Posun dolů pro vynechání okraje mřížky \\
 
     & \\
-    \(Q_{10}\#\#R \implies Q_{19}\) & Posun doprava a~přesun do stavu
+    \(Q_{10}\#\# \implies Q_{19}R\) & Posun doprava a~přesun do stavu
         ověření konce mřížky \\
-    \(Q_{11}FR \implies Q_{11}\) & Odstranění hodnoty z~domény řádku a
-        sloupce a~posun doprava \\
-    \(Q_{11}\#\#D \implies Q_{20}\) & Posun dolů pokud hranice mřížky \\
-    \(Q_{11}R \implies Q_{11}\) & Jinak posun doprava \\
-    \(Q_{19}\#D \implies Q_{11}\) & Následuje další řádek, přesun do stavu
+    \(Q_{11}F \implies Q_{11}R\) & Odstranění hodnoty z~domény řádku a~sloupce
+        a~posun doprava \\
+    \(Q_{11}\#\# \implies Q_{20}D\) & Posun dolů pokud hranice mřížky \\
+    \(Q_{11} \implies Q_{11}R\) & Jinak posun doprava \\
+    \(Q_{19}\# \implies Q_{11}D\) & Následuje další řádek, přesun do stavu
         úpravy domén \\
-    \(Q_{19}U \implies Q_{39}\) & Konec mřížky, přesun do stavu
+    \(Q_{19} \implies Q_{39}U\) & Konec mřížky, přesun do stavu
         vytvoření domén polí \\
 
     & \\
-    \(Q_{20}\#\#L \implies Q_{29}\) & Posun doleva a~přesun do stavu ověření
+    \(Q_{20}\#\# \implies Q_{29}L\) & Posun doleva a~přesun do stavu ověření
         konce mřížky \\
-    \(Q_{21}FL \implies Q_{21}\) & Odstranění hodnoty z domény řádku a sloupce
+    \(Q_{21}F \implies Q_{21}L\) & Odstranění hodnoty z~domény řádku a~sloupce
         a~posun doleva \\
-    \(Q_{21}\#\#D \implies Q_{10}\) & Posun dolů pokud hranice mřížky \\
-    \(Q_{21}L \implies Q_{21}\) & Jinak posun doleva \\
-    \(Q_{29}\#D \implies Q_{21}\) & Následuje další řádek, přesun do stavu
+    \(Q_{21}\#\# \implies Q_{10}D\) & Posun dolů pokud hranice mřížky \\
+    \(Q_{21} \implies Q_{21}L\) & Jinak posun doleva \\
+    \(Q_{29}\# \implies Q_{21}D\) & Následuje další řádek, přesun do stavu
         úpravy domén \\
-    \(Q_{29}U \implies Q_{49}\) & Konec mřížky, přesun do stavu
+    \(Q_{29} \implies Q_{49}U\) & Konec mřížky, přesun do stavu
         vytvoření domén polí \\
 \end{tabular}
 
 \subsubsection*{Vytvoření domén polí}
 
 \begin{tabular}{@{}p{4cm} p{10.5cm}@{}}
-    \(Q_{30}\#\#R \implies Q_{39}\) & Posun doprava a přesun do stavu
-        ověření konce mřížky \\
-    \(Q_{31}ER \implies Q_{31}\) & Vytvoření domény na základě domén řádku
-        a sloupce \\
-    \(Q_{31}\#\#U \implies Q_{40}\) & Posun nahoru pokud hranice mřížky \\
-    \(Q_{31}R \implies Q_{31}\) & Jinak posun doprava \\
-    \(Q_{39}\#L \implies Q_{31}\) & Existuje předchozí řádek, přesun do stavu
+    \(Q_{30}\#\# \implies Q_{39}R\) & Posun doprava a~přesun do stavu ověření
+        konce mřížky \\
+    \(Q_{31}E \implies Q_{31}R\) & Vytvoření domény na základě domén řádku
+        a~sloupce \\
+    \(Q_{31}\#\# \implies Q_{40}U\) & Posun nahoru pokud hranice mřížky \\
+    \(Q_{31} \implies Q_{31}R\) & Jinak posun doprava \\
+    \(Q_{39}\# \implies Q_{31}L\) & Existuje předchozí řádek, přesun do stavu
         vytváření domén polí \\
-    \(Q_{39} \implies Q_5\) & Konec mřížky \\
+    \(Q_{39} \implies Q_{50}\) & Konec mřížky, přesun do stavu úpravy domén na
+        základě nerovností \\
 
     & \\
-    \(Q_{40}\#\#L \implies Q_{49}\) & Posun doleva a přesun do stavu
-        ověření konce mřížky \\
-    \(Q_{41}EL \implies Q_{41}\) & Vytvoření domény na základě domén řádku
-        a sloupce \\
-    \(Q_{41}\#\#U \implies Q_{30}\) & Posun nahoru pokud hranice mřížky \\
-    \(Q_{41}L \implies Q_{41}\) & Jinak posun doleva \\
-    \(Q_{49}\#U \implies Q_{41}\) & Existuje předchozí řádek, přesun do stavu
+    \(Q_{40}\#\# \implies Q_{49}L\) & Posun doleva a~přesun do stavu ověření
+        konce mřížky \\
+    \(Q_{41}E \implies Q_{41}L\) & Vytvoření domény na základě domén řádku
+        a~sloupce \\
+    \(Q_{41}\#\# \implies Q_{30}U\) & Posun nahoru pokud hranice mřížky \\
+    \(Q_{41} \implies Q_{41}L\) & Jinak posun doleva \\
+    \(Q_{49}\# \implies Q_{41}U\) & Existuje předchozí řádek, přesun do stavu
         vytváření domén polí \\
-    \(Q_{49} \implies Q_5\) & Konec mřížky \\
+    \(Q_{49} \implies Q_{50}\) & Konec mřížky, přesun do stavu úpravy domén na
+        základě nerovností \\
+\end{tabular}
+
+\subsubsection*{Úprava domén na základě nerovností}
+
+\begin{tabular}{@{}p{4cm} p{10.5cm}@{}}
+    \(Q_{50} \implies Q_{51}N_-\) & Skok na horizontální nerovnost \\
+    \(Q_{50} \implies  Q_{60}\) & Žádná další horizontální nerovnost, přesun do
+        stavu prohledávání vertikálních nerovností \\
+    \(Q_{51} \implies Q_{52}L\) & Posun doleva na první pole v~nerovnosti,
+        uložení domény \\
+    \(Q_{52} \implies Q_{53}R\) & Posun zpět na nerovnost \\
+    \(Q_{53} \implies Q_{54}R\) & Posun doprava na druhé pole v~nerovnosti,
+        uložení domény \\
+    \(Q_{54} \implies Q_{55}L\) & Posun zpět na nerovnost, úprava domén na
+        základě nerovnosti \\
 
     & \\
-    \(Q_{5} \implies\) TODO & pravidla pro nerovnosti\\
+    \(Q_{60} \implies Q_{61}N_|\) & Skok na vertikální nerovnost \\
+    \(Q_{60} \implies Q_{70}\) & Žádná další vertikální nerovnost, přesun do
+        stavu řešení hry \\
+    \(Q_{61} \implies Q_{62}U\) & Posun nahoru na první pole v~nerovnosti,
+        uložení domény \\
+    \(Q_{62} \implies Q_{63}D\) & Posun zpět na nerovnost \\
+    \(Q_{63} \implies Q_{64}D\) & Posun dolů na druhé pole v~nerovnosti,
+        uložení domény \\
+    \(Q_{64} \implies Q_{65}U\) & Posun zpět na nerovnost, úprava domén na
+        základě nerovnosti \\
 \end{tabular}
 
 \section{Řešení hry}
@@ -472,7 +496,12 @@ Pravidla pro řešení hry
 \subsection*{Pravidla}
 
 \begin{tabular}{@{}p{4cm} p{10.5cm}@{}}
-    \(Q_6\{L\} \implies Q_7\) & Skok na pole s nejmenší doménou \\
+    \(Q_{70} \implies Q_{71}\{L\}\) & Skok na pole s nejmenší doménou \\
+    \(Q_{71}{} \implies Q_{BT}U\) & Nefunkční řešení, vrácení do řešitelného
+        stavu \\
+    \(Q_{71} \implies Q_{72}U\) & Jinak zvolení hodnoty z domény a přesun do
+        stavu odstranění hodnoty z ovlivněných domén \\
+    \(Q_{72}\#\#\)
     & \\
 \end{tabular}
 
