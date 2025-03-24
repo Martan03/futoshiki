@@ -54,6 +54,7 @@ implementovaného benchmarku. Výsledek benchmarku, tedy graf obsahující prům
 je také obsažen v~této kapitole.
 
 \chapter{Futoshiki a algoritmy pro řešení}
+\label{sec:futoshikiAlgs}
 
 Tato kapitola se podrobně zaměřuje na pravidla hry Futoshiki a~algoritmy, které
 jsou používány k~jejímu řešení. Nejprve se seznámíme s~pravidly, která jsou
@@ -79,21 +80,25 @@ k~řešení nevede.
 Všechny popsané algoritmy byly implementovány v~programu, který umožňuje řešení
 libovolné mřížky hlavolamu Futoshiki. Implementace obsahuje i~benchmark, pomocí
 kterého lze demonstrovat účinnost jednotlivých algoritmů v~různých herních
-scénářích.
+scénářích. Více o~benchmarku bude zmíněno v~sekci
+\hyperref[sec:timeComplexity]{testování časové složitosti}.
 
 \section{Pravidla hry}
 
 Futoshiki \cite{FutoshikiWiki}, známá také jako hra "větší/menší" (More or
 Less), je logický hlavolam pocházející z~Japonska, který je založen na podobném
 principu jako sudoku. Hlavolam se skládá ze čtvercové mřížky, obvykle
-o~velikosti 4x4, přičemž může být i~větší. Pro úspěšné vyřešení je třeba každé
-pole v~mřížce vyplnit číslem od 1 do velikosti mřížky. Dále musí platit
-pravidlo, že se v~každém řádku a~sloupci čísla nesmí opakovat. Kromě toho jsou
-na mřížce umístěny nerovnosti mezi některými poli, které určují vztah mezi
-dvěma čísly. Hra začíná s~libovolným počtem již vyplněných polí a~nerovností,
-přičemž toto počáteční rozmístění musí být v~souladu s~pravidly a~zaručovat
-existenci alespoň jednoho řešení. Následně hráč vyplňuje zbývající pole,
-zatímco nerovnosti se již nemění a~nepřidávají se žádné nové.
+o~velikosti 4x4, přičemž může být i~větší.
+
+Pro úspěšné vyřešení je třeba každé pole v~mřížce vyplnit číslem od 1 do
+velikosti mřížky. Dále musí platit pravidlo, že se v~každém řádku a~sloupci
+čísla nesmí opakovat. Kromě toho jsou na mřížce umístěny nerovnosti mezi
+některými poli, které určují vztah mezi dvěma čísly. Hra začíná s~libovolným
+počtem již vyplněných polí a~nerovností, přičemž toto počáteční rozmístění musí
+být v~souladu s~pravidly a~zaručovat existenci alespoň jednoho řešení. Následně
+hráč vyplňuje zbývající pole, zatímco nerovnosti se již nemění a~nepřidávají se
+žádné nové. Složená mřížka Futoshiki je takzvaný latinský čtverec
+\cite{LatinSquareWiki}.
 
 \section{Backtracking}
 
@@ -253,6 +258,7 @@ z~domény pole, které má být větší, budou odstraněny menší nebo rovné 
 minimální hodnotě z~domény druhého pole v~nerovnosti.
 
 \subsection{Forward Checking}
+\label{sec:forwardChecking}
 
 Forward Checking \cite{PrednaskyIZU} využívá již zmíněných look-ahead technik.
 Tento algoritmus snižuje počet zkoušených kombinacích tím, že upravuje domény
@@ -262,7 +268,7 @@ a~nebo jsou v~nerovnosti s~polem, do kterého se zapisuje.
 
 \subsubsection{Postup algoritmu}
 
-Ná základě následujícího postupu algoritmu Forward Checking pro řešení mřížky
+Na základě následujícího postupu algoritmu Forward Checking pro řešení mřížky
 Futoshiki byl algoritmus implementován. V~implementaci jsou poté pro výběr
 hracího pole využil heuristiku nejvíce omezená proměnná. Z~domény tohoto pole
 hodnoty vybírám postupně, nevyužívám tedy žádnou speciální heuristiku.
@@ -287,58 +293,68 @@ hodnoty vybírám postupně, nevyužívám tedy žádnou speciální heuristiku.
         zásobníku a~přesun na bod číslo 3.
 \end{enumerate}
 
-\section{Arc Consistency \#3}
+\subsection{Arc Consistency \#3}
 
 Algoritmus Arc Consistency \#3, známý také jako AC-3, rozšiřuje techniky
-snižování počtu zkoušených kombinací Forward Checkingu tím, že zajišťuje, aby
-během celého běhu algoritmu byly všechny domény konzistentní vzhledem ke všem
-omezením. Tento stav se nazývá Arc Consistency.
+snižování zkoušených kombinací Forward Checkingu. AC-3 pracuje iterativně
+s~množinou takzvaných oblouků (arc), kde každý oblouk reprezentuje vztah mezi
+dvěma proměnnými. Algoritmus poté zajišťuje, aby během celého běhu byly všechny
+domény konzistentní vzhledem ke všem omezením. Tento stav se nazývá Arc
+Consistency.
 
-AC-3 pracuje iterativně s~množinou takzvaných oblouků, kde každý oblouk
-reprezentuje vztah mezi dvěma proměnnými a~jejich doménami. Na začátku
-algoritmu se všechny oblouky reprezentující omezení (například nerovnosti ve
-Futoshiki) zařadí do fronty. Algoritmus poté iterativně vybírá oblouky z~fronty
-a~provádí následující kroky:
+Z~toho vyplývá, že po dosazení hodnoty do pole musí být upraveny všechny domény
+přímo i~nepřímo ovlivněných polí. Přímo ovlivněná pole byla popsána v~sekci
+o~\hyperref[sec:forwardChecking]{Forward Checkingu}. Nepřímo ovlivněná pole
+jsou taková pole, která nejsou bezprostředně v~relaci se změněným polem, ale
+změny se k~nim dostanou přes jiné proměnné. V~praxi to znamená, že změny se
+propagují, dokud nenastane konzistentní stav, tedy dokud se mění domény.
+
+\subsubsection{Postup algoritmu}
+
+Na základě tohoto postupu byl algoritmus Arc Consistency \#3 implementován,
+kde úprava domén nepřímo ovlivněných polí je implementována pomocí rekurze.
+Jestliže dojde ke změně domény jsou upraveny i~všechny domény polí, které
+vystupují v~nerovnosti s~upraveným polem. Tento postup se rekurzivně opakuje,
+dokud se domény nepřestanou měnit a~tedy nedošlo ke konzistentního stavu.
+
+Implementace využívá stejné heuristiky jako Forward Checking. Pro výběr
+hracího pole je využita heuristiku nejvíce omezená proměnná. Z~domény tohoto
+pole hodnoty vybírám postupně, nevyužívám tedy žádnou speciální heuristiku.
+
 \begin{enumerate}
-    \item Revize oblouku: Pro každý oblouk \((X,Y)\), kde \(X\) a \(Y\) jsou
-        proměnné, se kontroluje, zda každá hodnota v doméně \(X\) má alespoň
-        jednu odpovídající hodnotu v doméně \(Y\), která splňuje omezení mezi
-        \(X\) a \(Y\). Pokud ne, hodnoty, které toto omezení porušují, jsou z
-        domény \(X\) odstraněny.
-    \item Aktualizace fronty: Pokud se doména \(X\) změní, všechny oblouky
-        ovlivněné \(X\) jsou přidány zpět do fronty pro další kontrolu.
+    \item Vygenerování domén pro každé pole a inicializace zásobníku stavů
+        mřížky.
+    \item Jestliže jsou všechna pole vyplněna, nalezeno řešení.
+    \item Zvolení pole na základě heuristiky výběru hracího pole.
+    \begin{enumerate}
+        \item Jesliže doména je prázdná a~zásobník stavů mřížky je prázdný,
+            neexistuje řešení.
+        \item Jinak uložení aktuálního stavu mřížky.
+    \end{enumerate}
+    \item Zvolení hodnoty z~pole na základě heuristiky výběru hodnoty z~domény.
+    \begin{enumerate}
+        \item Odebrání zvolené hodnoty z~domény a~zápis hodnoty do pole.
+        \item Úprava domén přímo i nepřímo ovlivněných polí.
+        \item Přesun na bod číslo 2.
+    \end{enumerate}
+    \item Žádná z hodnot nevede k~řešení, obnovení a~odebrání stavu mřížky ze
+        zásobníku a~přesun na bod číslo 3.
 \end{enumerate}
 
-Tento proces pokračuje, dokud není fronta prázdná, což znamená, že všechny
-domény jsou konzistentní s ohledem na daná omezení.
+\subsection{Look-ahead v praxi}
 
-Na rozdíl od Forward Checkingu, který kontroluje konzistenci pouze lokálně při
-dosazení hodnoty, AC-3 zajišťuje globální konzistenci na úrovni všech
-proměnných a omezení.
+Využití look-ahead technik, jak už využitím algoritmu Forward Checking, tak
+i~algoritmu Arc Consistency \#3, je velice užitečné. Díky těmto technikám se
+stavový prostor může zúžit i~několikanásobně a~tím výrazně zlepšit výpočetní
+rychlost.
 
-\subsection{AC-3 a Futoshiki}
-
-V implementaci AC-3 pro Futoshiki je nejprve nutné vygenerovat domény pro
-všechna hrací pole tak, aby splňovaly stav Arc Consistency. Tento proces
-zahrnuje odstranění hodnot, které porušují pravidla Futoshiki. Pro generování
-domén využívám stejný algoritmus jako u Forward Checkingu. Po vygenerování
-domén následuje fáze postupného dosazování hodnot.
-
-Při zapisování hodnot jsou hrací pole a hodnota z jeho domény vybírány pomocí
-heuristik, stejně jako ve Forward Checkingu. Konkrétně používám heuristiku
-nejvíce omezená proměnná pro zvolení pole a heristiku náhodná hodnota pro volbu
-hodnoty z domény zvoleného pole. Po dosazení hodnoty se upraví domény všech
-polí ve stejném řádku, sloupci a také všech polí ovlivněných nerovnostmi.
-
-Pokud se doména některého pole změní, ověřují se všechny oblouky, ve kterých
-toto pole figuruje. V případě nekonzistence (výskyt hodnoty, která porušuje
-omezení) se doména druhého pole v oblouku upraví tak, aby konzistence byla
-obnovena. Tento proces jsem implementoval rekurzivně: jakmile dojde ke změně
-domény druhého pole, jsou znovu ověřeny všechny oblouky, kde toto pole
-figuruje. Tento postup se opakuje, dokud se žádná doména již nezmění, což
-znamená, že byl zajištěn stav Arc Consistency. Díky rekurzivní implementaci je
-odstraněna potřeba využití fronty, která je u klasické implementace AC-3
-využita.
+Nevýhodou těchto technik je však potřebná režie, kdy čím pokročilejší techniky
+jsou využity, tím více režie je potřeba. Z~tohoto důvodu se pro problémy
+s~menším stavovým prostorem hodí algoritmu s~co nejmenší režií, jako je třeba
+Backtracking. Tento problém lze velice dobře pozorovat při porovnávání
+rychlosti složení různých velikostí mřížek Futoshiki se zmíněnými algoritmy.
+Více o~tomto porovnání je popsáno v~sekci
+\hyperref[sec:timeComplexity]{testování časové složitosti}.
 
 \chapter{Existující formy konečných automatů}
 
@@ -671,10 +687,19 @@ Pravidla pro řešení hry
 \chapter{Implementace}
 
 Tato kapitola podrobně popisuje implementaci aplikace pro řešení hry Futoshiki.
-V~rámci řešení jsou využity algoritmy uvedené v~předchozích kapitolách. Také je
-detailně popsáno uživatelské prostředí aplikace, která je vytvořena jako
-terminálová aplikace, tedy veškeré prvky rozhraní jsou zobrazeny pomocí textu
-vytištěného do terminálu.
+V~rámci řešení jsou využity algoritmy uvedené v~kapitole
+\hyperref[sec:futoshikiAlgs]{futoshiki a algoritmy pro řešení}.
+
+V~první části bude čtenář seznámen se spouštěním aplikace, konkrétně
+s~veškerými podporovanými argumenty pro spuštění, díky kterým lze aplikaci
+před spuštěním nakonfigurovat.
+
+Podrobně je také popsáno uživatelské prostředí aplikace, která je vytvořena
+jako terminálová aplikace, tedy veškeré prvky rozhraní jsou zobrazeny pomocí
+textu vytištěného do terminálu.
+
+Nakonec bude popsán formát souboru konfigurace, který umožňuje nastavit výchozí
+hodnoty argumentů pro spuštění aplikace.
 
 Aplikace je implementována v~programovacím jazyce Rust za využití knihovny
 \texttt{termint}, která zjednodušuje tvorbu uživatelského rozhraní v~terminálu.
@@ -682,16 +707,24 @@ Vývoj probíhal na operačním systému Linux.
 
 \section{Spuštění aplikace}
 
-Při spouštění aplikace si může uživatel pomocí argumentů přizpůsobit nastavení
-hry, například zvolit algoritmus, který bude Futoshiki řešit, velikost mřížky
-nebo spustit benchmark.
+Pomocí argumentů lze při spouštění aplikace upřesnit, jaká část implementace
+má být spuštěna. Aplikace podporuje tři druhy spuštění:
+\begin{enumerate}
+    \item Spuštění hry
+    \item Spuštění benchmarku
+    \item Úprava výchozí konfigurace
+\end{enumerate}
 
 \subsection*{Argumenty pro spuštění hry}
+
+Výchozím druhem spuštění aplikace je spuštění hry. Pro tento typ spuštění není
+vyžadován žádný dodatečný argument. Dostupné argumenty jsou:
+
 \begin{itemize}
-    \item \texttt{-s, --size [číslo]}: Velikost mřížky (výchozí je 4)
-    \item \texttt{--solver [typ]}: Algoritmus pro řešení Futoshiki (více
-        popsáno později)
-    \item \texttt{-t, --theme [téma]}: Téma aplikace
+    \item \texttt{-s, --size [číslo]}: Nastaví velikost mřížky (výchozí je 4)
+    \item \texttt{--solver [typ]}: Zvolí algoritmus pro řešení Futoshiki
+        (\hyperref[sec:argsAlgs]{dostupné algoritmy})
+    \item \texttt{-t, --theme [téma]}: Téma aplikace (jak aplikace vypadá)
     \begin{itemize}
         \item \texttt{light}: Světlé téma
         \item \texttt{dark}: Tmavé téma
@@ -700,19 +733,26 @@ nebo spustit benchmark.
 \end{itemize}
 
 \subsection*{Argumenty pro benchmark}
-V~případě že by chtěl uživatel spustit benchmark, musí využít argument
-\texttt{bench}, za kterým mohou následovat tyto argumenty:
+
+Pro přepnutí spuštění na benchmark je potřeba využít argument \texttt{bench},
+za kterým mohou být následující argumenty:
+
 \begin{itemize}
-    \item \texttt{-s, --size [číslo]}: Velikost testované mřížky (lze zadat
-        vícekrát)
-    \item \texttt{--solver [typ]}: Testovaný algoritmus (lze zadat vícekrát)
-    \item \texttt{-r, --repeats [číslo]}: Počet opakování testu
-    \item \texttt{-b, --boards [číslo]}: Počet testovaných mřížek
+    \item \texttt{-s, --size [číslo]}: Nastaví velikost testované mřížky, lze
+        zadat vícekrát
+    \item \texttt{--solver [typ]}: Zvolí testovaný algoritmus, lze zadat
+        vícekrát (\hyperref[sec:argsAlgs]{dostupné algoritmy})
+    \item \texttt{-r, --repeats [číslo]}: Nastaví počet opakování testu
+    \item \texttt{-b, --boards [číslo]}: Nastaví počet testovaných mřížek
 \end{itemize}
 
 \subsection*{Dostupné typy algoritmů}
+\label{sec:argsAlgs}
+
+Argumenty vyžadující typ algoritmu podporují následující hodnoty:
+
 \begin{itemize}
-    \item \texttt{bt, backtract, backtracking}: Backtracking
+    \item \texttt{bt, backtrack, backtracking}: Backtracking
     \item \texttt{fc, forward-check, forward-checking}: Forward Checking
     \item \texttt{fcb, forward-check-bit, forward-checking-bit}: Forward
         Checking s~bitovými operacemi
@@ -721,12 +761,12 @@ V~případě že by chtěl uživatel spustit benchmark, musí využít argument
         \#3 s~bitovými operacemi
 \end{itemize}
 
-\subsection*{Konfigurace aplikace}
+\subsection*{Argumenty konfigurace}
 
 Pokud je aplikace spuštěna s~argumentem \texttt{config}, otevře se konfigurační
 soubor ve výchozím textovém editoru. Jestliže soubor neexistuje, automaticky se
-vytvoří. Uživatel si v~něm může nastavit výchozí hodnoty pro velikost mřížky,
-použitý algoritmus pro nalezení řešení a~téma aplikace.
+vytvoří. Formát konfiguračního souboru je detailně popsán v~sekci
+\hyperref[sec:appConfig]{konfigurace aplikace}.
 
 \section{Vzhled a možnosti aplikace}
 
@@ -735,7 +775,7 @@ nastavenou velikostí. V~této mřížce je jedno z~polí zvýrazněno, to znač
 označené pole. Pro změnu označeného pole lze využít klávesy šipek nebo klávesy
 \texttt{hjkl}, které využívá textový editor \texttt{Vim} pro navigaci v~textu.
 Aplikaci lze kdykoliv ukončit stiskem kláves \texttt{Q} a~\texttt{Esc}.
-Aplikace obsahuje tři obrazovky:
+Aplikace obsahuje tři stránky:
 \begin{enumerate}
     \item Vytváření mřížky
     \item Řešení mřížky
@@ -751,8 +791,10 @@ Aplikace obsahuje tři obrazovky:
 
 \subsection{Vytváření mřížky}
 
-Tento řežim umožňuje uživateli vytvořit vlastní mřížku, kterou lze následně
-nechat složit jedním z~algoritmů.
+Tato stránka umožňuje uživateli vytvořit vlastní mřížku, kterou lze následně
+nechat složit jedním z~algoritmů. Na tuto stránku se lze dostat ze stránky hry
+stisknutím klávesy \texttt{B}. Pro následné vrácení na stránku hry lze opět
+stisknout klávesu \texttt{B}.
 
 \subsection*{Funkcionalita}
 \begin{enumerate}
@@ -767,6 +809,8 @@ nechat složit jedním z~algoritmů.
     \begin{itemize}
         \item Hodnotu lze smazat zapsáním čísla nula nebo klávesou
             \texttt{Delete}.
+        \item Stiskem klávesy \texttt{Backspace} bude odstaněna číslice z~řádu
+            jednotek.
     \end{itemize}
     \item Přidání nerovnosti:
     \begin{itemize}
@@ -787,12 +831,14 @@ nechat složit jedním z~algoritmů.
 
 Po dokončení vytváření mřížky lze stisknutím klávesy \texttt{S} aktivovat
 aktuálně zvolený algoritmus, který následně mřížku vyřeší. V případě úspěchu
-se do mřížky doplní zbývající hodnoty a~vypíše se zpráva, že mřížka byla
-složena.
+se do mřížky doplní zbývající hodnoty a~nad mřížku se vypíše zpráva o~úspešném
+složení. V opačném případě bude nad mřížku vypsaná zpráva, že mřížka není
+složitelná.
 
 \subsection{Řešení mřížky}
 
-V~tomto režimu může uživatel mřížku řešit manuálně.
+Tato stránka umožňuje mřížku Futoshiki řešit. Uživateli však neumožňuje
+odstraňovat hodnoty vložené již z~počátku a~také upravovat nerovnosti.
 
 \subsection*{Funkcionalita}
 \begin{enumerate}
@@ -817,20 +863,22 @@ algoritmu stisknutím klávesy \texttt{S} a~tím zobrazit správné řešení.
 
 \subsection{Změna řešícího algoritmu}
 
-Uživatel má také možnost algorimus použitý pro řešení Futoshiki změnit, aniž
-by musel hru spouštět znovu za pomocí odpovídajících argumentů.
+Poslední stránkou v implementaci je stránka změny řešícího algoritmu. Díky
+této stránce nemusí uživatel hru zavírat a spouštět znovu s odpovídajícími
+argumenty, jenom aby změnil řešící algoritmus.
 
 \begin{enumerate}
     \item Přechod mezi stránkou výběru a stránkou hry:
     \begin{itemize}
         \item Stisknutím klávesy \texttt{Tab} se přepne stránka.
-        \item Pokud je aktuální stránka hry, přepne se na stránku výběru,
+        \item Pokud je aktuální stránka hra, přepne se na stránku výběru,
             v~opačném případě se přejde na stránku hry.
     \end{itemize}
     \item Výběr algoritmu:
     \begin{itemize}
         \item Výběr lze měnit pomocí kláves šipka nahoru a šipka dolů.
         \item Pro potvrzení výběru je třeba stisknout klávesu \texttt{Enter}.
+            Zároveň se automaticky přejde na stránku hry.
     \end{itemize}
 \end{enumerate}
 
@@ -840,6 +888,37 @@ by musel hru spouštět znovu za pomocí odpovídajících argumentů.
 	\caption{Stránka výběru řešícího algoritmu}
 	\label{solvers}
 \end{figure}
+
+\section{Konfigurace aplikace}
+\label{sec:appConfig}
+
+V případě, že uživatel spouští opakovaně aplikaci se stejnými argumenty, je
+vhodné si nastavit výchozí hodnoty argumentů v konfiguračním souboru. Ten je
+ve formátu JSON a obsahuje následující pole:
+
+\begin{center}
+    \begin{tabularx}{0.65\textwidth}{|l|l|X|}
+        \hline
+        \textbf{Název} & \textbf{Typ} & \textbf{Popis} \\
+        \hline
+        \texttt{defaultSize} & Integer & Výchozí velikost mřížky \\
+        \hline
+        \texttt{defaultSolver} & String & Výchozí řešící algoritmus \\
+        \hline
+        \texttt{defaultTheme} & String & Téma uživatelské aplikace \\
+        \hline
+    \end{tabularx}
+\end{center}
+
+Konfigurační soubor by pak mohl vypadat například takto:
+
+\begin{verbatim}
+{
+    "defaultSize": 10,
+    "defaultSolver": "ArcConsistency3Bit",
+    "defaultTheme": "Light"
+}
+\end{verbatim}
 
 \chapter{Testování}
 
