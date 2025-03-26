@@ -537,11 +537,13 @@ obsažený pravidla pro jednotlivé algoritmy.
         stavu \\
 
     & \\
-    \(Q_{10} \implies Q_{11}U\) & Uložení jedné z možných hodnot na zásobník \\
+    \(Q_{10} \implies Q_{11}U\) & Vytvoření domény obsahující všechny možné
+        hodnoty, vyjmutí první hodnoty a~její uložení \\
     \(Q_{11}\#\# \implies Q_{12}D\) & Konec mřížky, posun dolů a přesun do
         stavu kontroly výskytu zapsané hodnoty \\
     \(Q_{11} \implies Q_{11}U\) & Jinak posun nahoru \\
-    \(Q_{12}F \implies Q_{12}D\) & TODO: ověření existence \\
+    \(Q_{12}F \implies Q_{BT1}\) & Pokud \texttt{F} se rovná uložené hodnotě,
+        přesun do stavu zpětného navrácení (kolize hodnot) \\
     \(Q_{12}\#\# \implies Q_{13}U\) & Konec mřížky, přesun do stavu vrácení
         na původní pole \\
     \(Q_{12} \implies Q_{12}D\) & Jinak posun dolů \\
@@ -552,13 +554,66 @@ obsažený pravidla pro jednotlivé algoritmy.
     \(Q_{14}\#\# \implies Q_{15}R\) & Konec mřížky, posun doprava a přesun do
         stavu kontroly výskytu zapsané hodnoty \\
     \(Q_{14} \implies Q_{14}L\) & Jinak posun doleva \\
-    \(Q_{15}F \implies Q_{15}R\) & TODO: ověření existence \\
+    \(Q_{15}F \implies Q_{BT1}\) & Pokud \texttt{F} se rovná uložené hodnotě,
+        přesun do stavu zpětného navrácení (kolize hodnot) \\
     \(Q_{15}\#\# \implies Q_{20}L\) & Konec mřížky, přesun do stavu ověření
         nerovností \\
     \(Q_{15} \implies Q_{15}R\) & Jinak posun doprava \\
 
     & \\
-    \(Q_{20} \implies TODO\) & Ověření nerovností \\
+    \(Q_{20} \implies Q_{21}X\) & Skok na původní pole \\
+
+    \(Q_{21} \implies Q_{22}U\) & Posun nahoru pro ověření nerovnosti \\
+    \(Q_{22}N \implies Q_{22}U\) & Pokud nerovnost, uložení typu nerovnosti
+        a~posun nahoru \\
+    \(Q_{22}F \implies Q_{BT1}\) & Pokud nerovnost mezi uloženou hodnotou
+        a~hodnotou \texttt{F} neplatí, přesun do stavu zpětného navrácení \\
+    \(Q_{22} \implies Q_{23}X\) & Jinak skok na původní pole \\
+
+    \(Q_{23} \implies Q_{24}D\) & Posun dolů pro ověření nerovnosti \\
+    \(Q_{24}N \implies Q_{24}D\) & Pokud nerovnost, uložení typu nerovnosti
+        a~posun dolů \\
+    \(Q_{24}F \implies Q_{BT1}\) & Pokud nerovnost mezi uloženou hodnotou
+        a~hodnotou \texttt{F} neplatí, přesun do stavu zpětného navrácení \\
+    \(Q_{24} \implies Q_{25}X\) & Jinak skok na původní pole \\
+
+    \(Q_{25} \implies Q_{26}L\) & Posun doleva pro ověření nerovnosti \\
+    \(Q_{26}N \implies Q_{26}L\) & Pokud nerovnost, uložení typu nerovnosti
+        a~posun doleva \\
+    \(Q_{26}F \implies Q_{BT1}\) & Pokud nerovnost mezi uloženou hodnotou
+        a~hodnotou \texttt{F} neplatí, přesun do stavu zpětného navrácení \\
+    \(Q_{26} \implies Q_{27}X\) & Jinak skok na původní pole \\
+
+    \(Q_{27} \implies Q_{28}R\) & Posun doprava pro ověření nerovnosti \\
+    \(Q_{28}N \implies Q_{28}R\) & Pokud nerovnost, uložení typu nerovnosti
+        a~posun doprava \\
+    \(Q_{28}F \implies Q_{BT1}\) & Pokud nerovnost mezi uloženou hodnotou
+        a~hodnotou \texttt{F} neplatí, přesun do stavu zpětného navrácení \\
+    \(Q_{28} \implies Q_{30}X\) & Jinak skok na původní pole \\
+
+    \(Q_{30} \implies Q_{10}X\) & Zapsání hodnoty do pole a~skok na první
+        prázdné pole \\
+\end{tabular}
+
+\noindent
+\begin{tabular}{@{}p{4cm} p{10.5cm}@{}}
+    \(Q_{BT1} \implies Q_{BT2}X\) & Zkoušená hodnota nevyhovovala pravidlům,
+        přesun na původní pole a~testování dalších hodnot \\
+    \(Q_{BT2}\#\# \implies Q_{BT3}U\) & Okraj mřížky, přesun do stavu ověření
+        konce mřížky \\
+    \(Q_{BT2}\{\} \implies Q_{BT2}L\) & Odebrání hodnoty z~aktuálního pole,
+        přesun na předchozí pole \\
+    \(Q_{BT2}\{X\} \implies Q_{12}U\) & Vyjmutí první hodnoty z~domény a~její
+        uložení \\
+    \(Q_{BT2} \implies Q_{BT2}L\) & Jinak posun doleva \\
+    \(Q_{BT3} \implies Q_{BT4}R\) & Posun doprava pro ověření konce mřížky \\
+    \(Q_{BT4}\#\# \implies Q_{FB}\) & Konec mřížky, přesun do konečného stavu
+        selhání \\
+    \(Q_{BT4} \implies Q_{BT5}U\) & Jinak pokračování v~přesunu na předchozí
+        pole \\
+    \(Q_{BT5}\#\# \implies Q_{BT2}L\) & Okraj mřížky, posun zpět a~přesun do
+        stavu hledání předchozího pole \\
+    \(Q_{BT5} \implies Q_{BT5}R\) & Jinak posun doprava \\
 \end{tabular}
 
 \section{Vytvoření domén polí}
@@ -910,7 +965,9 @@ ve formátu JSON a obsahuje následující pole:
     \end{tabularx}
 \end{center}
 
-Konfigurační soubor by pak mohl vypadat například takto:
+Konfigurační soubor, který nastaví výchozí velikost mřížky na velikost 10,
+výchozí řešící algoritmus na Arc Consistency \#3 s využitím bitmap a výchozí
+téma aplikace na světlé, by pak mohl vypadat například takto:
 
 \begin{verbatim}
 {
@@ -928,10 +985,15 @@ správnosti výsledků algoritmů, aby byla zajištěna jejich funkčnost při �
 hry Futoshiki. Současně je hodnocena časová náročnost algoritmů, přičemž jejich
 výkonnost je porovnána při různých velikostech hrací mřížky.
 
+Testovány jsou i~další nepostradatelné části aplikace, jako je například
+ověřovač řešení, který testuje, zda je daná mřížka složena v~soulady
+s~pravidly. Dále je testován také generátor mřížky, aby bylo zaručeno, že daná
+mřížka je složitelná.
+
 \section{Správnost řešení}
 
 Při testování správnosti řešení se zaměřuji na několik klíčových částí
-aplikace: samotné algoritmy, ověřovač složení a~proces generování mřížky.
+aplikace: implementované řešící algoritmy, ověřovač složení a~generátor mřížky.
 
 \subsection*{Testování algoritmů}
 
@@ -950,10 +1012,10 @@ správně složena či nikoli.
 
 \subsection*{Testování generování mřížky}
 
-V~testovacím procesu generování mřížek bylo nejdříve vytvořeno několik
-náhodných mřížek, které byly následně složeny pomocí jednoho z~algoritmů.
-Výsledné složené mřížky byly zkontrolovány ověřovačem složení, což zajišťuje,
-že každá vygenerovaná mřížka je řešitelná a~splňuje pravidla hry.
+V~testování generátoru mřížky bylo nejdříve vytvořeno několik náhodných mřížek,
+které byly následně složeny pomocí jednoho z~algoritmů. Výsledné složené mřížky
+byly zkontrolovány ověřovačem složení, což zajišťuje, že každá vygenerovaná
+mřížka je řešitelná a~splňuje pravidla hry.
 
 \section{Časová náročnost}
 \label{sec:timeComplexity}
