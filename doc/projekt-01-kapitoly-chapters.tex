@@ -510,7 +510,7 @@ Sedmice \((Q, \Sigma, \Delta, R_1, R_2, s, F)\), kde:
 V~této kapitole se podrobně zaměříme na pravidla přechodů dvojdimenzionálního
 skákajícího automatu, který je navrhnut pro řešení hlavolamu Futoshiki.
 Nejdříve si definujeme základní značení, tedy abecedu symbolů a následně budou
-obsažený pravidla pro jednotlivé algoritmy.
+obsaženy pravidla pro jednotlivé algoritmy.
 
 \section{Základní značení}
 
@@ -539,6 +539,10 @@ obsažený pravidla pro jednotlivé algoritmy.
     & \\
     \(Q_{10} \implies Q_{11}U\) & Vytvoření domény obsahující všechny možné
         hodnoty, vyjmutí první hodnoty a~její uložení \\
+\end{tabular}
+
+\subsubsection*{Ověření sloupce}
+\begin{tabular}{@{}p{4cm} p{10.5cm}@{}}
     \(Q_{11}\#\# \implies Q_{12}D\) & Konec mřížky, posun dolů a přesun do
         stavu kontroly výskytu zapsané hodnoty \\
     \(Q_{11} \implies Q_{11}U\) & Jinak posun nahoru \\
@@ -549,8 +553,10 @@ obsažený pravidla pro jednotlivé algoritmy.
     \(Q_{12} \implies Q_{12}D\) & Jinak posun dolů \\
     \(Q_{13} \implies Q_{14}X\) & Skok na původní pole, přesun do stavu
         horizontálního ověření \\
+\end{tabular}
 
-    & \\
+\subsubsection*{Ověření řádku}
+\begin{tabular}{@{}p{4cm} p{10.5cm}@{}}
     \(Q_{14}\#\# \implies Q_{15}R\) & Konec mřížky, posun doprava a přesun do
         stavu kontroly výskytu zapsané hodnoty \\
     \(Q_{14} \implies Q_{14}L\) & Jinak posun doleva \\
@@ -562,7 +568,10 @@ obsažený pravidla pro jednotlivé algoritmy.
 
     & \\
     \(Q_{20} \implies Q_{21}X\) & Skok na původní pole \\
+\end{tabular}
 
+\subsubsection*{Ověření nerovností}
+\begin{tabular}{@{}p{4cm} p{10.5cm}@{}}
     \(Q_{21} \implies Q_{22}U\) & Posun nahoru pro ověření nerovnosti \\
     \(Q_{22}N \implies Q_{22}U\) & Pokud nerovnost, uložení typu nerovnosti
         a~posun nahoru \\
@@ -583,7 +592,10 @@ obsažený pravidla pro jednotlivé algoritmy.
     \(Q_{26}F \implies Q_{BT1}\) & Pokud nerovnost mezi uloženou hodnotou
         a~hodnotou \texttt{F} neplatí, přesun do stavu zpětného navrácení \\
     \(Q_{26} \implies Q_{27}X\) & Jinak skok na původní pole \\
+\end{tabular}
 
+\noindent
+\begin{tabular}{@{}p{4cm} p{10.5cm}@{}}
     \(Q_{27} \implies Q_{28}R\) & Posun doprava pro ověření nerovnosti \\
     \(Q_{28}N \implies Q_{28}R\) & Pokud nerovnost, uložení typu nerovnosti
         a~posun doprava \\
@@ -595,7 +607,7 @@ obsažený pravidla pro jednotlivé algoritmy.
         prázdné pole \\
 \end{tabular}
 
-\noindent
+\subsubsection*{Pravidla vrácení}
 \begin{tabular}{@{}p{4cm} p{10.5cm}@{}}
     \(Q_{BT1} \implies Q_{BT2}X\) & Zkoušená hodnota nevyhovovala pravidlům,
         přesun na původní pole a~testování dalších hodnot \\
@@ -616,9 +628,9 @@ obsažený pravidla pro jednotlivé algoritmy.
     \(Q_{BT5} \implies Q_{BT5}R\) & Jinak posun doprava \\
 \end{tabular}
 
-\section{Vytvoření domén polí}
+\section{Pravidla pro Forward Checking}
 
-\subsection*{Pravidla}
+\subsection{Vytvoření domén}
 
 \subsubsection*{Vytvoření domén řádků a sloupců}
 
