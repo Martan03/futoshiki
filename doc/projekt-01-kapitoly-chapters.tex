@@ -729,6 +729,11 @@ Pravidla pro řešení hry
         stavu \\
     \(Q_{71} \implies Q_{72}U\) & Jinak zvolení hodnoty z domény a přesun do
         stavu odstranění hodnoty z ovlivněných domén \\
+\end{tabular}
+
+\subsubsection*{Úprava domén polí ve stejném sloupci}
+
+\begin{tabular}{@{}p{4cm} p{10.5cm}@{}}
     \(Q_{72}\#\# \implies Q_{73}D\) & Posun zpět do herního pole \\
     \(Q_{72} \implies Q_{72}U\) & Jinak posun nahoru \\
 
@@ -736,19 +741,53 @@ Pravidla pro řešení hry
     \(Q_{73}\#\# \implies Q_{74}\) & Konec mřížky, přesun do stavu odstraňování
         hodnot z domén horizontálních sousedů \\
     \(Q_{73} \implies Q_{73}D\) & Jinak pouze posun dolů \\
+\end{tabular}
 
+\subsubsection*{Úprava domén polí ve stejném řádku}
+
+\begin{tabular}{@{}p{4cm} p{10.5cm}@{}}
     \(Q_{74} \implies Q_{75}\{L\}\) & Skok na pole s nejmenší doménou \\
     \(Q_{75}\#\# \implies Q_{76}R\) & Posun zpět do herního pole \\
     \(Q_{75} \implies Q_{75}L\) & Jinak posun doleva \\
 
     \(Q_{76}X \implies Q_{76}R\) & Odstranění hodnoty z domény a posun
         doprava \\
-    \(Q_{76}\#\# \implies Q_{77}\) & Konec mřížky, přesun do stavu zapsání
-        hodnoty do pole \\
+    \(Q_{76}\#\# \implies Q_{80}\) & Konec mřížky, přesun do stavu úpravy
+        domén polí v nerovnosti \\
     \(Q_{76} \implies Q_{76}R\) & Jinak pouze posun doprava \\
+\end{tabular}
 
-    \(Q_{77} \implies Q_{70}\{L\}\) & Skok zpět na pole s nejmenší doménou a
-        zapsání hodnoty \\
+\subsubsection*{Úprava domén polí v nerovnosti}
+
+\begin{tabular}{@{}p{4cm} p{10.5cm}@{}}
+    \(Q_{80} \implies Q_{81}U\) & Posun nahoru pro ověření nerovnosti \\
+    \(Q_{81}N \implies Q_{81}U\) & Pokud nerovnost, uložení typu nerovnosti
+        a~posun nahoru \\
+    \(Q_{81}\{X\} \implies Q_{81}L\) & Úprava domény aby platila uložená
+        nerovnost \\
+    \(Q_{81} \implies Q_{82}\{L\}\) & Jinak skok na původní pole \\
+    & \\
+    \(Q_{82} \implies Q_{83}L\) & Posun doleva pro ověření nerovnosti \\
+    \(Q_{83}N \implies Q_{83}L\) & Pokud nerovnost, uložení typu nerovnosti
+        a~posun doleva \\
+    \(Q_{83}\{X\} \implies Q_{83}U\) & Úprava domény aby platila uložená
+        nerovnost \\
+    \(Q_{83} \implies Q_{84}\{L\}\) & Jinak skok na původní pole \\
+    & \\
+    \(Q_{84} \implies Q_{85}R\) & Posun doprava pro ověření nerovnosti \\
+    \(Q_{85}N \implies Q_{85}R\) & Pokud nerovnost, uložení typu nerovnosti
+        a~posun doprava \\
+    \(Q_{85}\{X\} \implies Q_{85}U\) & Úprava domény aby platila uložená
+        nerovnost \\
+    \(Q_{85} \implies Q_{86}\{L\}\) & Jinak skok na původní pole \\
+    & \\
+    \(Q_{86} \implies Q_{87}D\) & Posun dolů pro ověření nerovnosti \\
+    \(Q_{87}N \implies Q_{87}D\) & Pokud nerovnost, uložení typu nerovnosti
+        a~posun dolů \\
+    \(Q_{87}\{X\} \implies Q_{87}L\) & Úprava domény aby platila uložená
+        nerovnost \\
+    \(Q_{87} \implies Q_{71}\{L\}\) & Jinak skok na původní pole a zapsání
+        hodnoty \\
 \end{tabular}
 
 \chapter{Implementace}
