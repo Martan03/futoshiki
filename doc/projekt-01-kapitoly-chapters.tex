@@ -11,38 +11,60 @@
 V~této práci se čtenář dozví informace o~hře Futoshiki, její pravidla
 a~o~různých metodách, které slouží pro řešení této hry. Dále jsou v práci
 zahrnuty také informace o~konečných automatech, které budou využity pro
-vytvoření automatu řešitele hlavolamu.
+vytvoření specifického automatu na řešení hry Futoshiki.
 
-V~první kapitole se tato práce zaměří na podrobný popis hry Futoshiki včetně
+V~druhé kapitole se práce zaměří na podrobný popis hry Futoshiki včetně
 pravidel pro úspešné vyřešení. Dále budou v~této kapitole detailně popsány
-algoritmy sloužící pro vyřešení mřížky Futoshiki, konkrétně algoritmy
-Backtracking, Forward checking a~Arc Consistency \#3.
+algoritmy sloužící pro vyřešení mřížky Futoshiki, konkrétně algoritmus
+Backtracking a~jeho vylepšení s~využitím Look-ahead procedur ve formě algoritmů
+Forward Checking a~Arc Consistency \#3. Look-ahead procedury se snaží zmenšit
+počet zkoušených kombinací tím, že se pokusí předvídat účinky jednotlivých cest
+při hledání řešení.
 
-Třetí kapilota popíše existující konečné automaty, které jsou důležité pro
-následnou derivaci automatu využitého pro řešení Futoshiki. Jsou zde popsány
-deterministické a nedeterministické konečné automaty, dvojcestný konečný
-automat, který nám ukáže základy dvojdimenzionálního automatu, a~nakonec také
-skákající automat, na jehož definici bude z~velké části postavena definice
-výsledného automatu pro řešení Futoshiki.
+Třetí kapilota popíše existující konečné automaty, které jsou často vnímané
+jako základní stavební bloky pro modelování výpočetních procesů. Tyto automaty
+jsou důležité pro následnou derivaci automatu využitého pro řešení Futoshiki.
+Jsou zde popsány deterministické a nedeterministické konečné automaty,
+dvojcestný konečný automat, který nám ukáže princip pohybu na vstupní pásce,
+který se využívá i~u~vícedimenzionálních automatů. Nakonec bude popsán také
+skákající automat a čtyřcestný automat, využívající princip pohybu dvojcestného
+automatu na dvojrozměrné vstupní pásce.
 
-Ve čtvrté kapitole je popsán již výsledný automat, tedy dvojdimenzionální
-skákájící automat, který umožňuje jak pohyb po mřížce ve čtyřech směrech,
-stejně jako čtyřcestný automat, ale také skoky.
+Ve čtvrté kapitole je popsán již výsledný automat, který je vytvořen na základě
+skákajícího automatu a~čtyřcestného automatu. Konkrétně se jedná
+o~dvojdimenzionální skákájící automat, který umožňuje jak pohyb po mřížce ve
+čtyřech směrech, stejně jako čtyřcestný automat, ale také skoky. Tento automat
+je následně využit pro řešení mřížky Futoshiki.
 
-Následující kapitola obsahuje pravidla pro samotný automat. Jsou zde definovány
-základní symboly a~následné řešení Futoshiki na základě jednotlivých algoritmů.
-Algoritmy Forward checking a~Arc Consistency \#3 mnoho pravidel sdílí. Jsou to
-například pravidla pro vytvoření domén a~základní pravidla řešení hry. To je
-z~důvodu podobnosti algoritmů, kde Arc Consistency \#3 má pouze více striktní
-úpravy domén.
+Následující kapitola obsahuje pravidla pro automat samotný. Jsou zde definovány
+základní symboly automatu, které jsou využity v~pravidlech. Následují pravidla
+automatu pro řešení mřížky Futoshiki pomocí algoritmu Backtracking a~pravidla
+pro řešení pomocí algoritmu Forward Checking. Pravidla pro algoritmus Arc
+Consistency \#3 jsou velmi podobná jako pro Forward Checking, z~toho důvodu
+jsou popsána pouze rozdílná pravidla. To je z~důvodu podobnosti algoritmů,
+kde Arc Consistency \#3 má pouze více striktní úpravy domén.
 
 Detailní popis implementace samotné je obsažen v kapitole šesté. Implementace
-byla vyvinuta v~jazyce Rust s~pomocí knihovny termint. První část této kapitoly
-se věnuje popisu spouštění aplikace. Jsou zde popsány veškeré argumenty pro
-spuštění hry, ale také benchmarku nebo úpravy konfigurace. Následně je popsán
-vzhled aplikace, která je implementována jako terminálová aplikace. Detailně
-bude čtenář seznámen s~ovládáním aplikace, konkrétně s vyplňováním mřížky,
-vytvářením mřížky a~s~ostatní funkcionalitou.
+byla vyvinuta v~jazyce Rust s~pomocí knihovny termint. Knihovna slouží pro
+jednodušší tvorbu terminálových uživatelských rozhraní.
+
+První část této kapitoly se věnuje popisu spouštění aplikace. Jsou zde popsány
+veškeré argumenty pro spuštění hry, ale také benchmarku nebo úpravy
+konfigurace. Spuštěním aplikace s~popsanými argumenty se mění nastavení hry,
+jako je třeba velikost mřížky nebo řešící algoritmus, a nastavení benchmarku,
+například testované velikosti či algoritmy.
+
+Následně je popsán vzhled aplikace, která je implementována jako terminálová
+aplikace. Detailně bude čtenář seznámen s~jednotlivými stránkami aplikace,
+konkrétně se stránkami pro vytvoření mřížky, řešení mřížky a~pro změnu řešícího
+algoritmu. U jednotlivých stránek bude popsáno ovládání, jako například pohyb
+na mřížce a zápis hodnoty, ale také funkcionalita stránky.
+
+Nakonec bude popsána struktura konfiguračního souboru, který nastavuje výchozí
+nastavení hry. To se hodí v~případě opakovaného spouštění aplikace se stejnými
+argumenty. Uživatel si může tyto argumenty uložit do konfiguračního souboru
+a~při následném spuštění se hodnoty z~konfiguračního souboru využijí jako
+výchozí.
 
 Poslední kapitola této práce se zaměří na testování. Hlavní důraz byl kladen
 na správnost implementovaných algoritmů a~na jejich časovou náročnost. Čtenář
@@ -51,7 +73,9 @@ tedy implementovaných algoritmů, ověřovače složení a~generátoru mřížk
 Následně bude popsáno testování časové náročnosti, které bylo provedeno pomocí
 implementovaného benchmarku. Výsledek benchmarku, tedy graf obsahující průměrné
 časy jednotlivých algoritmů pro mřížky od velikosti 4×4 až po velikost 10×10,
-je také obsažen v~této kapitole.
+je také obsažen v~této kapitole. Nakonec kapitola obsahuje porovnání
+jednotlivých algoritmů a~jejich časové náročnosti v~závislosti na velikosti
+hrací mřížky.
 
 \chapter{Futoshiki a algoritmy pro řešení}
 \label{sec:futoshikiAlgs}
@@ -358,6 +382,14 @@ Více o~tomto porovnání je popsáno v~sekci
 
 \chapter{Existující formy konečných automatů}
 
+Tato kapitola se zaměřuje na základní teorii o~konečných automatech, které jsou
+základem pro návrh specifického automatu pro řešení hlavolamu Futoshiki.
+Nejdříve budou popsány deterministické a~nedeterministické konečné automaty,
+následně bude popsán dvojcestný konečný automat. Na závěr kapitoly bude popsán
+skákající automat a~čtyřcestný automat, na základě kterých je navrhnut
+automat pro řešení mřížky Futoshiki. Čtyřcestné automaty poskytnou teoretický
+základ pro dvojdimenzionální automaty.
+
 \section{Konečný automat}
 
 Konečné automaty jsou základní matematické modely sloužící k popisu a analýze
@@ -383,6 +415,33 @@ Deterministický konečný automat je pětice \((Q, \Sigma, \delta, q_0, F)\), k
         \(F \subseteq Q\).
 \end{itemize}
 
+\subsubsection{Příklad}
+
+Mějme jazyk \(L\) nad abecedou \(\Sigma = \{a, b\}\), který obsahuje všechny
+řetězce, které končí podřetězcem "bb". Formálně je jazyk definován jako:
+\[
+    L = \{w~|~w = xbb, x \in \Sigma^* \}
+\]
+
+\noindent
+Graf pro tento deterministický konečný automat vypadá následovně:
+\begin{figure}[hbt]
+	\centering
+	\includegraphics[width=1\textwidth]{obrazky-figures/dfa.pdf}
+	\caption{Graf pro DKA}
+\end{figure}
+
+\noindent
+Z~grafu lze následně určit všechny hodnoty z~pětice DKA:
+\begin{itemize}
+    \item \(Q = \{S0, S1, S2\}\)
+    \item \(\Sigma = \{a, b\}\)
+    \item \(\delta = \{S0a \rightarrow S0, S0b \rightarrow S1, S1a \rightarrow
+        S0, S1b \rightarrow S2, S2a \rightarrow S0, S2b \rightarrow S2\}\)
+    \item \(q_0 = S0\)
+    \item \(F = \{S2\}\)
+\end{itemize}
+
 \subsection{Nedeterministický konečný automat}
 
 Nedeterministický konečný automat je pětice \((Q, \Sigma,\delta, q_0, F)\),
@@ -390,11 +449,41 @@ kde:
 \begin{itemize}
     \item \(Q\) je konečná neprázdná množina stavů.
     \item \(\Sigma\) je vstupní abeceda, konečná množina vstupních symbolů.
-    \item \(\delta\) je přechodová funkce ve tvaru
-        \(Q \times \Sigma \rightarrow Q\), kde \(\Sigma \cup \{\varepsilon\}\).
+    \item \(\delta\) je přechodová relace ve tvaru
+        \(Q \times (\Sigma \cup \varepsilon) \rightarrow Q\).
     \item \(q_0\) je počáteční stav, kde \(q_0 \in Q\).
     \item \(F\) je množina koncových nebo přijímacích stavů, kde
         \(F \subseteq Q\).
+\end{itemize}
+
+\subsubsection{Příklad}
+
+Mějme jazyk \(L\) nad abecedou \(\Sigma = \{a, b\}\), který obsahuje všechny
+řetězce, které končí podřetězcem "ab". Formálně je jazyk definován jako:
+\[
+    L = \{w~|~w = xab, x \in \Sigma^* \}
+\]
+
+\noindent
+Graf pro tento nedeterministický konečný automat vypadá následovně:
+\begin{figure}[hbt]
+	\centering
+	\includegraphics[width=1\textwidth]{obrazky-figures/nfa.pdf}
+	\caption{Graf pro NKA}
+\end{figure}
+
+\noindent
+Jesliže je automat ve stavu \(S0\) a~přečte symbol \(a\), může přejít do
+stavu \(S0\), ale i~\(S1\). To je z důvodu, že předem nevíme, zda se jedná
+o~symbol, který začíná ukončovací podřetězec "ab". Z~grafu lze následně určit
+všechny hodnoty z~pětice NKA:
+\begin{itemize}
+    \item \(Q = \{S0, S1, S2\}\)
+    \item \(\Sigma = \{a, b\}\)
+    \item \(\delta = \{S0a \rightarrow S0, S0b \rightarrow S0, S0a \rightarrow
+        S1, S1b \rightarrow S2\}\)
+    \item \(q_0 = S0\)
+    \item \(F = \{S2\}\)
 \end{itemize}
 
 \subsection{Dvojcestný konečný automat}
@@ -1112,6 +1201,50 @@ další nejpomalejší algoritmus. Nejlépe si vedly algoritmy Forward Checking
 a~Arc Consistency \#3 a~to v~jejich implementaci s~bitmapami.
 
 \chapter{Závěr}
+
+Tato práce se soustředí na poukázání vhodnosti využití dvojdimenzionálních
+automatů pro řešení hry Futoshiki, ale i~všech dalších her, které obsahují
+dvojdimenzionální herní mřížku.
+
+Na začátku práce je popsána hra Futoshiki a~její pravidla, která je potřeba
+splnit pro úspešné složení mřížky. Následně jsou detailně popsány algoritmy
+sloužící pro vyřešení libovolné mřížky. Jedná se o~algoritmus Backtracking
+a~o~jeho vylepšení s~využitím Look-ahead technik ve formě algoritmů Forward
+Checking a~Arc Consistency \#3. Look-ahead techniky se snaží zmenšit počet
+zkoušených kombinací tím, že se pokusí předvídat účinky jednotlivých kroků
+při hledání řešení.
+
+Další kapitola se věnuje popisu konečných automatů, ve které jsou představeny
+deterministické konečné automaty, nedeterministické konečné automaty a
+dvojcestné konečné automaty. Na konci této kapitoly je popsán skákající automat
+a čtyřcestný konečný automat, který využívá princip dvojcestného automatu pro
+řešení problému s~dvojrozměrnou vstupní páskou.
+
+Následuje popis dvojrozměrného skákajícího automatu, který je postaven na
+základě dříve popsaného skákajícího automatu a~čtyřcestného automatu. Tento
+automat je schopen zpracovávat vstupní pásku ve dvou rozměrech, což je vhodné
+pro řešení mřížky Futoshiki. Konkrétně automat umožňuje jak pohyb ve čtyřech
+směrech (nahoru, dolů, doleva a doprava), tak i~skoky.
+
+Navazující kapitola obsahuje již konkrétní pravidla pro dvojrozměrný skákající
+automat. Nejdříve jsou popsány základní symboly, které jsou použity jako
+vstupní abeceda. Následně jsou popsána pravidla pro řešení mřížky pomocí
+algoritmu Backtracking a~pravidla pro řešení pomocí Forward Checking. Nakonec
+obsažena pravidla pro Arc Consistency \#3. Ten je velmi podobný, jako Forward
+Checking, z~toho důvodu jsou popsána pouze rozlišná pravidla.
+
+Kapitola šestá se zaměřuje na implementaci aplikace pro řešení hry Futoshiki.
+Aplikace je napsána v~programovacím jazyce Rust a~využívá knihovnu
+\texttt{termint}, která zjednodušuje tvorbu uživatelského rozhraní v~terminálu.
+Dále je popsáno spouštění aplikace a~její konfigurace. Spuštění aplikace
+s~argumenty umožňuje nastavení hry, jako je velikost mřížky nebo řešící
+algoritmus. Následně je popsáno uživatelské rozhraní aplikace, konkrétně její
+jednotlivé stránky. Implementace obsahuje tři stránky: vytváření mřížky, řešení
+mřížky a~změna řešícího algoritmu. Na závěr této kapitoly je popsán formát
+konfiguračního souboru, který umožňuje nastavit výchozí hodnoty argumentů pro
+spuštění aplikace.
+
+
 
 %===============================================================================
 
