@@ -402,6 +402,16 @@ jejich absenci pro konkrétní symbol. Oba typy mají stejný vyjadřovací
 potenciál, protože každý nedeterministický konečný automat lze převést na
 ekvivalentní deterministický.
 
+Čtení vstupní pásky probíhá pomocí čtecí hlavice, která je na začátku umístěna
+na první symbol. Ta se postupně pohybuje směrem na konec pásky. Vrácení na
+předchozí symbol již není možné.
+
+\begin{figure}[hbt]
+	\centering
+	\includegraphics[width=1\textwidth]{obrazky-figures/fa.pdf}
+	\caption{Čtení vstupní pásky konečným automatem}
+\end{figure}
+
 \subsection{Deterministický konečný automat}
 
 Deterministický konečný automat je pětice \((Q, \Sigma, \delta, q_0, F)\), kde:
@@ -486,29 +496,37 @@ všechny hodnoty z~pětice NKA:
     \item \(F = \{S2\}\)
 \end{itemize}
 
-\subsection{Dvojcestný konečný automat}
+\section{Dvojcestný konečný automat}
 
 Dvojcestné konečné automaty rozšiřují klasické konečné automaty tím, že čtecí
-hlava se může pohybovat po vstupní pásce nejen zleva doprava, ale také zpět,
-tedy doprava i doleva. To jim umožňuje prozkoumávat části vstupu vícekrát.
-Stejně jako klasické konečné automaty se i dvojcestné konečné automaty dělí na
-deterministické a nedeterministické.
+hlavice se může pohybovat po vstupní pásce nejen směrem ke konci pásky, ale
+také zpět směrem k~začátku. To znamená, že čtecí hlava může číst symboly
+z~pásky a~přitom se pohybovat v~obou směrech, tedy doprava i~doleva. To jim
+umožňuje prozkoumávat části vstupu vícekrát. Stejně jako klasické konečné
+automaty se i~dvojcestné konečné automaty dělí na deterministické
+a~nedeterministické.
 
-I když dvojcestné automaty působí výkonněji než jednocestné automaty, mají
-stejnou vyjadřovací sílu: přijímají pouze regulární jazyky. Tento výsledek
-vychází z faktu, že každý dvojcestný konečný automat může být převeden na
-ekvivalentní jednocestný automat (za cenu možného zvýšení počtu stavů).
+I~když dvojcestné automaty působí výkonněji než jednocestné automaty, mají
+stejnou vyjadřovací sílu: přijímají pouze regulární jazyky. To je dáno tím, že
+každý dvojcestný automat lze převést na ekvivalentní jednocestný automat.
+Převod však může způsobit zvýšení počtu stavů.
 
 Vstupní řetězec je ohraničen z obou stran speciálními symboly \{ |-, -| \},
 které nejsou součástí vstupní abecedy \(\Sigma\). Tyto symboly slouží k
-indikaci začátku a konce vstupu a čtecí hlava se za ně nesmí dostat. Pokud by
-čtecí hlava narazila na jeden z těchto symbolů, automat zůstane na stejném
+indikaci začátku a konce vstupu a čtecí hlavice se za ně nesmí dostat. Pokud by
+čtecí hlavice narazila na jeden z těchto symbolů, automat zůstane na stejném
 místě nebo přejde do koncového stavu.
 
-\subsubsection*{Definice}
+\begin{figure}[hbt]
+	\centering
+	\includegraphics[width=0.9\textwidth]{obrazky-figures/2fa.pdf}
+	\caption{Čtení vstupní pásky dvojcestným konečným automatem}
+\end{figure}
+
+\subsection*{Definice}
 
 Dvojcestné konečné automaty jsou definované jako osmice
-\((Q, \Sigma, |-, -|, \delta, s, t, r)\), kde:
+\((Q, \Sigma, |-, -|, \delta, q_0, q_a, q_r)\), kde:
 \begin{itemize}
     \item \(Q\) je konečná množina stavů.
     \item \(\Sigma\) je konečná množina vstupních symbolů.
@@ -517,57 +535,144 @@ Dvojcestné konečné automaty jsou definované jako osmice
     \item \(\delta\) je přechodová funkce ve tvaru \(Q \times (\Sigma \cup \{
         |-, -| \}) \rightarrow (Q \times \{ L, R \})\), přičemž \(L\) a \(R\)
         jsou směry pohybu čtecí hlavice.
-    \item \(s\) je počáteční stav, kde \(s \in Q\).
-    \item \(t\) je akceptující stav, kde \(t \in Q\).
-    \item \(r\) je neakceptující stav, kde \(r \in Q\).
+    \item \(q_0\) je počáteční stav, kde \(q_0 \in Q\).
+    \item \(q_a\) je akceptující stav, kde \(q_a \in Q\).
+    \item \(q_r\) je neakceptující stav, kde \(q_r \in Q\).
 \end{itemize}
 
-\subsection{Skákající automaty}
+\section{Skákající automat}
 
-Skákající automat umožňuje čtecí hlavě skákat po vstupní pásce. Vstupní páska
-je rozdělena do buněk, přičemž každá buňka obsahuje jeden symbol vstupního
-řetězce. Automat čte symbol z buňky, na kterou ukazuje čtecí hlava, a na
-základě aktuálního stavu a tohoto symbolu určuje, do jakého stavu přejde. Na
-rozdíl od klasických konečných automatů, které se pohybují po pásce pouze zleva
-doprava, může skákající automat přeskakovat mezi libovolnými buňkami. Pokud je
-symbol již přečten, nemůže být přečten znovu.
+Skákající automat umožňuje čtecí hlavici skákat po vstupní pásce. Na základě
+aktuálního stavu automatu a~symbolu, na který ukazuje čtecí hlavice, se provede
+skok, odpovídající jednomu z~definovaných pravidel, na libovolný symbol na
+pásce. Na rozdíl od klasických konečných automatů tak nečte pásku postupně, ale
+umožňuje posun na libovolnou pozici. Jesliže byl znak již jednou přečten,
+nemůže být přečten znovu.
+
+\subsection*{Definice}
+
+Skákající automaty jsou definované jako pětice \(M = (Q, \Sigma, R, s F)\),
+kde:
+\begin{itemize}
+    \item \(Q\) je konečná množina stavů.
+    \item \(\Sigma\) je konečná množina vstupních symbolů.
+    \item \(R \subseteq Q \times \Sigma^* \times Q\) je konečná ternární
+        relace, nazývaná množinou pravidel.
+        \begin{itemize}
+            \item Každé pravidlo \((p, y, q) \in R\) je zapsáno jako
+                \(py \rightarrow q\).
+        \end{itemize}
+    \item \(s\) je počáteční stav, kde \(s \in Q\).
+    \item \(F\) je množina konečných stavů, kde \(F \subseteq Q\).
+\end{itemize}
 
 \subsection{Skákající automat s opakovaným čtením}
+
+Pro řešení některých problémů je potřeba, aby skákající automat mohl číst
+vstupní pásku opakovaně. To znamená, že čtecí hlavice může skákat na libovolné
+místo na pásce a~přitom může číst symboly, které již byly přečteny.
 
 \subsubsection*{Definice}
 
 Skákající automat s opakovaným čtením lze definovat jako pětice
 \(M = (Q, \Sigma, R, s F)\), kde:
 \begin{itemize}
-    \item \(Q\) je konečná množina stavů
-    \item \(\Sigma\) je konečná množina vstupních symbolů
+    \item \(Q\) je konečná množina stavů.
+    \item \(\Sigma\) je konečná množina vstupních symbolů.
     \item \(R \subseteq Q \times \Sigma^* \times Q\) je konečná ternární
-        relace, nazývaná množinou pravidel
+        relace, nazývaná množinou pravidel.
         \begin{itemize}
             \item Každé pravidlo \((p, y, q) \in R\) je zapsáno jako
-                \(py \rightarrow q\)
-            \item Jestliže je aktuální stav automatu \(q\) a na vstupu je
+                \(py \rightarrow q\).
+            \item Jestliže je aktuální stav automatu \(q\) a~na vstupu je
                 symbol odpovídající symbolu \(y\), automat přejde do stavu
-                \(q\)
-            \item Vstupní ukazatel zůstane na stejné pozici a nepřečte vstupní
-                symbol
+                \(q\).
+            \item Vstupní ukazatel zůstane na stejné pozici a~nepřečte vstupní
+                symbol.
         \end{itemize}
-    \item \(s \in Q\) je počáteční stav
-    \item \(F \subseteq Q\) je množina konečných stavů
+    \item \(s\)~je počáteční stav, kde \(s \in Q\).
+    \item \(F\)~je množina konečných stavů, kde \(F \subseteq Q\).
 \end{itemize}
 
-\subsubsection*{S podporou nerovností}
+\section{Dvojdimenzionální automaty}
 
-TEMP: definice stejná jako u skájícího automatu s opakovaným čtením. Změní se
-pouze množina pravidel:
+Dvojdimenzionální automaty jsou rozšířením klasických konečných automatů
+o~dvojrozměrnou vstupní pásku. Tento typ automatu je schopen zpracovávat
+dvojrozměrné vstupy, což je užitečné pro různé aplikace, jako je například
+rozpoznávání obrazů nebo analýza dat v~oblasti strojového učení. Mezi
+dvojrozměrné vstupy patří i~mřížková data, jako jsou například hrací mřížky pro
+různé hlavolamy, včetně mřížky Futoshiki.
+
+\subsection{Základní pojmy}
+
+\subsubsection{Vstup}
+
+Vstupem dvojdimenzionálního automatu je dvojrozměrná matice symbolů, někdy
+také označována jako obrázek. Matice obsahuje prvky z~dané abecedy \(\Sigma\).
+Všechny množiny takových matic jsou označovány jako \(\Sigma^{**}\).
+
+\[
+    p = \begin{bmatrix}
+        p_{1,1} & p_{1,2} & ... & p_{1,n} \\
+        p_{2,1} & p_{2,2} & ... & p_{2,n} \\
+        ...     & ...     & ... & ...     \\
+        p_{m,1} & p_{m,2} & ... & p_{m,n} \\
+    \end{bmatrix}
+\]
+
+\subsubsection{Velikost vstupní pásky}
+
+Jestliže máme obrázek \(p \in \Sigma^{**}\), potom \(l_1(p)\) značí počet řádků
+a~\(l_2(p)\) značí počet sloupců obrázku \(p\). Velikost obrázku \(p\) je potom
+dvojice \((l_1(p), l_2(p))\). Obrázek s~nulovou velikostí, tedy s~nulovým
+počtem řádků či sloupců, je prázdný obrázek. Ten se označuje jako~\(\lambda\).
+Jesliže platí \(1 \leq i \leq l_1(p)\) a \(1 \leq j \leq l_2(p)\), potom
+\(p_{i, j}\) označuje souřadnice obrázku.
+
+\subsubsection{Hranice}
+
+Pro procházení dvojrozměrné pásky je vhodné definovat hranice pro efektivnější
+procházení. Hranice lze identifikovat použitím speciálních symbolu, nejčastěji
+se využívá symbol \(\#\), kdy \(\# \notin \Sigma\). Tedy pro každý
+obrázek~\(p\)~o~velikosti \((m, n)\) existuje obrázek s~hranicemi \(\hat{p}\)
+s~velikostí \((m + 2, n + 2)\). Ten je vytvořený obkreslením obrázku
+\(p\)~speciálním znakem pro hranici.
+
+\[
+    \hat{p} = \begin{bmatrix}
+        \#  & \#      & \#      & \#  & \#      & \# \\
+        \#  & p_{1,1} & p_{1,2} & ... & p_{1,n} & \# \\
+        \#  & p_{2,1} & p_{2,2} & ... & p_{2,n} & \# \\
+        ... & ...     & ...     & ... & ...     & ...\\
+        \#  & p_{m,1} & p_{m,2} & ... & p_{m,n} & \# \\
+        \#  & \#      & \#      & \#  & \#      & \#
+    \end{bmatrix}
+\]
+
+\subsection{Čtyřcestný konečný automat}
+
+Čtyřcestné konečné automaty jsou rozšířením dvojcestných konečných automatů pro
+dvojrozměrné vstupní pásky. Čtecí hlavice se po vstupní pásce dokáže pohybovat
+ve čtyřech směrech: nahoru, dolů, doleva a~doprava.
+
+Čtyřcestné automaty mají stejnou vyjadřovací sílu jako dvojcestné automaty,
+protože každý čtyřcestný automat lze převést na ekvivalentní dvojcestný
+automat. Převod však může způsobit zvýšení počtu stavů.
+
+\subsubsection{Definice}
+
+Čtyřcestné konečné automaty jsou definované jako sedmice
+\((\Sigma, Q, \Delta, q_0, q_a, q_r, \delta)\), kde:
 
 \begin{itemize}
-    \item \(R \subseteq Q \times C(\Sigma^*) \times Q\)
-    \begin{itemize}
-        \item \(C\) je predikát, který musí být splněn aby proběhl přechod
-        \item \(p[c] \rightarrow q\)
-        \item \(p[x < 10] \rightarrow q\)
-    \end{itemize}
+    \item \(\Sigma\) je konečná množina vstupních symbolů.
+    \item \(Q\) je konečná množina stavů.
+    \item \(\Delta\) je množina povolených směrů.
+    \item \(q_0\) je počáteční stav, kde \(q_0 \in Q\).
+    \item \(q_a\) je akceptující stav, kde \(q_a \in Q\).
+    \item \(q_r\) je neakceptující stav, kde \(q_r \in Q\).
+    \item \(\delta\) je přechodová funkce ve tvaru
+        \((Q \setminus \{q_a, q_r\} \times \Sigma) \implies (Q \times \Delta)\).
 \end{itemize}
 
 \chapter{Dvojdimenzionální skákající automat}
@@ -583,15 +688,15 @@ ve vstupní pásce.
 
 Sedmice \((Q, \Sigma, \Delta, R_1, R_2, s, F)\), kde:
 \begin{itemize}
-    \item \(Q\) je konečná množina stavů
-    \item \(\Sigma\) je konečná množina vstupních symbolů
-    \item \(\Delta\) je množina povolených směrů
+    \item \(Q\) je konečná množina stavů.
+    \item \(\Sigma\) je konečná množina vstupních symbolů.
+    \item \(\Delta\) je množina povolených směrů.
     \item \(R_1\) množina pravidel pro pohyb ve tvaru
-        \((Q \times \Sigma) \implies (Q \times \Delta)\)
+        \((Q \times \Sigma) \implies (Q \times \Delta)\).
     \item \(R_2\) množina pravidel pro skoky ve tvaru
-        \(Q \implies (Q \times \Sigma)\)
-    \item \(s \in Q\) je počáteční stav
-    \item \(F \subseteq Q\) je množina konečných stavů
+        \(Q \implies (Q \times \Sigma)\).
+    \item \(s\) je počáteční stav, kde \(s \in Q\).
+    \item \(F\) je množina konečných stavů, kde \(F \subseteq Q\).
 \end{itemize}
 
 \chapter{Pravidla dvojdimenzionálního skákajícího automatu}
