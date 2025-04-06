@@ -11,7 +11,11 @@
 V~této práci se čtenář dozví informace o~hře Futoshiki, její pravidla
 a~o~různých metodách, které slouží pro řešení této hry. Dále jsou v práci
 zahrnuty také informace o~konečných automatech, které budou využity pro
-vytvoření specifického automatu na řešení hry Futoshiki.
+vytvoření specifického automatu na řešení hry Futoshiki. Na základě tohoto
+automatu budou vytvořena pravidla pro řešení mřížky Futoshiki pomocí
+jednotlivých algoritmů. Cílem této práce je poukázat, že hra Futoshiki je
+řešitelná pomocí automatů a~ukázat vhodnost využití dvoudimenzionálních
+automatů.
 
 V~druhé kapitole se práce zaměří na podrobný popis hry Futoshiki včetně
 pravidel pro úspešné vyřešení. Dále budou v~této kapitole detailně popsány
@@ -19,34 +23,42 @@ algoritmy sloužící pro vyřešení mřížky Futoshiki, konkrétně algoritmu
 Backtracking a~jeho vylepšení s~využitím Look-ahead procedur ve formě algoritmů
 Forward Checking a~Arc Consistency \#3. Look-ahead procedury se snaží zmenšit
 počet zkoušených kombinací tím, že se pokusí předvídat účinky jednotlivých cest
-při hledání řešení.
+při hledání řešení. Díky tomu se eliminují prohledávané cesty ještě před jejich
+prozkoumáním. V~kapitole budou také popsány výhody a~nevýhody algoritmů
+z~hlediska výpočetní a~časové složitosti.
 
 Třetí kapilota popíše existující konečné automaty, které jsou často vnímané
 jako základní stavební bloky pro modelování výpočetních procesů. Tyto automaty
 jsou důležité pro následnou derivaci automatu využitého pro řešení Futoshiki.
-Jsou zde popsány deterministické a nedeterministické konečné automaty,
+Jsou zde popsány deterministické a nedeterministické konečné automaty, ale také
 dvojcestný konečný automat, který nám ukáže princip pohybu na vstupní pásce,
-který se využívá i~u~vícedimenzionálních automatů. Nakonec bude popsán také
-skákající automat a čtyřcestný automat, využívající princip pohybu dvojcestného
+který se využívá i~u~vícedimenzionálních automatů. Nakonec bude popsán
+skákající automat a~čtyřcestný automat, využívající princip pohybu dvojcestného
 automatu na dvojrozměrné vstupní pásce.
 
 Ve čtvrté kapitole je popsán již výsledný automat, který je vytvořen na základě
 skákajícího automatu a~čtyřcestného automatu. Konkrétně se jedná
 o~dvojdimenzionální skákájící automat, který umožňuje jak pohyb po mřížce ve
-čtyřech směrech, stejně jako čtyřcestný automat, ale také skoky. Tento automat
-je následně využit pro řešení mřížky Futoshiki.
+čtyřech směrech, stejně jako čtyřcestný automat, ale také skoky. Díky skokům
+může automat přeskočit určitou oblast vstupní pásky a~rychleji se dostat do
+požadované části mřížky, čímž se zvyšuje efektivita hledání řešení. Tento
+automat je následně využit pro řešení mřížky Futoshiki.
 
 Následující kapitola obsahuje pravidla pro automat samotný. Jsou zde definovány
-základní symboly automatu, které jsou využity v~pravidlech. Následují pravidla
-automatu pro řešení mřížky Futoshiki pomocí algoritmu Backtracking a~pravidla
-pro řešení pomocí algoritmu Forward Checking. Pravidla pro algoritmus Arc
-Consistency \#3 jsou velmi podobná jako pro Forward Checking, z~toho důvodu
-jsou popsána pouze rozdílná pravidla. To je z~důvodu podobnosti algoritmů,
-kde Arc Consistency \#3 má pouze více striktní úpravy domén.
+základní symboly automatu, které jsou využity v~pravidlech. Tyto symboly slouží
+například k~reprezentaci hodnot v~mřížce a~nerovností mezi buňkami. Následují
+pravidla automatu pro řešení mřížky Futoshiki pomocí algoritmu Backtracking
+a~pravidla pro řešení pomocí algoritmu Forward Checking. Pravidla pro
+algoritmus Arc Consistency \#3 jsou velmi podobná jako pro Forward Checking,
+z~toho důvodu jsou popsána pouze rozdílná pravidla. To je z~důvodu podobnosti
+algoritmů, kde Arc Consistency \#3 má pouze více striktní úpravy domén.
 
 Detailní popis implementace samotné je obsažen v kapitole šesté. Implementace
 byla vyvinuta v~jazyce Rust s~pomocí knihovny termint. Knihovna slouží pro
-jednodušší tvorbu terminálových uživatelských rozhraní.
+jednodušší tvorbu terminálových uživatelských rozhraní. Rust byl zvolen zejména
+díky své efektivitě a~bezpečnosti při práci s~pamětí, kdy v~porovnání s~jazykem
+C~je Rust téměř stejně efektivní, avšak mnohem více bezpečný při práci
+s~pamětí.
 
 První část této kapitoly se věnuje popisu spouštění aplikace. Jsou zde popsány
 veškeré argumenty pro spuštění hry, ale také benchmarku nebo úpravy
@@ -75,7 +87,8 @@ implementovaného benchmarku. Výsledek benchmarku, tedy graf obsahující prům
 časy jednotlivých algoritmů pro mřížky od velikosti 4×4 až po velikost 10×10,
 je také obsažen v~této kapitole. Nakonec kapitola obsahuje porovnání
 jednotlivých algoritmů a~jejich časové náročnosti v~závislosti na velikosti
-hrací mřížky.
+hrací mřížky. Z~tohoto srovnání vyplývá, jaké algoritmy jsou vhodné pro
+řešení konkrétní velikosti mřížky.
 
 \chapter{Futoshiki a algoritmy pro řešení}
 \label{sec:futoshikiAlgs}
@@ -92,14 +105,15 @@ klíčový základ pro pochopení dalších sofistikovanějších metod, které 
 k~řešení hlavolamu Futoshiki.
 
 Následně se zaměříme na algoritmus Forward Checking a~jeho dvě možné
-implementace. Tento algoritmus vylepšuje základní princip Backtrackingu tím, že
-předběžně kontroluje možné hodnoty, což vede ke snížení počtu zkoušených
-kombinací.
+implementace, kdy v~jedné variantě jsou domény uloženy jako hašovací množiny
+a~v druhé jako bitmapy. Tento algoritmus vylepšuje základní princip
+Backtrackingu tím, že předběžně kontroluje možné hodnoty, což vede ke snížení
+počtu zkoušených kombinací.
 
 Nakonec bude popsáno možné vylepšení Forward Checkingu. Tento vylepšený
 algoritmus se nazývá Arc Consistency \#3. Vylepšení spočívá ve více striktní
-úpravě domén, což zabraňuje zbytečnému zkoušení hodnot, u~kterých je jasné, že
-k~řešení nevede.
+úpravě domén, což zabraňuje zbytečnému zkoušení hodnot u~kterých je jasné, že
+k~řešení nevedou.
 
 Všechny popsané algoritmy byly implementovány v~programu, který umožňuje řešení
 libovolné mřížky hlavolamu Futoshiki. Implementace obsahuje i~benchmark, pomocí
@@ -110,19 +124,53 @@ scénářích. Více o~benchmarku bude zmíněno v~sekci
 \section{Pravidla hry}
 
 Futoshiki \cite{FutoshikiWiki}, známá také jako hra "větší/menší" (More or
-Less), je logický hlavolam pocházející z~Japonska, který je založen na podobném
-principu jako sudoku. Hlavolam se skládá ze čtvercové mřížky, obvykle
-o~velikosti 4x4, přičemž může být i~větší.
+Less), je logický hlavolam pocházející z~Japonska. Jeho název v~překladu
+znamená "nerovnost". Hra je založená na podobném principu jako sudoku. Hlavolam
+se skládá ze čtvercové mřížky, obvykle o~velikosti 4×4 nebo 5×5, přičemž může
+být i~větší.
 
 Pro úspěšné vyřešení je třeba každé pole v~mřížce vyplnit číslem od 1 do
-velikosti mřížky. Dále musí platit pravidlo, že se v~každém řádku a~sloupci
-čísla nesmí opakovat. Kromě toho jsou na mřížce umístěny nerovnosti mezi
-některými poli, které určují vztah mezi dvěma čísly. Hra začíná s~libovolným
-počtem již vyplněných polí a~nerovností, přičemž toto počáteční rozmístění musí
-být v~souladu s~pravidly a~zaručovat existenci alespoň jednoho řešení. Následně
-hráč vyplňuje zbývající pole, zatímco nerovnosti se již nemění a~nepřidávají se
-žádné nové. Složená mřížka Futoshiki je takzvaný latinský čtverec
-\cite{LatinSquareWiki}.
+velikosti mřížky, přičemž musí platit následující pravidla:
+
+\begin{enumerate}
+    \item Unikátnost čísla v~řádku
+    \begin{itemize}
+        \item \(\forall r \in \{1, \dots, n\},\ \forall i, j \in \{1, \dots, n
+            \};\ i \neq j \implies x_{r, i} \neq x_{r, j}\)
+        \item Pro každý řádek \(r\)~a~každou dvojici sloupců \(i\)~a~\(j\)
+            musí platit, že čísla v~polích na souřadnicích
+            \([r, i]\)~a~\([r, j]\) jsou odlišná.
+        \item \textbf{Prakticky:} čísla se v~řádcích nesmí opakovat.
+    \end{itemize}
+    \item Unikátnost čísla v~sloupci
+    \begin{itemize}
+        \item \(\forall c \in \{1, \dots, n\},\ \forall i, j \in \{1, \dots, n
+            \};\ i \neq j \implies x_{i, c} \neq x_{j, c}\)
+        \item Pro každý sloupec \(c\)~a~každou dvojici řádků \(i\)~a~\(j\)
+            musí platit, že čísla v~polích na souřadnicích
+            \([i, c]\)~a~\([j, c]\) jsou odlišná.
+        \item \textbf{Prakticky:} čísla se ve sloupcích nesmí opakovat.
+    \end{itemize}
+    \item Platné nerovnosti mezi poli.
+    \begin{itemize}
+        \item Nechť \(R\) je množina všech nerovností mezi poli.
+        \item \(\forall ((i_1, j_1), (i_2, j_2), \prec) \in R;\ \prec = <~
+            \implies x_{i_1, j_1} < x_{i_2, j_2},\ \prec = >\ \implies
+            x_{i_1, j_1} > x_{i_2, j_2} \)
+    \end{itemize}
+\end{enumerate}
+
+Hra začíná s~libovolným počtem již vyplněných polí a~nerovností, přičemž toto
+počáteční rozmístění musí být v~souladu s~pravidly a~zaručovat existenci
+alespoň jednoho řešení. Následně hráč vyplňuje zbývající pole, zatímco
+nerovnosti se již nemění a~nepřidávají se žádné nové. Složená mřížka Futoshiki
+je takzvaný latinský čtverec \cite{LatinSquareWiki}.
+
+\begin{figure}[hbt]
+	\centering
+	\includegraphics[width=0.4\textwidth]{obrazky-figures/futoshiki.png}
+	\caption{Mřížka Futoshiki o~velikosti 4×4}
+\end{figure}
 
 \section{Backtracking}
 
@@ -140,6 +188,7 @@ Postup Backtrackingu se může lišit v závislosti na řešeném problému.
 Následující postup popisuje řešení mřížky Futoshiki. Na základě tohoto postupu
 byla následně implementována rekurzivní varianta algoritmu.
 
+\newpage
 \begin{enumerate}
     \item Posun na první nevyplněné pole. Pokud neexistuje, bylo nalezeno
         řešení.
@@ -541,6 +590,7 @@ Dvojcestné konečné automaty jsou definované jako osmice
 \end{itemize}
 
 \section{Skákající automat}
+\label{chap:jumpingAutomata}
 
 Skákající automat umožňuje čtecí hlavici skákat po vstupní pásce. Na základě
 aktuálního stavu automatu a~symbolu, na který ukazuje čtecí hlavice, se provede
@@ -650,6 +700,7 @@ s~velikostí \((m + 2, n + 2)\). Ten je vytvořený obkreslením obrázku
 \]
 
 \subsection{Čtyřcestný konečný automat}
+\label{chap:4fa}
 
 Čtyřcestné konečné automaty jsou rozšířením dvojcestných konečných automatů pro
 dvojrozměrné vstupní pásky. Čtecí hlavice se po vstupní pásce dokáže pohybovat
@@ -677,12 +728,12 @@ automat. Převod však může způsobit zvýšení počtu stavů.
 
 \chapter{Dvojdimenzionální skákající automat}
 
-Dvojdimenzionální skákající automaty jsou automaty, které vznikly spojením
-dvou typů automatů - skákající a čtyřcestné automaty. Tento typ automatu je
-díky skokům vhodný pro rychlejší procházení dvojrozměrné pásky. V~této práci
-se skoky velice hodí pro rychlejší pohyb v~mřížce Futoshiki, bez kterých by
-automat musel postupně mřížku procházet, dokud by nedošel na konkrétní pozici
-ve vstupní pásce.
+Dvojdimenzionální skákající automat je automat, které vznikl spojením
+dvou typů automatů - skákající \ref{chap:jumpingAutomata} a~čtyřcestné
+automaty \ref{chap:4fa}. Tento typ automatu je díky skokům vhodný pro rychlejší
+procházení dvojrozměrné pásky. V~této práci se skoky velice hodí pro rychlejší
+pohyb v~mřížce Futoshiki, bez kterých by automat musel postupně mřížku
+procházet, dokud by nedošel na konkrétní pozici ve vstupní pásce.
 
 \section{Definice}
 
