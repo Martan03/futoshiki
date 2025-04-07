@@ -699,6 +699,20 @@ s~velikostí \((m + 2, n + 2)\). Ten je vytvořený obkreslením obrázku
     \end{bmatrix}
 \]
 
+\subsection{Dvojdimenzionální automaty a Futoshiki}
+
+V úvodu této kapitoly bylo zmíněno, že dvojdimenzionální automaty jsou vhodné
+pro řešení dvojrozměrných problémů, jako je například mřížka Futoshiki. Proč je
+však vhodné tento typ automatů pro řešení Futoshiki využít? Samotná mřížka
+Futoshiki je uspořádána jako dvojdimenzionální mřížka, což odpovídá
+dvojrozměrné vstupní pásce, kterou dvojdimenzionální automaty přijímají.
+Po mřížce je přirozené se pohybovat ve čtyřech směrech, tedy nahoru, dolů,
+doleva a doprava, což opět dvojrozměrné automaty umožňují. Dále je využití
+dvojdimenzionálních automatů výhodné i~z~důvodu, že při řešení je třeba
+zohlednit omezení v~bezprostředním okolí buňky, což je opět přirozené
+použití dvojdimenzionálních automatů. Problematika by sice šla vyřešit i~pomocí
+jednodimenzionálních automatů, ale bylo by to mnohem složitější a~neefektivní.
+
 \subsection{Čtyřcestný konečný automat}
 \label{chap:4fa}
 
@@ -767,6 +781,7 @@ obsaženy pravidla pro jednotlivé algoritmy.
     \item \(N_|\) - vertikální nerovnost mezi poli
     \item \(F\) - vyplněné herní pole
     \item \(X\) - nevyplněné herní pole
+    \item \(L\) - předchozí herní pole
     \item \(\{X\}\) - pole s~neprázdnou doménou
     \item \(\{L\}\) - pole s~nejmenší doménou
     \item \(\{\}\) - pole s~prázdnou doménou
@@ -969,11 +984,13 @@ Pravidla pro řešení hry
 \subsection*{Pravidla}
 
 \begin{tabular}{@{}p{4cm} p{10.5cm}@{}}
-    \(Q_{70} \implies Q_{71}\{L\}\) & Skok na pole s nejmenší doménou \\
+    \(Q_{70} \implies Q_{71}\{L\}\) & Skok na pole s nejmenší doménou, uložení
+        stavu mřížky \\
     \(Q_{71}{} \implies Q_{BT}U\) & Nefunkční řešení, vrácení do řešitelného
         stavu \\
-    \(Q_{71} \implies Q_{72}U\) & Jinak zvolení hodnoty z domény a přesun do
-        stavu odstranění hodnoty z ovlivněných domén \\
+    \(Q_{71} \implies Q_{72}U\) & Jinak uložení a~následné smazání první
+        hodnoty z~domény a~přesun do stavu odstranění hodnoty z~ovlivněných
+        domén \\
 \end{tabular}
 
 \subsubsection*{Úprava domén polí ve stejném sloupci}
@@ -1033,6 +1050,16 @@ Pravidla pro řešení hry
         nerovnost \\
     \(Q_{87} \implies Q_{71}\{L\}\) & Jinak skok na původní pole a zapsání
         hodnoty \\
+\end{tabular}
+
+\subsubsection*{Zpětné navrácení}
+
+\begin{tabular}{@{}p{4cm} p{10.5cm}@{}}
+    \(Q_{BT} \implies Q_{BT1}L\) & Skok na předchozí pole a~obnovení stavu
+        mřížky \\
+    \(Q_{BT1}{} \implies Q_{BT}U\) & Předchozí pole má prázdnou doménu,
+        pokračování ve zpětném navrácení \\
+    \(Q_{BT1} \implies Q_{74}U\) & Jinak přesun do stavu vyplňování mřížky \\
 \end{tabular}
 
 \chapter{Implementace}
@@ -1366,28 +1393,46 @@ Na začátku práce je popsána hra Futoshiki a~její pravidla, která je potře
 splnit pro úspešné složení mřížky. Následně jsou detailně popsány algoritmy
 sloužící pro vyřešení libovolné mřížky. Jedná se o~algoritmus Backtracking
 a~o~jeho vylepšení s~využitím Look-ahead technik ve formě algoritmů Forward
-Checking a~Arc Consistency \#3. Look-ahead techniky se snaží zmenšit počet
-zkoušených kombinací tím, že se pokusí předvídat účinky jednotlivých kroků
-při hledání řešení.
+Checking a~Arc Consistency \#3.
+
+Look-ahead techniky se snaží zmenšit počet zkoušených kombinací tím, že se
+pokusí předvídat účinky jednotlivých kroků při hledání řešení. Tento efekt lze
+pozorovat především při větších mřížkách, což bylo dokázáno v~kapitole
+\hyperref[sec:timeComplexity]{časová náročnost}, která obsahuje graf s~výsledky
+testování časové náročnosti jednotlivých algoritmů. Při menších mřížkách je
+však Backtracking rychlejší než algoritmy využívající look-ahead techniky, což
+je způsobeno tím, že Backtracking je jednodušší a~neobsahuje režii spojenou
+s~předpovídáním budoucích kroků. Proto je i Backtracking velice užitečný,
+hlavně tedy pro řešení problémů s~menším stavovým prostorem.
 
 Další kapitola se věnuje popisu konečných automatů, ve které jsou představeny
 deterministické konečné automaty, nedeterministické konečné automaty a
-dvojcestné konečné automaty. Na konci této kapitoly je popsán skákající automat
-a čtyřcestný konečný automat, který využívá princip dvojcestného automatu pro
-řešení problému s~dvojrozměrnou vstupní páskou.
+dvojcestné konečné automaty. Poslední ze zmíněných automatů ukazuje princip
+pohybu po pásce, který je následně využit i~u~dvojdimenzionálních automatů.
+Následně je popsán skákající automat, který jak z~názvu vypovídá, podporuje
+skoky po vstupní pásce, což dokáže zvýšit efektivity řešení.
+
+Na konci této kapitoly jsou popsány dvojdimenzionální automaty. Bylo také
+popsáno, jak vypadá jejich vstup a~jak se vstup upravuje, aby bylo lépe poznat
+hranice. Následně bylo vysvětleno z~jakého důvodu se dvojdimenzionální automaty
+hodí pro řešení Futoshiki. Nakonec pak byl popsán čtyřcestný konečný automat,
+který využívá princip dvojcestného automatu pro řešení problému s~dvojrozměrnou
+vstupní páskou.
 
 Následuje popis dvojrozměrného skákajícího automatu, který je postaven na
 základě dříve popsaného skákajícího automatu a~čtyřcestného automatu. Tento
 automat je schopen zpracovávat vstupní pásku ve dvou rozměrech, což je vhodné
 pro řešení mřížky Futoshiki. Konkrétně automat umožňuje jak pohyb ve čtyřech
-směrech (nahoru, dolů, doleva a doprava), tak i~skoky.
+směrech (nahoru, dolů, doleva a doprava), tak i~skoky, které umožňují
+přeskočit určitou oblast vstupní pásky a~rychleji se dostat do požadované části
+mřížky, čímž se zvyšuje efektivita řešení.
 
 Navazující kapitola obsahuje již konkrétní pravidla pro dvojrozměrný skákající
 automat. Nejdříve jsou popsány základní symboly, které jsou použity jako
 vstupní abeceda. Následně jsou popsána pravidla pro řešení mřížky pomocí
 algoritmu Backtracking a~pravidla pro řešení pomocí Forward Checking. Nakonec
-obsažena pravidla pro Arc Consistency \#3. Ten je velmi podobný, jako Forward
-Checking, z~toho důvodu jsou popsána pouze rozlišná pravidla.
+jsou obsažena pravidla pro Arc Consistency \#3. Ten je velmi podobný, jako
+Forward Checking, z~toho důvodu jsou popsána pouze rozlišná pravidla.
 
 Kapitola šestá se zaměřuje na implementaci aplikace pro řešení hry Futoshiki.
 Aplikace je napsána v~programovacím jazyce Rust a~využívá knihovnu
@@ -1400,7 +1445,17 @@ mřížky a~změna řešícího algoritmu. Na závěr této kapitoly je popsán 
 konfiguračního souboru, který umožňuje nastavit výchozí hodnoty argumentů pro
 spuštění aplikace.
 
-
+V~poslední kapitole se práce zaměří na testování implementace. Testována byla
+správnost implementovaných algoritmů a~jejich časová náročnost. Čtenář byl
+detailně seznámen, jak byly testovány jednotlivé algoritmy, ověřovač složení
+a~generátor mřížky. Dále bylo popsáno testování časové náročnosti, které bylo
+provedeno pomocí speciálního spuštění aplikace s~argumentem \texttt{bench}.
+Tento druh spuštění umožňuje spustit benchmark, kde se testují zvolené
+algoritmy na zvolených velikostech mřížek. Výsledky testování, obsahující
+minimální, maximální a~průměrný čas, jsou následně vytisknuty do terminálu.
+Z~průměrných časů je následně také vygenerován graf, který zobrazuje časovou
+náročnost jednotlivých algoritmů. Tento graf umožňuje snadné porovnání
+efektivity algoritmů při řešení různě velkých mřížek.
 
 %===============================================================================
 
