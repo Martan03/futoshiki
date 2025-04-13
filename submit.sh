@@ -5,14 +5,15 @@ mkdir $login
 
 cd doc
 make
+cp $login.pdf ../$login/$login.pdf
+make clean
 cd ..
-cp doc/$login.pdf $login
 
 cp -r src doc README.md Cargo.toml $login
 
 cd $login
-tar cf $login.tar -- *
+zip -r $login.zip .
 
 cd ..
-mv $login/$login.tar .
+mv $login/$login.zip .
 rm -r $login
