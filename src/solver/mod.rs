@@ -10,7 +10,9 @@ use serde::{Deserialize, Serialize};
 
 use crate::board::board_struct::Board;
 
+pub mod ac3;
 pub mod bt_solver;
+pub mod domain;
 pub mod look_ahead;
 pub mod look_ahead_bit;
 
