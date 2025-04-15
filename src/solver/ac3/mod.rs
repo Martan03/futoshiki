@@ -2,32 +2,37 @@ use std::collections::HashSet;
 
 use arc::Arc;
 use queue::Queue;
-use termint::geometry::Vec2;
+use termint::geometry::{Rect, Vec2};
 
 use crate::board::board_struct::Board;
 
-use super::domain::Domain;
+use super::domain::DomainTrait;
 
 pub mod arc;
 pub mod queue;
 
 pub struct AC3<'a> {
     board: &'a mut Board,
-    values: Vec<Box<dyn Domain>>,
+    values: Vec<Box<dyn DomainTrait>>,
     queue: Queue,
 }
 
 impl<'a> AC3<'a> {
     pub fn generate(
         board: &'a mut Board,
-        values: Vec<Box<dyn Domain>>,
-    ) -> Vec<HashSet<usize>> {
+        values: Vec<Box<dyn DomainTrait>>,
+    ) -> Vec<Box<dyn DomainTrait>> {
         let mut ac = Self {
             board,
             values,
             queue: Queue::new(),
         };
-        todo!()
+
+        ac.gen_unique();
+        ac.gen_inequality();
+
+        ac.process();
+        ac.values
     }
 }
 
@@ -39,18 +44,58 @@ struct ArcPush<'a> {
 }
 
 impl<'a> AC3<'a> {
-    /// Resolves given arc
-    fn resolve(&mut self, arc: Arc) {
-        match arc {
-            Arc::Unique(f, s) => self.resolve_unique(f, s),
-            Arc::Inequality(l, g) => self.resolve_inequality(l, g),
+    /// Processes the arcs in the queue
+    fn process(&mut self) {
+        while let Some(arc) = self.queue.pop() {
+            match arc {
+                Arc::Unique(f, s) => self.resolve_unique(f, s),
+                Arc::Inequality(l, g) => self.resolve_inequality(l, g),
+            }
+        }
+    }
+
+    /// Adds all the unique arcs to the queue
+    fn gen_unique(&mut self) {
+        for pos in self.board.rect() {
+            for i in (pos.x + 1)..self.board.size() {
+                // Row unique arcs
+                let y = pos.y * self.board.size();
+                self.queue.push(Arc::Unique(pos.x + y, i + y));
+
+                // Column unique arcs
+                self.queue.push(Arc::Unique(
+                    pos.y + pos.x * self.board.size(),
+                    pos.y + i * self.board.size(),
+                ));
+            }
+        }
+    }
+
+    /// Adds all inequality arcs to the queue
+    fn gen_inequality(&mut self) {
+        let lsize = self.board.size().saturating_sub(1);
+        for pos in Rect::new(0, 0, lsize, self.board.size()) {
+            let spos = Vec2::new(pos.x + 1, pos.y);
+
+            let cond = self.board.hor_conds[pos.x + pos.y * lsize];
+            self.gen_cond_arc(pos, spos, cond);
+
+            let cond = self.board.ver_conds[pos.y + pos.x * self.board.size()];
+            self.gen_cond_arc(pos.inverse(), spos.inverse(), cond);
         }
     }
 
     /// Resolves unique arc, pushes related arcs when domain changes
-    fn resolve_unique(&mut self, first: usize, second: usize) {
-        if self.values[second].remove(self.board[first].value()) {
-            self.push_arcs(second, first);
+    fn resolve_unique(&mut self, f: usize, s: usize) {
+        let (f, s) = match (self.board[f].value(), self.board[s].value()) {
+            (0, 0) => return,
+            (0, _) => (s, f),
+            (_, 0) => (f, s),
+            _ => return,
+        };
+
+        if self.values[s].remove(self.board[f].value()) {
+            self.push_arcs(s, f);
         }
     }
 
@@ -62,7 +107,7 @@ impl<'a> AC3<'a> {
         if self.values[lower].remove_greater(max) {
             self.push_arcs(lower, greater);
         }
-        if self.values[greater].remove_greater(min) {
+        if self.values[greater].remove_lower(min) {
             self.push_arcs(greater, lower);
         }
     }
@@ -127,7 +172,7 @@ impl<'a> AC3<'a> {
 
         let cond = conds.get(get_id(x, y)?).copied().flatten()? ^ positive;
 
-        let first = det.pos.y + det.pos.y * det.size;
+        let first = det.pos.x + det.pos.y * det.size;
         let second = x + y * det.size;
         if second == det.second {
             return Some(());
@@ -139,5 +184,15 @@ impl<'a> AC3<'a> {
         };
         det.queue.push(arc);
         Some(())
+    }
+
+    fn gen_cond_arc(&mut self, fpos: Vec2, spos: Vec2, cond: Option<bool>) {
+        let f = fpos.x + fpos.y * self.board.size();
+        let s = spos.x + spos.y * self.board.size();
+        match cond {
+            Some(true) => self.queue.push(Arc::Inequality(s, f)),
+            Some(false) => self.queue.push(Arc::Inequality(f, s)),
+            None => {}
+        }
     }
 }

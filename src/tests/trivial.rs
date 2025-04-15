@@ -4,7 +4,9 @@ use crate::{
     board::{board_struct::Board, cell::Cell},
     checker::Checker,
     solver::{
+        ac3::AC3,
         bt_solver::BtSolver,
+        domain::{bit_domain::BitDomain, DomainTrait},
         look_ahead::{ac3_solver::Ac3Solver, fc_solver::FcSolver},
         look_ahead_bit::{
             ac3_bit_solver::Ac3BitSolver, fc_bit_solver::FcBitSolver,
@@ -60,4 +62,38 @@ fn ac3_solver_test() {
     let mut board = get_trivial();
     assert!(Ac3Solver::solve(&mut board));
     assert!(Checker::check(&board));
+}
+
+#[test]
+fn ac3_test() {
+    let mut board = get_trivial();
+    let values = vec![
+        Box::new(BitDomain((1 << board.size()) - 1))
+            as Box<dyn DomainTrait>;
+        board.size() * board.size()
+    ];
+
+    let values = AC3::generate(&mut board, values);
+
+    let expected = vec![
+        vec![1, 2, 3, 4],
+        vec![3, 4],
+        vec![3, 4],
+        vec![1, 2, 3, 4],
+        vec![4],
+        vec![2, 3, 4],
+        vec![1, 2, 3, 4],
+        vec![3, 4],
+        vec![1, 2, 3, 4],
+        vec![2, 3, 4],
+        vec![2, 3, 4],
+        vec![3, 4],
+        vec![1, 2, 3, 4],
+        vec![1, 2, 3, 4],
+        vec![4],
+        vec![1, 2, 3, 4],
+    ];
+    for (domain, expected) in values.iter().zip(expected.iter()) {
+        assert_eq!(domain.values(), *expected);
+    }
 }
