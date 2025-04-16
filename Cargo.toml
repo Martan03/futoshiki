@@ -1,6 +1,10 @@
 [package]
 name = "futoshiki"
 version = "0.1.0"
+authors = ["Martin Slezák (github.com/Martan03)"]
+description = "Futoshiki TUI implementation in Rust"
+repository = "https://github.com/Martan03/futoshiki"
+readme = "README.md"
 edition = "2021"
 
 [dependencies]

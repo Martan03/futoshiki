@@ -18,7 +18,7 @@ pub struct AC3<'a> {
 impl<'a> AC3<'a> {
     /// Prunes the given domain using the AC3 algorithm, starts with every
     /// relation in the queue
-    pub fn generate(board: &'a mut Board, values: &'a mut Domains) {
+    pub fn generate(board: &'a mut Board, values: &'a mut Domains) -> bool {
         let mut ac = Self {
             board,
             values,
@@ -28,7 +28,7 @@ impl<'a> AC3<'a> {
         ac.gen_unique();
         ac.gen_inequality();
 
-        ac.process();
+        ac.process().is_some()
     }
 
     /// Prunes the given domain using the AC3 algorithm, but starts with only
@@ -37,7 +37,7 @@ impl<'a> AC3<'a> {
         board: &'a mut Board,
         values: &'a mut Domains,
         pos: Vec2,
-    ) {
+    ) -> bool {
         let mut ac = Self {
             board,
             values,
@@ -58,8 +58,7 @@ impl<'a> AC3<'a> {
             }
         }
         ac.push_arcs(id, usize::MAX);
-
-        ac.process();
+        ac.process().is_some()
     }
 }
 
@@ -70,15 +69,17 @@ struct ArcPush<'a> {
     pub second: usize,
 }
 
-impl<'a> AC3<'a> {
+impl AC3<'_> {
     /// Processes the arcs in the queue
-    fn process(&mut self) {
+    /// Returns Some when solution found, else None
+    fn process(&mut self) -> Option<()> {
         while let Some(arc) = self.queue.pop() {
             match arc {
-                Arc::Unique(f, s) => self.resolve_unique(f, s),
-                Arc::Inequality(l, g) => self.resolve_inequality(l, g),
+                Arc::Unique(f, s) => self.resolve_unique(f, s)?,
+                Arc::Inequality(l, g) => self.resolve_inequality(l, g)?,
             }
         }
+        Some(())
     }
 
     /// Adds all the unique arcs to the queue
@@ -113,30 +114,36 @@ impl<'a> AC3<'a> {
     }
 
     /// Resolves unique arc, pushes related arcs when domain changes
-    fn resolve_unique(&mut self, f: usize, s: usize) {
+    fn resolve_unique(&mut self, f: usize, s: usize) -> Option<()> {
         let (f, s) = match (self.board[f].value(), self.board[s].value()) {
-            (0, 0) => return,
+            (0, 0) => return Some(()),
             (0, _) => (s, f),
             (_, 0) => (f, s),
-            _ => return,
+            _ => return Some(()),
         };
 
-        if self.values[s].remove(self.board[f].value()) {
+        if self.values[s].remove(self.board[f].value())? {
             self.push_arcs(s, f);
         }
+        Some(())
     }
 
     /// Resolves the inequality arc, pushes related arcs when domain changes
-    fn resolve_inequality(&mut self, lower: usize, greater: usize) {
+    fn resolve_inequality(
+        &mut self,
+        lower: usize,
+        greater: usize,
+    ) -> Option<()> {
         let min = self.values[lower].min();
         let max = self.values[greater].max();
 
-        if self.values[lower].remove_greater(max) {
+        if self.values[lower].remove_greater(max)? {
             self.push_arcs(lower, greater);
         }
-        if self.values[greater].remove_lower(min) {
+        if self.values[greater].remove_lower(min)? {
             self.push_arcs(greater, lower);
         }
+        Some(())
     }
 
     /// Pushes all the arcs related to the first cell except relation with

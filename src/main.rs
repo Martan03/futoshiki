@@ -11,20 +11,14 @@ use args::{
     action::Action, args_struct::Args, bench_args::BenchArgs,
     game_args::GameArgs,
 };
-use bench::solver_bench::SolverBench;
-use board::{board_struct::Board, cell::Cell};
+use bench::{bench_struct::Bench, solver_bench::SolverBench};
+use board::board_struct::Board;
 use config::Config;
 use crossterm::terminal::{disable_raw_mode, is_raw_mode_enabled};
 use error::Error;
 use pareg::Pareg;
-use solver::{ac3_solver::AC3Solver, Solver};
-use termint::{
-    buffer::Buffer,
-    enums::Color,
-    geometry::{Rect, Vec2},
-    widgets::{StrSpanExtension, Widget},
-};
-use tui::theme::Theme;
+use solver::{fc_solver::FCSolver, Solver};
+use termint::{enums::Color, widgets::StrSpanExtension};
 
 mod app;
 mod args;
@@ -38,6 +32,8 @@ mod tests;
 mod tui;
 
 fn main() -> ExitCode {
+    // test_solver();
+    // return ExitCode::SUCCESS;
     match run() {
         Ok(_) => ExitCode::SUCCESS,
         Err(e) => {
@@ -99,30 +95,21 @@ fn register_panic_hook() {
 }
 
 #[allow(unused)]
-fn test_solver() -> Result<(), Error> {
-    let mut board = Board {
-        cells: vec![Cell::empty(); 16],
-        hor_conds: vec![None; 12],
-        ver_conds: vec![None; 12],
-        selected: Vec2::new(0, 0),
-        size: 4,
-        theme: Theme::dark(),
-    };
-    board.hor_conds[1] = Some(true);
-    board.hor_conds[2] = Some(true);
-    board.hor_conds[11] = Some(true);
-    board.ver_conds[0] = Some(false);
-    board.ver_conds[4] = Some(true);
-    board.ver_conds[5] = Some(false);
-    board.ver_conds[6] = Some(false);
+fn test_solver() {
+    let mut board = Board::tricky();
+    let stat =
+        Bench::run(|| _ = FCSolver::bit(&mut board.clone()).solve(), 10000);
 
-    if AC3Solver::bit(&mut board).solve() {
-        println!("Solved!");
-        let mut buffer = Buffer::empty(Rect::new(1, 1, 20, 10));
-        board.render(&mut buffer);
-        buffer.render();
-        Ok(())
-    } else {
-        Err(Error::Msg("not solved".to_string()))
-    }
+    println!(
+        "{}Forward Checking:\n\
+            {}└>\x1b[0m Time: [{}{:?} {}{:?} {}{:?}\x1b[0m]",
+        Color::Green.to_fg(),
+        Color::Gray.to_fg(),
+        Color::Gray.to_fg(),
+        stat.min_time,
+        Color::White.to_fg(),
+        stat.avg_time(),
+        Color::Gray.to_fg(),
+        stat.max_time
+    );
 }

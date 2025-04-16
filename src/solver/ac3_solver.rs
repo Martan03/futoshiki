@@ -59,7 +59,7 @@ impl<'a> Solver<'a> for AC3Solver<'a> {
     }
 }
 
-impl<'a> AC3Solver<'a> {
+impl AC3Solver<'_> {
     /// Assigns given value to cell on given coordinates and removes the value
     /// from the neighbor domains
     fn assign(&mut self, val: usize, pos: Vec2) {

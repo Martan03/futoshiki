@@ -48,7 +48,11 @@ impl<'a> Solver<'a> for FCSolver<'a> {
         for val in values {
             let vals = self.values.clone();
 
-            self.assign(val, x, y);
+            if self.assign(val, x, y).is_none() {
+                self.board[id].set(0);
+                self.values = vals;
+                continue;
+            }
             if self.solve() {
                 return true;
             }
@@ -59,7 +63,7 @@ impl<'a> Solver<'a> for FCSolver<'a> {
     }
 }
 
-impl<'a> FCSolver<'a> {
+impl FCSolver<'_> {
     /// Generates the initial domain state
     fn generate(&mut self) {
         for pos in self.board.rect() {
@@ -73,13 +77,13 @@ impl<'a> FCSolver<'a> {
 
     /// Assigns given value to cell on given coordinates and removes the value
     /// from the neighbor domains
-    fn assign(&mut self, val: usize, x: usize, y: usize) {
+    fn assign(&mut self, val: usize, x: usize, y: usize) -> Option<()> {
         let id = x + y * self.board.size();
         self.board[id].set(val);
 
         for pos in 0..self.board.size() {
-            self.remove_val(id, val, x, pos);
-            self.remove_val(id, val, pos, y);
+            self.remove_val(id, val, x, pos)?;
+            self.remove_val(id, val, pos, y)?;
         }
         self.check_conds(val, x, y)
     }
@@ -105,47 +109,62 @@ impl<'a> FCSolver<'a> {
     }
 
     /// Checks all conditions related to cell on given coordinates
-    fn check_conds(&mut self, val: usize, x: usize, y: usize) {
+    fn check_conds(&mut self, val: usize, x: usize, y: usize) -> Option<()> {
         let lsize = self.board.size().saturating_sub(1);
 
         if let Some(xs) = x.checked_sub(1) {
             let cond = self.board.hor_conds[xs + y * lsize];
             let id = xs + y * self.board.size();
-            self.handle_cond(cond, val, id);
+            self.handle_cond(cond, val, id)?;
         }
         if let Some(ys) = y.checked_sub(1) {
             let id = x + ys * self.board.size();
             let cond = self.board.ver_conds[id];
-            self.handle_cond(cond, val, id);
+            self.handle_cond(cond, val, id)?;
         }
 
         if x < lsize {
             let cond = self.board.hor_conds[x + y * lsize];
             let id = x + 1 + y * self.board.size();
-            self.handle_cond(cond.map(|v| !v), val, id);
+            self.handle_cond(cond.map(|v| !v), val, id)?;
         }
         if y < lsize {
             let cond = self.board.ver_conds[x + y * self.board.size()];
             let id = x + (y + 1) * self.board.size();
-            self.handle_cond(cond.map(|v| !v), val, id);
+            self.handle_cond(cond.map(|v| !v), val, id)?;
         }
+        Some(())
     }
 
     /// Removes value from domain on given coordinates
-    fn remove_val(&mut self, cid: usize, val: usize, x: usize, y: usize) {
+    /// Returns Some when no change or domain not empty, else None
+    fn remove_val(
+        &mut self,
+        cid: usize,
+        val: usize,
+        x: usize,
+        y: usize,
+    ) -> Option<bool> {
         let id = x + y * self.board.size();
         if id == cid {
-            return;
+            return Some(false);
         }
-        _ = self.values[id].remove(val);
+        self.values[id].remove(val)
     }
 
     /// Removes values that are in conflict with the inequality
-    fn handle_cond(&mut self, cond: Option<bool>, val: usize, id: usize) {
+    /// Returns Some when no change or domain not empty, else None
+    fn handle_cond(
+        &mut self,
+        cond: Option<bool>,
+        val: usize,
+        id: usize,
+    ) -> Option<()> {
         match cond {
-            Some(true) => _ = self.values[id].remove_lower(val),
-            Some(false) => _ = self.values[id].remove_greater(val),
-            None => {}
-        }
+            Some(true) => self.values[id].remove_lower(val)?,
+            Some(false) => self.values[id].remove_greater(val)?,
+            None => return Some(()),
+        };
+        Some(())
     }
 }

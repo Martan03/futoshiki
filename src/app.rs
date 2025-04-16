@@ -92,7 +92,7 @@ impl App {
                 theme.clone(),
             ),
             action: Default::default(),
-            solver: solver,
+            solver,
             state: Default::default(),
             term: Term::new().small_screen(Self::small_screen()),
             screen: Default::default(),

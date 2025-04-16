@@ -138,42 +138,75 @@ impl IndexMut<Vec2> for Board {
 impl Default for Board {
     /// Creates a square [`Board`] with the size of 4
     fn default() -> Self {
-        // let mut cells = vec![Cell::empty(); 16];
-        // cells[5] = Cell::new(3);
-
-        // let mut hor_conds = vec![None; 12];
-        // hor_conds[6] = Some(true);
-        // hor_conds[5] = Some(false);
-
-        // let mut ver_conds = vec![None; 12];
-        // ver_conds[6] = Some(false);
-        // ver_conds[9] = Some(true);
-
-        // Self {
-        //     cells,
-        //     hor_conds,
-        //     ver_conds,
-        //     selected: Vec2::new(0, 0),
-        //     size: 4,
-        // }
-
-        // let mut board = Board {
-        //     cells: vec![Cell::empty(); 16],
-        //     hor_conds: vec![None; 12],
-        //     ver_conds: vec![None; 12],
-        //     selected: Vec2::new(0, 0),
-        //     size: 4,
-        //     theme: Theme::default(),
-        // };
-        // board.hor_conds[1] = Some(true);
-        // board.hor_conds[2] = Some(true);
-        // board.hor_conds[11] = Some(true);
-        // board.ver_conds[0] = Some(false);
-        // board.ver_conds[4] = Some(true);
-        // board.ver_conds[5] = Some(false);
-        // board.ver_conds[6] = Some(false);
-        // board
         let mut board = Board {
+            cells: vec![Cell::empty(); 16],
+            hor_conds: vec![None; 12],
+            ver_conds: vec![None; 12],
+            selected: Vec2::new(0, 0),
+            size: 4,
+            theme: Theme::dark(),
+        };
+        board.hor_conds[1] = Some(true);
+        board.hor_conds[2] = Some(true);
+        board.hor_conds[11] = Some(true);
+        board.ver_conds[0] = Some(false);
+        board.ver_conds[4] = Some(true);
+        board.ver_conds[5] = Some(false);
+        board.ver_conds[6] = Some(false);
+        board
+    }
+}
+
+/// Some board presets used for testing purposes
+impl Board {
+    pub fn trivial() -> Self {
+        let cells = vec![2, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 3, 1, 0, 2];
+        Self {
+            cells: cells.into_iter().map(Cell::from).collect(),
+            hor_conds: vec![None; 12],
+            ver_conds: vec![None; 12],
+            selected: Vec2::new(0, 0),
+            size: 4,
+            theme: Theme::dark(),
+        }
+    }
+
+    pub fn easy() -> Self {
+        let cells = vec![0, 0, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0];
+        let mut board = Self {
+            cells: cells.into_iter().map(Cell::from).collect(),
+            hor_conds: vec![None; 12],
+            ver_conds: vec![None; 12],
+            selected: Vec2::new(0, 0),
+            size: 4,
+            theme: Theme::dark(),
+        };
+        board.ver_conds[0] = Some(true);
+        board.ver_conds[8] = Some(true);
+        board.ver_conds[10] = Some(true);
+        board
+    }
+
+    pub fn tricky() -> Self {
+        let cells = vec![0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        let mut board = Self {
+            cells: cells.into_iter().map(Cell::from).collect(),
+            hor_conds: vec![None; 12],
+            ver_conds: vec![None; 12],
+            selected: Vec2::new(0, 0),
+            size: 4,
+            theme: Theme::dark(),
+        };
+        board.hor_conds[2] = Some(true);
+        board.hor_conds[4] = Some(true);
+        board.hor_conds[8] = Some(true);
+        board.hor_conds[9] = Some(true);
+        board.ver_conds[11] = Some(true);
+        board
+    }
+
+    pub fn extreme() -> Self {
+        let mut board = Self {
             cells: vec![Cell::empty(); 16],
             hor_conds: vec![None; 12],
             ver_conds: vec![None; 12],

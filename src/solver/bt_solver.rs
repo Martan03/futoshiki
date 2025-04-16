@@ -53,7 +53,7 @@ impl<'a> Solver<'a> for BtSolver<'a> {
     }
 }
 
-impl<'a> BtSolver<'a> {
+impl BtSolver<'_> {
     /// Recursive solver, which tries every value, until it finds solution
     fn solve_inner(&mut self, mut x: usize, mut y: usize) -> bool {
         if x == self.board.size() {
