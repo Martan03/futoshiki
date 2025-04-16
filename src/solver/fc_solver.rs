@@ -144,12 +144,13 @@ impl FCSolver<'_> {
         val: usize,
         x: usize,
         y: usize,
-    ) -> Option<bool> {
+    ) -> Option<()> {
         let id = x + y * self.board.size();
         if id == cid {
-            return Some(false);
+            return Some(());
         }
-        self.values[id].remove(val)
+        (self.values[id].remove(val) && !self.values[id].is_empty())
+            .then_some(())
     }
 
     /// Removes values that are in conflict with the inequality
@@ -160,11 +161,11 @@ impl FCSolver<'_> {
         val: usize,
         id: usize,
     ) -> Option<()> {
-        match cond {
-            Some(true) => self.values[id].remove_lower(val)?,
-            Some(false) => self.values[id].remove_greater(val)?,
+        let changed = match cond {
+            Some(true) => self.values[id].remove_lower(val),
+            Some(false) => self.values[id].remove_greater(val),
             None => return Some(()),
         };
-        Some(())
+        (changed && !self.values[id].is_empty()).then_some(())
     }
 }

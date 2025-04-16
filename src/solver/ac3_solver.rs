@@ -48,7 +48,11 @@ impl<'a> Solver<'a> for AC3Solver<'a> {
         for val in values {
             let vals = self.values.clone();
 
-            self.assign(val, pos);
+            if !self.assign(val, pos) {
+                self.board[id].set(0);
+                self.values = vals;
+                continue;
+            }
             if self.solve() {
                 return true;
             }
@@ -62,10 +66,10 @@ impl<'a> Solver<'a> for AC3Solver<'a> {
 impl AC3Solver<'_> {
     /// Assigns given value to cell on given coordinates and removes the value
     /// from the neighbor domains
-    fn assign(&mut self, val: usize, pos: Vec2) {
+    fn assign(&mut self, val: usize, pos: Vec2) -> bool {
         let id = pos.x + pos.y * self.board.size();
         self.board[id].set(val);
-        AC3::eliminate(self.board, &mut self.values, pos);
+        AC3::eliminate(self.board, &mut self.values, pos)
     }
 
     /// Finds unassigned cell with the smallest domain (least possible values)

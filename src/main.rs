@@ -17,7 +17,7 @@ use config::Config;
 use crossterm::terminal::{disable_raw_mode, is_raw_mode_enabled};
 use error::Error;
 use pareg::Pareg;
-use solver::{fc_solver::FCSolver, Solver};
+use solver::{ac3_solver::AC3Solver, Solver};
 use termint::{enums::Color, widgets::StrSpanExtension};
 
 mod app;
@@ -98,7 +98,7 @@ fn register_panic_hook() {
 fn test_solver() {
     let mut board = Board::tricky();
     let stat =
-        Bench::run(|| _ = FCSolver::bit(&mut board.clone()).solve(), 10000);
+        Bench::run(|| _ = AC3Solver::bit(&mut board.clone()).solve(), 10000);
 
     println!(
         "{}Forward Checking:\n\

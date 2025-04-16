@@ -12,25 +12,20 @@ impl HashDomain {
 }
 
 impl DomainTrait for HashDomain {
-    fn remove(&mut self, value: usize) -> Option<bool> {
-        let rem = self.0.remove(&value);
-        (!self.0.is_empty()).then_some(rem)
+    fn remove(&mut self, value: usize) -> bool {
+        self.0.remove(&value)
     }
 
-    fn remove_greater(&mut self, value: usize) -> Option<bool> {
+    fn remove_greater(&mut self, value: usize) -> bool {
         let len = self.0.len();
         self.0.retain(|&v| v < value);
-
-        let new_len = self.0.len();
-        (new_len != 0).then_some(new_len != len)
+        self.0.len() != len
     }
 
-    fn remove_lower(&mut self, value: usize) -> Option<bool> {
+    fn remove_lower(&mut self, value: usize) -> bool {
         let len = self.0.len();
         self.0.retain(|&v| v > value);
-
-        let new_len = self.0.len();
-        (new_len != 0).then_some(new_len != len)
+        self.0.len() != len
     }
 
     fn min(&self) -> usize {
@@ -64,47 +59,35 @@ mod tests {
 
     #[test]
     fn hash_domain_remove() {
-        let mut domain = HashDomain(HashSet::from_iter([2, 3]));
+        let mut domain = HashDomain(HashSet::from_iter([1, 2, 3, 4]));
 
-        assert_eq!(domain.remove(3), Some(true));
-        assert_eq!(domain.0, HashSet::from_iter([2]));
+        assert!(domain.remove(3));
+        assert_eq!(domain.0, HashSet::from_iter([1, 2, 4]));
 
-        assert_eq!(domain.remove(3), Some(false));
-        assert_eq!(domain.0, HashSet::from_iter([2]));
-
-        assert_eq!(domain.remove(2), None);
-        assert_eq!(domain.0, HashSet::from_iter([]));
-        assert_eq!(domain.remove(4), None);
+        assert!(!domain.remove(3));
+        assert_eq!(domain.0, HashSet::from_iter([1, 2, 4]));
     }
 
     #[test]
     fn hash_domain_remove_greater() {
         let mut domain = HashDomain(HashSet::from_iter([1, 2, 3, 4, 6]));
 
-        assert_eq!(domain.remove_greater(4), Some(true));
+        assert!(domain.remove_greater(4));
         assert_eq!(domain.0, HashSet::from_iter([1, 2, 3]));
 
-        assert_eq!(domain.remove_greater(4), Some(false));
+        assert!(!domain.remove_greater(4));
         assert_eq!(domain.0, HashSet::from_iter([1, 2, 3]));
-
-        assert_eq!(domain.remove_greater(1), None);
-        assert_eq!(domain.0, HashSet::from_iter([]));
-        assert_eq!(domain.remove_greater(5), None);
     }
 
     #[test]
     fn hash_domain_remove_lower() {
         let mut domain = HashDomain(HashSet::from_iter([1, 3, 4, 5, 6]));
 
-        assert_eq!(domain.remove_lower(4), Some(true));
+        assert!(domain.remove_lower(4));
         assert_eq!(domain.0, HashSet::from_iter([5, 6]));
 
-        assert_eq!(domain.remove_lower(4), Some(false));
+        assert!(!domain.remove_lower(4));
         assert_eq!(domain.0, HashSet::from_iter([5, 6]));
-
-        assert_eq!(domain.remove_lower(6), None);
-        assert_eq!(domain.0, HashSet::from_iter([]));
-        assert_eq!(domain.remove_lower(5), None);
     }
 
     #[test]

@@ -10,34 +10,29 @@ impl BitDomain {
 }
 
 impl DomainTrait for BitDomain {
-    /// Removes a value from the domain.
-    /// Returns None when domain got empty, else returns whether domain changed
-    ///
-    /// Can panic when invalid value is given
-    fn remove(&mut self, value: usize) -> Option<bool> {
-        let prev = self.0;
-        self.0 &= !(1 << (value - 1));
-        (self.0 != 0).then_some(self.0 != prev)
+    fn remove(&mut self, value: usize) -> bool {
+        let mask = 1 << value.saturating_sub(1);
+        let exists = self.0 & mask != 0;
+        self.0 &= !mask;
+        exists
     }
 
-    /// Removes all values greater than the given value from the domain.
-    /// Returns None when domain got empty, else returns whether domain changed
-    ///
-    /// Can panic when invalid value is given
-    fn remove_greater(&mut self, value: usize) -> Option<bool> {
+    fn remove_greater(&mut self, value: usize) -> bool {
+        if value == 0 {
+            return false;
+        }
         let prev = self.0;
         self.0 &= (1 << (value - 1)) - 1;
-        (self.0 != 0).then_some(prev != self.0)
+        prev != self.0
     }
 
-    /// Removes all values lower than the given value from the domain.
-    /// Returns None when domain got empty, else returns whether domain changed
-    ///
-    /// Can panic when invalid value is given
-    fn remove_lower(&mut self, value: usize) -> Option<bool> {
+    fn remove_lower(&mut self, value: usize) -> bool {
+        if value == 0 {
+            return false;
+        }
         let prev = self.0;
         self.0 &= !((1 << value) - 1);
-        (self.0 != 0).then_some(prev != self.0)
+        prev != self.0
     }
 
     fn min(&self) -> usize {
@@ -81,45 +76,35 @@ mod tests {
 
     #[test]
     fn bit_domain_remove() {
-        let mut domain = BitDomain(0b110);
+        let mut domain = BitDomain(0b1111);
 
-        assert_eq!(domain.remove(3), Some(true));
-        assert_eq!(domain.0, 0b10);
+        assert!(domain.remove(3));
+        assert_eq!(domain.0, 0b1011);
 
-        assert_eq!(domain.remove(3), Some(false));
-        assert_eq!(domain.0, 0b10);
-
-        assert_eq!(domain.remove(2), None);
-        assert_eq!(domain.0, 0);
-        assert_eq!(domain.remove(2), None);
+        assert!(!domain.remove(3));
+        assert_eq!(domain.0, 0b1011);
     }
 
     #[test]
     fn bit_domain_remove_greater() {
         let mut domain = BitDomain(0b101100);
 
-        assert_eq!(domain.remove_greater(4), Some(true));
+        assert!(domain.remove_greater(4));
         assert_eq!(domain.0, 0b100);
 
-        assert_eq!(domain.remove_greater(4), Some(false));
+        assert!(!domain.remove_greater(4));
         assert_eq!(domain.0, 0b100);
-
-        assert_eq!(domain.remove_greater(1), None);
-        assert_eq!(domain.0, 0);
     }
 
     #[test]
     fn bit_domain_remove_lower() {
         let mut domain = BitDomain(0b111101);
 
-        assert_eq!(domain.remove_lower(4), Some(true));
+        assert!(domain.remove_lower(4));
         assert_eq!(domain.0, 0b110000);
 
-        assert_eq!(domain.remove_lower(4), Some(false));
+        assert!(!domain.remove_lower(4));
         assert_eq!(domain.0, 0b110000);
-
-        assert_eq!(domain.remove_lower(6), None);
-        assert_eq!(domain.0, 0);
     }
 
     #[test]
