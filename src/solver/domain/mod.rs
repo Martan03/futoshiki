@@ -1,6 +1,8 @@
 pub mod bit_domain;
 pub mod hash_domain;
 
+pub type Domains = Vec<Box<dyn DomainTrait>>;
+
 pub trait DomainTrait: DomainClone {
     /// Removes a value from the domain. Returns whether the value was present
     /// in the domain.
@@ -22,6 +24,9 @@ pub trait DomainTrait: DomainClone {
 
     /// Returns all values from the domain.
     fn values(&self) -> Vec<usize>;
+
+    /// Returns whether the domain is empty
+    fn is_empty(&self) -> bool;
 }
 
 pub trait DomainClone {

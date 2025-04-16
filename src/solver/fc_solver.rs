@@ -1,0 +1,151 @@
+use termint::geometry::Vec2;
+
+use crate::{
+    board::board_struct::Board,
+    solver::{
+        domain::{
+            bit_domain::BitDomain, hash_domain::HashDomain, DomainTrait,
+            Domains,
+        },
+        Solver,
+    },
+};
+
+pub struct FCSolver<'a> {
+    board: &'a mut Board,
+    values: Domains,
+}
+
+impl<'a> FCSolver<'a> {
+    /// Creates new AC3 solver with given board and bitmap domain
+    pub fn bit(board: &'a mut Board) -> Self {
+        let value = Box::new(BitDomain::default(board.size()));
+        Self::new(board, value)
+    }
+
+    /// Creates new AC3 solver with given board and hashset domain
+    pub fn hash(board: &'a mut Board) -> Self {
+        let value = Box::new(HashDomain::default(board.size()));
+        Self::new(board, value)
+    }
+
+    fn new(board: &'a mut Board, value: Box<dyn DomainTrait>) -> Self {
+        let values: Domains = vec![value; board.size() * board.size()];
+        let mut fc = Self { board, values };
+        fc.generate();
+        fc
+    }
+}
+
+impl<'a> Solver<'a> for FCSolver<'a> {
+    fn solve(&mut self) -> bool {
+        let Some(Vec2 { x, y }) = self.find_cell() else {
+            return true;
+        };
+
+        let id = x + y * self.board.size();
+        let values = self.values[id].values();
+        for val in values {
+            let vals = self.values.clone();
+
+            self.assign(val, x, y);
+            if self.solve() {
+                return true;
+            }
+            self.board[id].set(0);
+            self.values = vals;
+        }
+        false
+    }
+}
+
+impl<'a> FCSolver<'a> {
+    /// Generates the initial domain state
+    fn generate(&mut self) {
+        for pos in self.board.rect() {
+            let value = self.board[pos.x + pos.y * self.board.size()].value();
+            if value == 0 {
+                continue;
+            }
+            self.assign(value, pos.x, pos.y);
+        }
+    }
+
+    /// Assigns given value to cell on given coordinates and removes the value
+    /// from the neighbor domains
+    fn assign(&mut self, val: usize, x: usize, y: usize) {
+        let id = x + y * self.board.size();
+        self.board[id].set(val);
+
+        for pos in 0..self.board.size() {
+            self.remove_val(id, val, x, pos);
+            self.remove_val(id, val, pos, y);
+        }
+        self.check_conds(val, x, y)
+    }
+
+    /// Finds unassigned cell with the smallest domain (least possible values)
+    fn find_cell(&self) -> Option<Vec2> {
+        let mut min_val = usize::MAX;
+        let mut min = None;
+
+        for pos in self.board.rect() {
+            let id = pos.x + pos.y * self.board.size();
+            if self.board[id].value() > 0 {
+                continue;
+            }
+
+            let values = self.values[id].values().len();
+            if values < min_val {
+                min_val = values;
+                min = Some(pos);
+            }
+        }
+        min
+    }
+
+    /// Checks all conditions related to cell on given coordinates
+    fn check_conds(&mut self, val: usize, x: usize, y: usize) {
+        let lsize = self.board.size().saturating_sub(1);
+
+        if let Some(xs) = x.checked_sub(1) {
+            let cond = self.board.hor_conds[xs + y * lsize];
+            let id = xs + y * self.board.size();
+            self.handle_cond(cond, val, id);
+        }
+        if let Some(ys) = y.checked_sub(1) {
+            let id = x + ys * self.board.size();
+            let cond = self.board.ver_conds[id];
+            self.handle_cond(cond, val, id);
+        }
+
+        if x < lsize {
+            let cond = self.board.hor_conds[x + y * lsize];
+            let id = x + 1 + y * self.board.size();
+            self.handle_cond(cond.map(|v| !v), val, id);
+        }
+        if y < lsize {
+            let cond = self.board.ver_conds[x + y * self.board.size()];
+            let id = x + (y + 1) * self.board.size();
+            self.handle_cond(cond.map(|v| !v), val, id);
+        }
+    }
+
+    /// Removes value from domain on given coordinates
+    fn remove_val(&mut self, cid: usize, val: usize, x: usize, y: usize) {
+        let id = x + y * self.board.size();
+        if id == cid {
+            return;
+        }
+        _ = self.values[id].remove(val);
+    }
+
+    /// Removes values that are in conflict with the inequality
+    fn handle_cond(&mut self, cond: Option<bool>, val: usize, id: usize) {
+        match cond {
+            Some(true) => _ = self.values[id].remove_lower(val),
+            Some(false) => _ = self.values[id].remove_greater(val),
+            None => {}
+        }
+    }
+}

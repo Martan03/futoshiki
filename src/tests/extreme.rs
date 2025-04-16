@@ -5,13 +5,10 @@ use crate::{
     checker::Checker,
     solver::{
         ac3::AC3,
+        ac3_solver::AC3Solver,
         bt_solver::BtSolver,
-        domain::{bit_domain::BitDomain, DomainTrait},
-        look_ahead::{ac3_solver::Ac3Solver, fc_solver::FcSolver},
-        look_ahead_bit::{
-            ac3_bit_solver::Ac3BitSolver, fc_bit_solver::FcBitSolver,
-        },
-        values::DomainValues,
+        domain::{bit_domain::BitDomain, Domains},
+        fc_solver::FCSolver,
         Solver,
     },
     tui::theme::Theme,
@@ -45,16 +42,18 @@ fn bt_solver_test() {
 }
 
 #[test]
-fn bt_solver_domain_test() {
+fn bt_solver_bit_domain_test() {
     let mut board = get_extreme();
-    let size = board.size();
+    let mut backtracking = BtSolver::bit(&mut board);
 
-    let values = AC3::generate(
-        &mut board,
-        vec![Box::new(BitDomain((1 << size) - 1)); size * size],
-    );
-    let mut backtracking =
-        BtSolver::new(&mut board).values(Box::new(DomainValues::new(values)));
+    assert!(backtracking.solve());
+    assert!(Checker::check(&board));
+}
+
+#[test]
+fn bt_solver_hash_domain_test() {
+    let mut board = get_extreme();
+    let mut backtracking = BtSolver::hash(&mut board);
 
     assert!(backtracking.solve());
     assert!(Checker::check(&board));
@@ -63,41 +62,47 @@ fn bt_solver_domain_test() {
 #[test]
 fn fc_bit_solver_test() {
     let mut board = get_extreme();
-    assert!(FcBitSolver::solve(&mut board));
+    assert!(FCSolver::bit(&mut board).solve());
+
+    for y in 0..board.size() {
+        for x in 0..board.size() {
+            print!("{} ", board[x + y * board.size()].value());
+        }
+        println!();
+    }
+
     assert!(Checker::check(&board));
 }
 
 #[test]
 fn fc_solver_test() {
     let mut board = get_extreme();
-    assert!(FcSolver::solve(&mut board));
+    assert!(FCSolver::hash(&mut board).solve());
     assert!(Checker::check(&board));
 }
 
 #[test]
 fn ac3_bit_solver_test() {
     let mut board = get_extreme();
-    assert!(Ac3BitSolver::solve(&mut board));
+    assert!(AC3Solver::bit(&mut board).solve());
     assert!(Checker::check(&board));
 }
 
 #[test]
 fn ac3_solver_test() {
     let mut board = get_extreme();
-    assert!(Ac3Solver::solve(&mut board));
+    assert!(AC3Solver::hash(&mut board).solve());
     assert!(Checker::check(&board));
 }
 
 #[test]
 fn ac3_test() {
     let mut board = get_extreme();
-    let values = vec![
-        Box::new(BitDomain((1 << board.size()) - 1))
-            as Box<dyn DomainTrait>;
+    let mut values: Domains = vec![
+        Box::new(BitDomain((1 << board.size()) - 1));
         board.size() * board.size()
     ];
-
-    let values = AC3::generate(&mut board, values);
+    AC3::generate(&mut board, &mut values);
 
     let expected = vec![
         vec![1, 2, 3],

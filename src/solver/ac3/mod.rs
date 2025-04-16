@@ -4,22 +4,21 @@ use termint::geometry::{Rect, Vec2};
 
 use crate::board::board_struct::Board;
 
-use super::domain::DomainTrait;
+use super::domain::Domains;
 
 pub mod arc;
 pub mod queue;
 
 pub struct AC3<'a> {
     board: &'a mut Board,
-    values: Vec<Box<dyn DomainTrait>>,
+    values: &'a mut Domains,
     queue: Queue,
 }
 
 impl<'a> AC3<'a> {
-    pub fn generate(
-        board: &'a mut Board,
-        values: Vec<Box<dyn DomainTrait>>,
-    ) -> Vec<Box<dyn DomainTrait>> {
+    /// Prunes the given domain using the AC3 algorithm, starts with every
+    /// relation in the queue
+    pub fn generate(board: &'a mut Board, values: &'a mut Domains) {
         let mut ac = Self {
             board,
             values,
@@ -30,7 +29,37 @@ impl<'a> AC3<'a> {
         ac.gen_inequality();
 
         ac.process();
-        ac.values
+    }
+
+    /// Prunes the given domain using the AC3 algorithm, but starts with only
+    /// directly related cells in the queue
+    pub fn eliminate(
+        board: &'a mut Board,
+        values: &'a mut Domains,
+        pos: Vec2,
+    ) {
+        let mut ac = Self {
+            board,
+            values,
+            queue: Queue::new(),
+        };
+
+        let id = pos.x + pos.y * ac.board.size();
+        for x in 0..ac.board.size() {
+            // Row unique arcs
+            if x != pos.x {
+                let y = pos.y * ac.board.size();
+                ac.queue.push(Arc::Unique(id, x + y));
+            }
+
+            // Column unique arcs
+            if x != pos.y {
+                ac.queue.push(Arc::Unique(id, pos.x + x * ac.board.size()));
+            }
+        }
+        ac.push_arcs(id, usize::MAX);
+
+        ac.process();
     }
 }
 

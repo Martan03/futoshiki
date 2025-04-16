@@ -173,14 +173,21 @@ impl Default for Board {
         // board.ver_conds[5] = Some(false);
         // board.ver_conds[6] = Some(false);
         // board
-        let cells = vec![2, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 3, 1, 0, 2];
-        Board {
-            cells: cells.into_iter().map(Cell::from).collect(),
+        let mut board = Board {
+            cells: vec![Cell::empty(); 16],
             hor_conds: vec![None; 12],
             ver_conds: vec![None; 12],
             selected: Vec2::new(0, 0),
             size: 4,
             theme: Theme::dark(),
-        }
+        };
+        board.hor_conds[1] = Some(true);
+        board.hor_conds[2] = Some(true);
+        board.hor_conds[11] = Some(true);
+        board.ver_conds[0] = Some(false);
+        board.ver_conds[4] = Some(true);
+        board.ver_conds[5] = Some(false);
+        board.ver_conds[6] = Some(false);
+        board
     }
 }

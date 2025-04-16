@@ -186,7 +186,7 @@ impl Default for App {
         Self {
             board: Default::default(),
             action: Default::default(),
-            solver: SolverType::ForwardBitCheck,
+            solver: SolverType::BitAC3,
             state: Default::default(),
             term: Term::new().small_screen(Self::small_screen()),
             screen: Default::default(),

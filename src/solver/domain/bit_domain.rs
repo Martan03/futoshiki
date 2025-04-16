@@ -3,6 +3,12 @@ use super::DomainTrait;
 #[derive(Debug, Clone)]
 pub struct BitDomain(pub usize);
 
+impl BitDomain {
+    pub fn default(max: usize) -> Self {
+        Self((1 << max) - 1)
+    }
+}
+
 impl DomainTrait for BitDomain {
     fn remove(&mut self, value: usize) -> bool {
         let mask = 1 << value.saturating_sub(1);
@@ -46,17 +52,27 @@ impl DomainTrait for BitDomain {
     fn values(&self) -> Vec<usize> {
         let mut values = Vec::new();
         for i in 0..usize::BITS as usize {
-            if self.0 & (1 << i) != 0 {
+            if (self.0 & (1 << i)) != 0 {
                 values.push(i + 1);
             }
         }
         values
+    }
+
+    fn is_empty(&self) -> bool {
+        self.0 == 0
     }
 }
 
 #[cfg(test)]
 mod tests {
     use crate::solver::domain::{bit_domain::BitDomain, DomainTrait};
+
+    #[test]
+    fn hash_domain_default() {
+        let domain = BitDomain::default(5);
+        assert_eq!(domain.0, 0b11111);
+    }
 
     #[test]
     fn bit_domain_remove() {
@@ -107,5 +123,14 @@ mod tests {
     fn bit_domain_values() {
         let domain = BitDomain(0b101100);
         assert_eq!(domain.values(), vec![3, 4, 6]);
+    }
+
+    #[test]
+    fn bit_domain_is_empty() {
+        let domain = BitDomain(0);
+        assert!(domain.is_empty());
+
+        let domain = BitDomain(0b101100);
+        assert!(!domain.is_empty());
     }
 }

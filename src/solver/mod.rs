@@ -1,20 +1,18 @@
 use std::fmt::Display;
 
+use ac3_solver::AC3Solver;
 use bt_solver::BtSolver;
-use look_ahead::{ac3_solver::Ac3Solver, fc_solver::FcSolver};
-use look_ahead_bit::{
-    ac3_bit_solver::Ac3BitSolver, fc_bit_solver::FcBitSolver,
-};
+use fc_solver::FCSolver;
 use pareg::FromArg;
 use serde::{Deserialize, Serialize};
 
 use crate::board::board_struct::Board;
 
 pub mod ac3;
+pub mod ac3_solver;
 pub mod bt_solver;
 pub mod domain;
-pub mod look_ahead;
-pub mod look_ahead_bit;
+pub mod fc_solver;
 pub mod values;
 
 pub trait Solver<'a> {
@@ -36,76 +34,78 @@ pub trait Solver<'a> {
     Deserialize,
 )]
 pub enum SolverType {
-    #[arg("bt" | "backtracking")]
-    Backtrack,
-    #[arg("fcb" | "forward-check-bit" | "forward-checking-bit")]
-    ForwardBitCheck,
-    #[arg("fc" | "forwarch-check" | "forward-checking")]
-    ForwardCheck,
-    #[arg("ac3" | "arc-cons3" | "arc-consistency3")]
+    #[arg("backtracking")]
+    BT,
+    #[arg("bit-ac3-bt" | "bit-ac3-backtracking")]
+    BitAC3BT,
+    #[arg("ac3-bt" | "ac3-backtracking")]
+    AC3BT,
+    #[arg("bit-fc" | "bit-forward-checking")]
+    BitFC,
+    #[arg("forward-checking")]
+    FC,
+    #[arg("bit-ac3" | "bit-arc-consistency3")]
     #[default]
-    ArcConsistency3Bit,
-    #[arg("ac3b" | "arc-cons3-bit" | "arc-consistency3-bit")]
-    ArcConsistency3,
+    BitAC3,
+    #[arg("arc-consistency3")]
+    AC3,
 }
 
 impl SolverType {
     /// Solves the board using the corresponding solver algorithm
     pub fn solve(&self, board: &mut Board) -> bool {
         match self {
-            SolverType::Backtrack => BtSolver::new(board).solve(),
-            SolverType::ForwardBitCheck => FcBitSolver::solve(board),
-            SolverType::ForwardCheck => FcSolver::solve(board),
-            SolverType::ArcConsistency3Bit => Ac3BitSolver::solve(board),
-            SolverType::ArcConsistency3 => Ac3Solver::solve(board),
+            SolverType::BT => BtSolver::new(board).solve(),
+            SolverType::BitAC3BT => BtSolver::bit(board).solve(),
+            SolverType::AC3BT => BtSolver::hash(board).solve(),
+            SolverType::BitFC => FCSolver::bit(board).solve(),
+            SolverType::FC => FCSolver::hash(board).solve(),
+            SolverType::BitAC3 => AC3Solver::bit(board).solve(),
+            SolverType::AC3 => AC3Solver::hash(board).solve(),
         }
     }
 
     /// Gets all solvers
     pub fn solvers() -> &'static [Self] {
         &[
-            Self::Backtrack,
-            Self::ForwardBitCheck,
-            Self::ForwardCheck,
-            Self::ArcConsistency3Bit,
-            Self::ArcConsistency3,
+            Self::BT,
+            Self::BitAC3BT,
+            Self::AC3BT,
+            Self::BitFC,
+            Self::FC,
+            Self::BitAC3,
+            Self::AC3,
         ]
     }
 
     /// Gets solver type based on the given id
     pub fn get(id: usize) -> Self {
-        match id {
-            0 => Self::Backtrack,
-            1 => Self::ForwardBitCheck,
-            2 => Self::ForwardCheck,
-            3 => Self::ArcConsistency3Bit,
-            4 => Self::ArcConsistency3,
-            _ => panic!("Unknown solver ID"),
-        }
+        Self::solvers().get(id).copied().expect("Unknown solver ID")
     }
 
     /// Gets id of the current solver
     pub fn get_id(&self) -> usize {
-        match self {
-            SolverType::Backtrack => 0,
-            SolverType::ForwardBitCheck => 1,
-            SolverType::ForwardCheck => 2,
-            SolverType::ArcConsistency3Bit => 3,
-            SolverType::ArcConsistency3 => 4,
+        for (i, solver) in Self::solvers().iter().enumerate() {
+            if solver == self {
+                return i;
+            }
         }
+        panic!("Unknown solver type");
     }
 }
 
 impl Display for SolverType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            SolverType::Backtrack => write!(f, "Backtracking"),
-            SolverType::ForwardBitCheck => write!(f, "Forward bit checking"),
-            SolverType::ForwardCheck => write!(f, "Forward checking"),
-            SolverType::ArcConsistency3Bit => {
-                write!(f, "Bit Arc Consistency #3")
+            SolverType::BT => write!(f, "Backtracking"),
+            SolverType::BitAC3BT => {
+                write!(f, "Bit Arc Consistency #3 Backtracking")
             }
-            SolverType::ArcConsistency3 => write!(f, "Arc Consistency #3"),
+            SolverType::AC3BT => write!(f, "Arc Consistency #3 Backtracking"),
+            SolverType::BitFC => write!(f, "Bit Forward Checking"),
+            SolverType::FC => write!(f, "Forward Checking"),
+            SolverType::BitAC3 => write!(f, "Bit Arc Consistency #3"),
+            SolverType::AC3 => write!(f, "Arc Consistency #3"),
         }
     }
 }

@@ -17,7 +17,7 @@ use config::Config;
 use crossterm::terminal::{disable_raw_mode, is_raw_mode_enabled};
 use error::Error;
 use pareg::Pareg;
-use solver::look_ahead_bit::ac3_bit_solver::Ac3BitSolver;
+use solver::{ac3_solver::AC3Solver, Solver};
 use termint::{
     buffer::Buffer,
     enums::Color,
@@ -116,7 +116,7 @@ fn test_solver() -> Result<(), Error> {
     board.ver_conds[5] = Some(false);
     board.ver_conds[6] = Some(false);
 
-    if Ac3BitSolver::solve(&mut board) {
+    if AC3Solver::bit(&mut board).solve() {
         println!("Solved!");
         let mut buffer = Buffer::empty(Rect::new(1, 1, 20, 10));
         board.render(&mut buffer);

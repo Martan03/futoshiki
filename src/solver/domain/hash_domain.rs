@@ -5,6 +5,12 @@ use super::DomainTrait;
 #[derive(Debug, Clone)]
 pub struct HashDomain(pub HashSet<usize>);
 
+impl HashDomain {
+    pub fn default(max: usize) -> Self {
+        Self((1..=max).collect())
+    }
+}
+
 impl DomainTrait for HashDomain {
     fn remove(&mut self, value: usize) -> bool {
         self.0.remove(&value)
@@ -37,6 +43,10 @@ impl DomainTrait for HashDomain {
     fn values(&self) -> Vec<usize> {
         self.0.iter().cloned().collect()
     }
+
+    fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
 }
 
 #[cfg(test)]
@@ -44,6 +54,12 @@ mod tests {
     use std::collections::HashSet;
 
     use crate::solver::domain::{hash_domain::HashDomain, DomainTrait};
+
+    #[test]
+    fn hash_domain_default() {
+        let domain = HashDomain::default(5);
+        assert_eq!(domain.0, HashSet::from_iter([1, 2, 3, 4, 5]));
+    }
 
     #[test]
     fn hash_domain_remove() {
@@ -96,5 +112,14 @@ mod tests {
         let mut values = domain.values();
         values.sort();
         assert_eq!(values, vec![3, 4, 6]);
+    }
+
+    #[test]
+    fn hash_domain_is_empty() {
+        let domain = HashDomain(HashSet::new());
+        assert!(domain.is_empty());
+
+        let domain = HashDomain(HashSet::from_iter([1, 2, 3]));
+        assert!(!domain.is_empty());
     }
 }

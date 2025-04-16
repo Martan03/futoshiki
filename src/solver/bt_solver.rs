@@ -1,7 +1,11 @@
 use crate::board::board_struct::Board;
 
 use super::{
-    values::{ConstValues, Values},
+    ac3::AC3,
+    domain::{
+        bit_domain::BitDomain, hash_domain::HashDomain, DomainTrait, Domains,
+    },
+    values::{ConstValues, DomainValues, Values},
     Solver,
 };
 
@@ -21,10 +25,25 @@ impl<'a> BtSolver<'a> {
         }
     }
 
-    /// Sets a values source for the solver to given value
-    pub fn values(mut self, values: Box<dyn Values>) -> Self {
-        self.values = values;
-        self
+    /// Creates new backtracking solver with given board and bitmap domain
+    pub fn bit(board: &'a mut Board) -> Self {
+        let value = Box::new(BitDomain::default(board.size()));
+        Self::domain(board, value)
+    }
+
+    /// Creates new backtracking solver with given board and hashset domain
+    pub fn hash(board: &'a mut Board) -> Self {
+        let value = Box::new(HashDomain::default(board.size()));
+        Self::domain(board, value)
+    }
+
+    fn domain(board: &'a mut Board, value: Box<dyn DomainTrait>) -> Self {
+        let mut values: Domains = vec![value; board.size() * board.size()];
+        AC3::generate(board, &mut values);
+        Self {
+            board,
+            values: Box::new(DomainValues::new(values)),
+        }
     }
 }
 

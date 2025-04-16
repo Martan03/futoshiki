@@ -30,14 +30,6 @@ impl Queue {
             None
         }
     }
-
-    pub fn is_empty(&self) -> bool {
-        self.queue.is_empty()
-    }
-
-    pub fn len(&self) -> usize {
-        self.queue.len()
-    }
 }
 
 #[cfg(test)]
@@ -51,12 +43,12 @@ mod tests {
         let mut queue = Queue::new();
 
         queue.push(Arc::Unique(1, 2));
-        assert_eq!(queue.len(), 1);
+        assert_eq!(queue.queue.len(), 1);
         queue.push(Arc::Unique(1, 2));
-        assert_eq!(queue.len(), 1);
+        assert_eq!(queue.queue.len(), 1);
 
         queue.push(Arc::Inequality(1, 2));
-        assert_eq!(queue.len(), 2);
+        assert_eq!(queue.queue.len(), 2);
     }
 
     #[test]
@@ -66,21 +58,11 @@ mod tests {
         queue.push(Arc::Unique(1, 2));
         queue.push(Arc::Inequality(1, 2));
 
-        assert_eq!(queue.len(), 2);
+        assert_eq!(queue.queue.len(), 2);
         assert_eq!(queue.pop(), Some(Arc::Unique(1, 2)));
-        assert_eq!(queue.len(), 1);
+        assert_eq!(queue.queue.len(), 1);
         assert_eq!(queue.pop(), Some(Arc::Inequality(1, 2)));
-        assert_eq!(queue.len(), 0);
+        assert_eq!(queue.queue.len(), 0);
         assert_eq!(queue.pop(), None);
-    }
-
-    #[test]
-    fn test_empty() {
-        let mut queue = Queue::new();
-
-        assert!(queue.is_empty());
-
-        queue.push(Arc::Unique(1, 2));
-        assert!(!queue.is_empty());
     }
 }

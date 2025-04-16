@@ -1,4 +1,4 @@
-use super::domain::DomainTrait;
+use super::domain::Domains;
 
 pub trait Values {
     /// Returns the values of the domain
@@ -23,12 +23,12 @@ impl Values for ConstValues {
 }
 
 pub struct DomainValues {
-    values: Vec<Box<dyn DomainTrait>>,
+    values: Domains,
 }
 
 impl DomainValues {
     /// Creates a new instance of DomainValues
-    pub fn new(values: Vec<Box<dyn DomainTrait>>) -> Self {
+    pub fn new(values: Domains) -> Self {
         Self { values }
     }
 }
