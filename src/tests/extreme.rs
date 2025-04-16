@@ -11,6 +11,7 @@ use crate::{
         look_ahead_bit::{
             ac3_bit_solver::Ac3BitSolver, fc_bit_solver::FcBitSolver,
         },
+        values::DomainValues,
         Solver,
     },
     tui::theme::Theme,
@@ -39,7 +40,23 @@ fn get_extreme() -> Board {
 #[test]
 fn bt_solver_test() {
     let mut board = get_extreme();
-    assert!(BtSolver::solve(&mut board));
+    assert!(BtSolver::new(&mut board).solve());
+    assert!(Checker::check(&board));
+}
+
+#[test]
+fn bt_solver_domain_test() {
+    let mut board = get_extreme();
+    let size = board.size();
+
+    let values = AC3::generate(
+        &mut board,
+        vec![Box::new(BitDomain((1 << size) - 1)); size * size],
+    );
+    let mut backtracking =
+        BtSolver::new(&mut board).values(Box::new(DomainValues::new(values)));
+
+    assert!(backtracking.solve());
     assert!(Checker::check(&board));
 }
 

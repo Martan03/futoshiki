@@ -15,10 +15,11 @@ pub mod bt_solver;
 pub mod domain;
 pub mod look_ahead;
 pub mod look_ahead_bit;
+pub mod values;
 
 pub trait Solver<'a> {
-    /// Solves given board and returns Some(board) when solvable, else None
-    fn solve(board: &'a mut Board) -> bool;
+    /// Solves given board and returns true if the solution was found
+    fn solve(&mut self) -> bool;
 }
 
 /// Enum containing all available solver types
@@ -52,7 +53,7 @@ impl SolverType {
     /// Solves the board using the corresponding solver algorithm
     pub fn solve(&self, board: &mut Board) -> bool {
         match self {
-            SolverType::Backtrack => BtSolver::solve(board),
+            SolverType::Backtrack => BtSolver::new(board).solve(),
             SolverType::ForwardBitCheck => FcBitSolver::solve(board),
             SolverType::ForwardCheck => FcSolver::solve(board),
             SolverType::ArcConsistency3Bit => Ac3BitSolver::solve(board),

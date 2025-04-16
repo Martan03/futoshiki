@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 use arc::Arc;
 use queue::Queue;
 use termint::geometry::{Rect, Vec2};

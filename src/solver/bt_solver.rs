@@ -1,15 +1,36 @@
-use crate::{board::board_struct::Board, solver::Solver};
+use crate::board::board_struct::Board;
 
-/// Backtracking solver
-#[derive(Debug, PartialEq)]
+use super::{
+    values::{ConstValues, Values},
+    Solver,
+};
+
 pub struct BtSolver<'a> {
     board: &'a mut Board,
+    values: Box<dyn Values>,
+}
+
+impl<'a> BtSolver<'a> {
+    /// Creates a new instance of the backtracking solver with given board and
+    /// with constant values source
+    pub fn new(board: &'a mut Board) -> Self {
+        let size = board.size();
+        Self {
+            board,
+            values: Box::new(ConstValues::new(size)),
+        }
+    }
+
+    /// Sets a values source for the solver to given value
+    pub fn values(mut self, values: Box<dyn Values>) -> Self {
+        self.values = values;
+        self
+    }
 }
 
 impl<'a> Solver<'a> for BtSolver<'a> {
-    fn solve(board: &'a mut Board) -> bool {
-        let mut solver = Self { board };
-        solver.solve_inner(0, 0)
+    fn solve(&mut self) -> bool {
+        self.solve_inner(0, 0)
     }
 }
 
@@ -29,7 +50,7 @@ impl<'a> BtSolver<'a> {
             return self.solve_inner(x + 1, y);
         }
 
-        for num in 1..=self.board.size() {
+        for num in self.values.get(id) {
             if !self.is_valid(num, x, y) {
                 continue;
             }
@@ -42,10 +63,9 @@ impl<'a> BtSolver<'a> {
         false
     }
 
-    /// Checks if the given value can be inserted on the given coordinates
     fn is_valid(&self, val: usize, x: usize, y: usize) -> bool {
         // Checks row and column uniqueness
-        for (pos, _) in (0..self.board.size()).enumerate() {
+        for pos in 0..self.board.size() {
             if self.board[x + pos * self.board.size()].value() == val
                 || self.board[pos + y * self.board.size()].value() == val
             {
