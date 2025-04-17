@@ -24,7 +24,7 @@ impl BenchStat {
         self.total_time += other.total_time;
         self.cnt += other.cnt;
         self.min_time = self.min_time.min(other.min_time);
-        self.max_time = self.max_time.min(other.max_time);
+        self.max_time = self.max_time.max(other.max_time);
     }
 
     pub fn avg_time(&self) -> Duration {

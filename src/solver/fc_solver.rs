@@ -149,8 +149,8 @@ impl FCSolver<'_> {
         if id == cid {
             return Some(());
         }
-        (self.values[id].remove(val) && !self.values[id].is_empty())
-            .then_some(())
+        self.values[id].remove(val);
+        (!self.values[id].is_empty()).then_some(())
     }
 
     /// Removes values that are in conflict with the inequality
@@ -161,11 +161,11 @@ impl FCSolver<'_> {
         val: usize,
         id: usize,
     ) -> Option<()> {
-        let changed = match cond {
+        let _changed = match cond {
             Some(true) => self.values[id].remove_lower(val),
             Some(false) => self.values[id].remove_greater(val),
             None => return Some(()),
         };
-        (changed && !self.values[id].is_empty()).then_some(())
+        (!self.values[id].is_empty()).then_some(())
     }
 }
