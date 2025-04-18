@@ -44,10 +44,6 @@ impl DomainTrait for HashDomain {
     fn values(&self) -> Vec<usize> {
         self.0.iter().cloned().collect()
     }
-
-    fn is_empty(&self) -> bool {
-        self.0.is_empty()
-    }
 }
 
 #[cfg(test)]
@@ -125,14 +121,5 @@ mod tests {
         let mut values = domain.values();
         values.sort();
         assert_eq!(values, vec![3, 4, 6]);
-    }
-
-    #[test]
-    fn hash_domain_is_empty() {
-        let domain = HashDomain(HashSet::new());
-        assert!(domain.is_empty());
-
-        let domain = HashDomain(HashSet::from_iter([1, 2, 3]));
-        assert!(!domain.is_empty());
     }
 }

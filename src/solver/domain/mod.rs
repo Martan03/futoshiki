@@ -1,7 +1,7 @@
 pub mod bit_domain;
 pub mod hash_domain;
 
-pub trait DomainTrait: DomainClone {
+pub trait DomainTrait {
     /// Removes a value from the domain. Returns whether the value was present
     /// in the domain.
     fn remove(&mut self, value: usize) -> Option<bool>;
@@ -22,27 +22,4 @@ pub trait DomainTrait: DomainClone {
 
     /// Returns all values from the domain.
     fn values(&self) -> Vec<usize>;
-
-    /// Returns whether the domain is empty
-    fn is_empty(&self) -> bool;
-}
-
-pub trait DomainClone {
-    /// Clones the domain box
-    fn clone_box(&self) -> Box<dyn DomainTrait>;
-}
-
-impl<T> DomainClone for T
-where
-    T: DomainTrait + Clone + 'static,
-{
-    fn clone_box(&self) -> Box<dyn DomainTrait> {
-        Box::new(self.clone())
-    }
-}
-
-impl Clone for Box<dyn DomainTrait> {
-    fn clone(&self) -> Self {
-        self.clone_box()
-    }
 }

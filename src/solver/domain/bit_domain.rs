@@ -43,17 +43,19 @@ impl DomainTrait for BitDomain {
     }
 
     fn values(&self) -> Vec<usize> {
+        let mut bits = self.0;
         let mut values = Vec::new();
         for i in 0..usize::BITS as usize {
-            if (self.0 & (1 << i)) != 0 {
+            if bits == 0 {
+                break;
+            }
+
+            if (bits & 1) != 0 {
                 values.push(i + 1);
             }
+            bits >>= 1;
         }
         values
-    }
-
-    fn is_empty(&self) -> bool {
-        self.0 == 0
     }
 }
 
@@ -128,14 +130,5 @@ mod tests {
     fn bit_domain_values() {
         let domain = BitDomain(0b101100);
         assert_eq!(domain.values(), vec![3, 4, 6]);
-    }
-
-    #[test]
-    fn bit_domain_is_empty() {
-        let domain = BitDomain(0);
-        assert!(domain.is_empty());
-
-        let domain = BitDomain(0b101100);
-        assert!(!domain.is_empty());
     }
 }

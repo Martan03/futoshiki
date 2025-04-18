@@ -45,8 +45,7 @@ where
         };
 
         let id = pos.x + pos.y * self.board.size();
-        let values: Vec<usize> = self.values[id].values();
-        for val in values {
+        for val in self.values[id].values() {
             let vals = self.values.clone();
 
             if !self.assign(val, pos) {

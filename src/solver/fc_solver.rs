@@ -44,8 +44,7 @@ where
         };
 
         let id = x + y * self.board.size();
-        let values = self.values[id].values();
-        for val in values {
+        for val in self.values[id].values() {
             let vals = self.values.clone();
 
             if self.assign(val, x, y).is_none() {
