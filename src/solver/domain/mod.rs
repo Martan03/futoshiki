@@ -1,5 +1,6 @@
 pub mod bit_domain;
 pub mod hash_domain;
+pub mod vec_domain;
 
 pub trait DomainTrait: DomainClone {
     /// Removes a value from the domain. Returns whether the value was present

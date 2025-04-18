@@ -5,7 +5,8 @@ use termint::enums::Color;
 use crate::{
     bench::bench_struct::Bench,
     solver::domain::{
-        bit_domain::BitDomain, hash_domain::HashDomain, DomainTrait,
+        bit_domain::BitDomain, hash_domain::HashDomain, vec_domain::VecDomain,
+        DomainTrait,
     },
 };
 
@@ -119,6 +120,7 @@ fn get_domains(
 ) -> Vec<(String, Box<dyn Fn(usize) -> (Box<dyn DomainTrait>, usize)>)> {
     vec![
         ("HashSet".to_string(), Box::new(get_hash_domain)),
+        ("Vector".to_string(), Box::new(get_vec_domain)),
         ("Bitmap".to_string(), Box::new(get_bit_domain)),
     ]
 }
@@ -127,6 +129,12 @@ fn get_hash_domain(size: usize) -> (Box<dyn DomainTrait>, usize) {
     let domain = HashDomain::default(size);
     let bucket_size = domain.0.capacity() * size_of::<usize>();
     (Box::new(domain), size_of::<HashDomain>() + bucket_size)
+}
+
+fn get_vec_domain(size: usize) -> (Box<dyn DomainTrait>, usize) {
+    let domain = VecDomain::default(size);
+    let bucket_size = domain.0.capacity() * size_of::<usize>();
+    (Box::new(domain), size_of::<VecDomain>() + bucket_size)
 }
 
 fn get_bit_domain(size: usize) -> (Box<dyn DomainTrait>, usize) {

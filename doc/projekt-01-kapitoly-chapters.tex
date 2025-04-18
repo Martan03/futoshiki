@@ -123,7 +123,7 @@ scénářích. Více o~benchmarku bude zmíněno v~sekci
 
 \section{Pravidla hry}
 
-Futoshiki \cite{FutoshikiWiki}, známá také jako hra "větší/menší" (More or
+Futoshiki~\cite{FutoshikiWiki}, známá také jako hra "větší/menší" (More or
 Less), je logický hlavolam pocházející z~Japonska. Jeho název v~překladu
 znamená "nerovnost". Hra je založená na podobném principu jako sudoku. Hlavolam
 se skládá ze čtvercové mřížky, obvykle o~velikosti 4×4 nebo 5×5, přičemž může
@@ -153,10 +153,17 @@ velikosti mřížky, přičemž musí platit následující pravidla:
     \end{itemize}
     \item Platné nerovnosti mezi poli.
     \begin{itemize}
-        \item Nechť \(R\) je množina všech nerovností mezi poli.
-        \item \(\forall ((i_1, j_1), (i_2, j_2), \prec) \in R;\ \prec = <~
-            \implies x_{i_1, j_1} < x_{i_2, j_2},\ \prec = >\ \implies
-            x_{i_1, j_1} > x_{i_2, j_2} \)
+        \item Nechť \(R\) je množina všech nerovností mezi poli, kdy prvek
+            množiny je trojice \((p_1, p_2, n)\), kde:
+        \begin{itemize}
+            \item \(p_1\) a~\(p_2\) jsou dvojice \((x, y)\) představující
+                souřadnice polí v~nerovnosti
+            \item \(n\) je typ nerovnosti
+        \end{itemize}
+        \item \(\forall ((i_1, j_1), (i_2, j_2), <) \in R;\ x_{i_1, j_1} <
+            x_{i_2, j_2} \)
+        \item \(\forall ((i_1, j_1), (i_2, j_2), >) \in R;\ x_{i_1, j_1} >
+            x_{i_2, j_2} \)
     \end{itemize}
 \end{enumerate}
 
@@ -164,7 +171,7 @@ Hra začíná s~libovolným počtem již vyplněných polí a~nerovností, při�
 počáteční rozmístění musí být v~souladu s~pravidly a~zaručovat existenci
 alespoň jednoho řešení. Následně hráč vyplňuje zbývající pole, zatímco
 nerovnosti se již nemění a~nepřidávají se žádné nové. Složená mřížka Futoshiki
-je takzvaný latinský čtverec \cite{LatinSquareWiki}.
+je takzvaný latinský čtverec~\cite{LatinSquareWiki}.
 
 \begin{figure}[hbt]
 	\centering
@@ -174,7 +181,7 @@ je takzvaný latinský čtverec \cite{LatinSquareWiki}.
 
 \section{Backtracking}
 
-Backtracking \cite{PrednaskyIZU}\cite{BacktrackingWiki} je způsob řešení
+Backtracking~\cite{PrednaskyIZU}\cite{BacktrackingWiki} je způsob řešení
 algoritmických problémů, které jsou založeny na prohledávání stavového
 prostoru. Je to jednoduchý a~často využívaný algoritmus, který systematicky
 prohledává prostor řešení. Je založen na prohledávání do hloubky, tedy nejdříve
@@ -188,11 +195,10 @@ Postup Backtrackingu se může lišit v závislosti na řešeném problému.
 Následující postup popisuje řešení mřížky Futoshiki. Na základě tohoto postupu
 byla následně implementována rekurzivní varianta algoritmu.
 
-\newpage
 \begin{enumerate}
     \item Posun na první nevyplněné pole. Pokud neexistuje, bylo nalezeno
         řešení.
-    \item Postupné dosazování hodnot (1 až velikost mřížky) a~otestování, zda
+    \item Postupné dosazování hodnot (1~až velikost mřížky) a~otestování, zda
         dosazená hodnota porušuje některé z~pravidel.
     \begin{enumerate}
         \item Pokud ano, zkouší se jiná hodnota.
@@ -214,7 +220,7 @@ stavový prostor. To je dáno tím, že algoritmus zkouší všechny možnosti, 
 ohledu na to, zda je již z počátku zjevné, že daná možnost k~řešení nevede.
 
 Nevýhoda tohoto algoritmu lze například pozorovat u~větších mřížek futoshiki.
-Více o~jeho časové složitosti je popsáno v sekci
+Více o~jeho časové složitosti je popsáno v~sekci
 \hyperref[sec:timeComplexity]{testování časové složitosti}.
 
 Z~tohoto důvodu se pro problémy s~velkými stavovými prostory využívají
@@ -227,22 +233,22 @@ v~\hyperref[sec:lookAhead]{následující sekci}.
 \label{sec:lookAhead}
 
 Pro optimalizaci algoritmu Backtracking se využívají procedury zvané
-look-ahead \cite{LookAheadWiki}. Tato procedura se pokouší zmenšit stavový
+look-ahead~\cite{LookAheadWiki}. Tato procedura se pokouší zmenšit stavový
 prostor tím, že se pokusí předvídat účinky jednotlivých cest při hledání
 řešení. Obecně algoritmy využívající této techniky uchovávají domény platných
 hodnot u~každé proměnné. Tato doména se poté během provádění algoritmu mění na
 základě predikcí.
 
 Mezi algoritmy využívající look-ahead techniky patří například Forward Checking
-a~Arc Consistency \#3.
+a~algoritmy Arc Consistency, mezi které patří například Arc Consistency \#3.
 
 \subsection{Heuristiky}
 
-Algoritmy využívající technik look-ahead využívají heuristiky
-\cite{PrednaskyIZU}, které dále optimalizují proces hledání řešení. Heuristika
-určuje strategii výběru hracího pole a hodnoty, která bude dosazena do tohoto
-pole. Existují dvě hlavní kategorie heuristik: heuristiky pro výběr hracího
-pole a~heuristiky pro výběr hodnoty z~domény.
+Některé algoritmy využívající technik look-ahead mohout využívat
+heuristiky~\cite{PrednaskyIZU}, které dále optimalizují proces hledání řešení.
+Heuristika určuje strategii výběru hracího pole a hodnoty, která bude dosazena
+do tohoto pole. Existují dvě hlavní kategorie heuristik: heuristiky pro výběr
+hracího pole a~heuristiky pro výběr hodnoty z~domény.
 
 \subsubsection{Heuristiky výběru hracího pole}
 
@@ -297,54 +303,70 @@ pomocí hašovacích množin a~bitmap. Implementace je podobná, u~hašovacích 
 se využívají funkce pro práci s~množinami, zatímco u~bitmap se používají bitové
 operace.
 
-\subsection{Generování domén}
+\subsubsection*{Porovnání domén}
 
-Při využití domén je na počátku algoritmu potřeba vygenerovat doménu pro každé
-hrací pole. Generování domén lze implementovat více způsoby. Já je generuji ve
-třech krocích:
-\begin{enumerate}
-    \item Generace domén řádků a~sloupců.
-    \item Generace domén polí.
-    \item Úprava domén na základě nerovností.
-\end{enumerate}
+I~když na základě teorie by domény implementované pomocí bitmap měly být
+nejvíce efektivní, rozhodl jsem se toto teoretické tvrzení ověřit v~praxi.
+Implementoval jsem benchmark, který změří využití paměti domén pro různé
+velikosti a~který změří časovou náročnost nejčastěji využívaných operací domén.
 
-\subsubsection{Generace domén řádků a sloupců}
+Při prohlédnutí grafu~\ref{fig:domain-size} obsahující paměťové využití domén,
+implementace pomocí hašovacích množin a~pomocí vektorů výrazně zaostávají za
+bitmapovou implementací, což je předpokládané. Bitmapová doména využívá pouze
+jedinou hodnotu čísla, zatímco hašovací množiny i~vektory mají těchto hodnot
+několik. V grafu je využita aproximace minimální velikosti hašovacích množin
+i~vektorů. To je z~důvodu, že tyto datové struktury často obsahují další
+pomocná či kontrolní data. Z grafu lze také vidět, že si hašovací množiny
+předalokují paměť, z~toho důvodu může být pro různé velikosti domén stejné
+využití paměti. Tato technika se využívá i~u~vektorů, v~případě na grafu však
+bylo alokováno pouze tolik paměti, kolik bylo potřeba.
 
-Prvním krokem je generace domén řádků a sloupců. Ta se provádí iterací přes
-všechny pole mřížky s~následným přidáváním hodnot, z~již vyplněných polí, do
-domén daného řádku či sloupce.
+\begin{figure}[hbt]
+	\centering
+	\includegraphics[width=1\textwidth]{obrazky-figures/domain_size.png}
+	\caption{Porovnání velikostí domén}
+    \label{fig:domain-size}
+\end{figure}
 
-\subsubsection{Generace domén polí}
+Graf~\ref{fig:domain-benchmark} zobrazující časovou náročnost využívaných
+operací již obsahuje menší překvapení, kdy operace nad doménou implementovanou
+pomocí vektorů jsou výrazně rychlejší, než implementace pomocí hašovacích
+množin. Je také nutno podotknout, že osa \texttt{y}~je logaritmická, tedy
+reálný rozdíl je zkreslen. Přesto však lze vidět, že operace na hašovacích
+množinách jsou výrazně pomalejší, hlavně tedy s~rostoucí velikostí domény.
 
-Generování domén polí samotných probíhá v druhém kroku. Tato generace probíhá
-na základě domén řádků a sloupců. Konkrétně je provedeno sjednocení domény
-konkrétního řádku a~sloupce, čímž vznikne doména pro dané pole.
+Konkrétně jsou porovnány operace vymazání hodnoty a~vymazání hodnot
+větších/menších jak dané hodnota. Tyto operace jsou velmi často využiti
+v~algoritmech pro řešení Futoshiki. Zajímavostí je to, že samotná implementace
+pro vymazání hodnot větších/menších jak daná hodnota, je pro implementace domén
+pomocí vektorů i~hašovacích množin stejná, přesto jsou hašovací množiny výrazně
+pomalejší. Důvod pro tento jev je, že vektory si prvky ukládají do souvislého
+bloku paměti, zatímco hašovací množiny ne. Hašovací množiny pak musí vypočítat
+haš prvku, na základě něho přistoupit k~prvku a~až poté vymazat.
 
-\subsubsection{Úprava domén na základě nerovností}
-
-Posledním krokem v~generování je úprava domén polí ovlivněných nerovností.
-Ta je provedena iterováním přes všechny nerovnosti a~následného úpravení domén
-tak, aby obsahovaly pouze hodnoty, které by neporušily danou nerovnost.
-Konkrétně z~domény pole, které má být menší, odstraním hodnoty, které jsou
-větší nebo rovné maximální hodnotě z~domény druhého pole v~nerovnosti. Naopak
-z~domény pole, které má být větší, budou odstraněny menší nebo rovné hodnoty
-minimální hodnotě z~domény druhého pole v~nerovnosti.
+\begin{figure}[hbt]
+	\centering
+	\includegraphics[width=1\textwidth]{obrazky-figures/domains_benchmark.png}
+	\caption{Porovnání rychlosti operací domén}
+    \label{fig:domain-benchmark}
+\end{figure}
 
 \subsection{Forward Checking}
 \label{sec:forwardChecking}
 
-Forward Checking \cite{PrednaskyIZU} využívá již zmíněných look-ahead technik.
+Forward Checking~\cite{PrednaskyIZU} využívá již zmíněných look-ahead technik.
 Tento algoritmus snižuje počet zkoušených kombinacích tím, že upravuje domény
 všech přímo ovlivněných polí po zápisu do pole. Přímo ovlivněná pole v~případě
-řešení Futoshiki taková pole, která se nachází ve stejném řádku či sloupci
+řešení Futoshiki jsou taková pole, která se nachází ve stejném řádku či sloupci
 a~nebo jsou v~nerovnosti s~polem, do kterého se zapisuje.
 
 \subsubsection{Postup algoritmu}
 
 Na základě následujícího postupu algoritmu Forward Checking pro řešení mřížky
-Futoshiki byl algoritmus implementován. V~implementaci jsou poté pro výběr
-hracího pole využil heuristiku nejvíce omezená proměnná. Z~domény tohoto pole
-hodnoty vybírám postupně, nevyužívám tedy žádnou speciální heuristiku.
+Futoshiki byl algoritmus implementován. V~implementaci je poté pro výběr
+hracího pole využita heuristika nejvíce omezená proměnná. Z~domény tohoto pole
+jsou hodnoty vybírány postupně, nejsou tedy využívány žádné speciální
+heuristiky.
 
 \begin{enumerate}
     \item Vygenerování domén pro každé pole a inicializace zásobníku stavů
@@ -365,6 +387,16 @@ hodnoty vybírám postupně, nevyužívám tedy žádnou speciální heuristiku.
     \item Žádná z hodnot nevede k~řešení, obnovení a~odebrání stavu mřížky ze
         zásobníku a~přesun na bod číslo 3.
 \end{enumerate}
+
+\subsubsection{Generování domény}
+
+Prvním krokem algoritmu je vygenerovat doménu pro každé pole. Nelze však domény
+inicializovat vytvořením domény obsahujících všechny hodnoty, jelikož
+algoritmus Forward Checking již počítá s tím, že kolidující hodnoty jsou již
+odstraněny. Proto je na počátku třeba domény nejen inicializovat, aby
+obsahovaly všechny hodnoty, ale navíc i~upravit. To lze udělat iterací přes
+všechna vyplněná pole a~následnou úpravou všech přímo ovlivněných domén. Postup
+je stejný jako při zapisování hodnot do pole v~algoritmu samotném.
 
 \subsection{Arc Consistency \#3}
 
