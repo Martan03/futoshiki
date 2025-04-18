@@ -27,6 +27,10 @@ impl Args {
                     let bench_args = BenchArgs::parse(&mut args)?;
                     parsed.action = Action::Benchmark(bench_args);
                 }
+                "doc" => {
+                    args.next();
+                    parsed.action = Action::Doc;
+                }
                 "config" => {
                     args.next();
                     parsed.action = Action::Config;
@@ -58,6 +62,8 @@ impl Args {
                 "Starts TUI game according to options\n"
             "futoshiki bench" ["bench_options"] =>
                 "Starts the benchmark according to options\n"
+            "futoshiki doc" =>
+                "Starts the benchmark used in documentation\n"
             "futoshiki config" =>
                 "Opens config.json file in default editor\n"
             "Game options":

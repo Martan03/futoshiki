@@ -11,7 +11,9 @@ use args::{
     action::Action, args_struct::Args, bench_args::BenchArgs,
     game_args::GameArgs,
 };
-use bench::{bench_struct::Bench, solver_bench::SolverBench};
+use bench::{
+    bench_struct::Bench, doc_bench::DocBench, solver_bench::SolverBench,
+};
 use board::board_struct::Board;
 use config::Config;
 use crossterm::terminal::{disable_raw_mode, is_raw_mode_enabled};
@@ -50,6 +52,7 @@ fn run() -> Result<(), Error> {
     match args.action {
         Action::Game(game_args) => run_app(game_args),
         Action::Benchmark(bench_args) => run_benchmark(bench_args),
+        Action::Doc => run_doc_benchmark(),
         Action::Config => config(),
         Action::Help => {
             Args::help();
@@ -66,6 +69,11 @@ fn run_app(args: GameArgs) -> Result<(), Error> {
 
 fn run_benchmark(args: BenchArgs) -> Result<(), Error> {
     SolverBench::run(args);
+    Ok(())
+}
+
+fn run_doc_benchmark() -> Result<(), Error> {
+    DocBench::run();
     Ok(())
 }
 

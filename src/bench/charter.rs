@@ -7,12 +7,10 @@ use plotters::{
     style::{Color, IntoFont, Palette, Palette99, BLACK, WHITE},
 };
 
-use crate::solver::SolverType;
-
 #[derive(Debug, Clone)]
 pub struct Charter {
     title: String,
-    lines: HashMap<SolverType, Vec<(i32, f64)>>,
+    lines: HashMap<String, Vec<(i32, f64)>>,
 }
 
 impl Charter {
@@ -23,11 +21,11 @@ impl Charter {
         }
     }
 
-    pub fn push(&mut self, solver: &SolverType, pos: i32, value: f64) {
-        if let Some(line) = self.lines.get_mut(solver) {
+    pub fn push(&mut self, title: String, pos: i32, value: f64) {
+        if let Some(line) = self.lines.get_mut(&title) {
             line.push((pos, value));
         } else {
-            self.lines.insert(*solver, vec![(pos, value)]);
+            self.lines.insert(title, vec![(pos, value)]);
         }
     }
 
@@ -53,11 +51,11 @@ impl Charter {
             .y_desc("Secs.")
             .draw()?;
 
-        for (i, (solver, line)) in self.lines.iter().enumerate() {
+        for (i, (title, line)) in self.lines.iter().enumerate() {
             let color = Palette99::pick(i);
             chart
                 .draw_series(LineSeries::new(line.iter().copied(), &color))?
-                .label(solver.to_string())
+                .label(title)
                 .legend(move |(x, y)| {
                     PathElement::new([(x, y), (x + 20, y)], &color)
                 });
@@ -103,6 +101,8 @@ impl Charter {
             })
             .unwrap_or(100.0);
 
-        (x_min..x_max, y_min..y_max)
+        let padding = (y_max - y_min) * 0.001;
+
+        (x_min..x_max, (y_min - padding).max(0.)..y_max)
     }
 }

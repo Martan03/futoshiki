@@ -63,7 +63,7 @@ impl SolverBench {
             print!("{}{}. ", Color::Gray.to_fg(), i + 1);
 
             let secs = stat.avg_time().as_secs_f64();
-            self.charter.push(solver, size as i32, secs);
+            self.charter.push(solver.to_string(), size as i32, secs);
             Self::print_stat(solver, stat);
         }
     }
