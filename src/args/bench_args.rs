@@ -4,12 +4,13 @@ use pareg::Pareg;
 
 use crate::{error::Result, solver::SolverType};
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct BenchArgs {
     pub sizes: HashSet<usize>,
     pub solvers: HashSet<SolverType>,
     pub repeats: usize,
     pub boards: usize,
+    pub timeout: f64,
 }
 
 impl BenchArgs {
@@ -21,6 +22,7 @@ impl BenchArgs {
                 "--solver" => _ = parsed.solvers.insert(args.next_arg()?),
                 "-r" | "--repeats" => parsed.repeats = args.next_arg()?,
                 "-b" | "--boards" => parsed.boards = args.next_arg()?,
+                "-t" | "--timeout" => parsed.timeout = args.next_arg()?,
                 arg => Err(format!("unexpected argument: '{arg}'"))?,
             }
         }
@@ -35,6 +37,7 @@ impl Default for BenchArgs {
             solvers: HashSet::new(),
             repeats: 10,
             boards: 1,
+            timeout: 10.,
         }
     }
 }

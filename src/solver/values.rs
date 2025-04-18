@@ -1,4 +1,4 @@
-use super::domain::Domains;
+use super::domain::DomainTrait;
 
 pub trait Values {
     /// Returns the values of the domain
@@ -22,18 +22,27 @@ impl Values for ConstValues {
     }
 }
 
-pub struct DomainValues {
-    values: Domains,
+pub struct DomainValues<D>
+where
+    D: DomainTrait,
+{
+    values: Vec<D>,
 }
 
-impl DomainValues {
+impl<D> DomainValues<D>
+where
+    D: DomainTrait,
+{
     /// Creates a new instance of DomainValues
-    pub fn new(values: Domains) -> Self {
+    pub fn new(values: Vec<D>) -> Self {
         Self { values }
     }
 }
 
-impl Values for DomainValues {
+impl<D> Values for DomainValues<D>
+where
+    D: DomainTrait,
+{
     fn get(&self, id: usize) -> Vec<usize> {
         self.values[id].values()
     }

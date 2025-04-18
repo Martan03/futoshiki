@@ -2,58 +2,74 @@ use crate::board::board_struct::Board;
 
 use super::{
     ac3::AC3,
-    domain::{
-        bit_domain::BitDomain, hash_domain::HashDomain, DomainTrait, Domains,
-    },
+    domain::{bit_domain::BitDomain, hash_domain::HashDomain, DomainTrait},
     values::{ConstValues, DomainValues, Values},
     Solver,
 };
 
-pub struct BtSolver<'a> {
+pub struct BtSolver<'a, V>
+where
+    V: Values,
+{
     board: &'a mut Board,
-    values: Box<dyn Values>,
+    values: V,
 }
 
-impl<'a> BtSolver<'a> {
+impl<'a> BtSolver<'a, ConstValues> {
     /// Creates a new instance of the backtracking solver with given board and
     /// with constant values source
     pub fn new(board: &'a mut Board) -> Self {
         let size = board.size();
         Self {
             board,
-            values: Box::new(ConstValues::new(size)),
-        }
-    }
-
-    /// Creates new backtracking solver with given board and bitmap domain
-    pub fn bit(board: &'a mut Board) -> Self {
-        let value = Box::new(BitDomain::default(board.size()));
-        Self::domain(board, value)
-    }
-
-    /// Creates new backtracking solver with given board and hashset domain
-    pub fn hash(board: &'a mut Board) -> Self {
-        let value = Box::new(HashDomain::default(board.size()));
-        Self::domain(board, value)
-    }
-
-    fn domain(board: &'a mut Board, value: Box<dyn DomainTrait>) -> Self {
-        let mut values: Domains = vec![value; board.size() * board.size()];
-        AC3::generate(board, &mut values);
-        Self {
-            board,
-            values: Box::new(DomainValues::new(values)),
+            values: ConstValues::new(size),
         }
     }
 }
 
-impl<'a> Solver<'a> for BtSolver<'a> {
+impl<'a> BtSolver<'a, DomainValues<BitDomain>> {
+    /// Creates new backtracking solver with given board and bitmap domain
+    pub fn bit(board: &'a mut Board) -> Self {
+        let value = BitDomain::default(board.size());
+        Self::domain(board, value)
+    }
+}
+
+impl<'a> BtSolver<'a, DomainValues<HashDomain>> {
+    /// Creates new backtracking solver with given board and hashset domain
+    pub fn hash(board: &'a mut Board) -> Self {
+        let value = HashDomain::default(board.size());
+        Self::domain(board, value)
+    }
+}
+
+impl<'a, D> BtSolver<'a, DomainValues<D>>
+where
+    D: DomainTrait + Clone,
+{
+    fn domain(board: &'a mut Board, value: D) -> Self {
+        let mut values = vec![value; board.size() * board.size()];
+        AC3::generate(board, &mut values);
+        Self {
+            board,
+            values: DomainValues::new(values),
+        }
+    }
+}
+
+impl<'a, V> Solver<'a> for BtSolver<'a, V>
+where
+    V: Values,
+{
     fn solve(&mut self) -> bool {
         self.solve_inner(0, 0)
     }
 }
 
-impl BtSolver<'_> {
+impl<V> BtSolver<'_, V>
+where
+    V: Values,
+{
     /// Recursive solver, which tries every value, until it finds solution
     fn solve_inner(&mut self, mut x: usize, mut y: usize) -> bool {
         if x == self.board.size() {

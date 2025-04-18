@@ -10,7 +10,7 @@ use crate::error::Result;
 use super::{action::Action, bench_args::BenchArgs, game_args::GameArgs};
 
 /// Parses given arguments and checks for arguments conditions
-#[derive(Debug, Clone, Default, PartialEq, Eq)]
+#[derive(Debug, Clone, Default, PartialEq)]
 pub struct Args {
     pub action: Action,
 }
@@ -76,6 +76,7 @@ impl Args {
             "-r  --repeats" ["num"] =>
                 "Sets repeats of the benchmark (default 10)\n"
             "-b  --boards" ["num"] => "Number of boards tested (default 1)\n"
+            "-t  --timeout" ["secs"] => "Solver timeout in seconds\n"
             "Solver types":
             "bt  backtrack  backtracking" =>
                 "Backtracking solver implementation"

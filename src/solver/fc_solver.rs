@@ -5,39 +5,39 @@ use crate::{
     solver::{
         domain::{
             bit_domain::BitDomain, hash_domain::HashDomain, DomainTrait,
-            Domains,
         },
         Solver,
     },
 };
 
-pub struct FCSolver<'a> {
+pub struct FCSolver<'a, D>
+where
+    D: DomainTrait + Clone,
+{
     board: &'a mut Board,
-    values: Domains,
+    values: Vec<D>,
 }
 
-impl<'a> FCSolver<'a> {
+impl<'a> FCSolver<'a, BitDomain> {
     /// Creates new AC3 solver with given board and bitmap domain
     pub fn bit(board: &'a mut Board) -> Self {
-        let value = Box::new(BitDomain::default(board.size()));
+        let value = BitDomain::default(board.size());
         Self::new(board, value)
-    }
-
-    /// Creates new AC3 solver with given board and hashset domain
-    pub fn hash(board: &'a mut Board) -> Self {
-        let value = Box::new(HashDomain::default(board.size()));
-        Self::new(board, value)
-    }
-
-    fn new(board: &'a mut Board, value: Box<dyn DomainTrait>) -> Self {
-        let values: Domains = vec![value; board.size() * board.size()];
-        let mut fc = Self { board, values };
-        fc.generate();
-        fc
     }
 }
 
-impl<'a> Solver<'a> for FCSolver<'a> {
+impl<'a> FCSolver<'a, HashDomain> {
+    /// Creates new AC3 solver with given board and hashset domain
+    pub fn hash(board: &'a mut Board) -> Self {
+        let value = HashDomain::default(board.size());
+        Self::new(board, value)
+    }
+}
+
+impl<'a, D> Solver<'a> for FCSolver<'a, D>
+where
+    D: DomainTrait + Clone,
+{
     fn solve(&mut self) -> bool {
         let Some(Vec2 { x, y }) = self.find_cell() else {
             return true;
@@ -63,7 +63,16 @@ impl<'a> Solver<'a> for FCSolver<'a> {
     }
 }
 
-impl FCSolver<'_> {
+impl<'a, D> FCSolver<'a, D>
+where
+    D: DomainTrait + Clone,
+{
+    fn new(board: &'a mut Board, value: D) -> Self {
+        let values = vec![value; board.size() * board.size()];
+        let mut fc = Self { board, values };
+        fc.generate();
+        fc
+    }
     /// Generates the initial domain state
     fn generate(&mut self) {
         for pos in self.board.rect() {
@@ -144,13 +153,12 @@ impl FCSolver<'_> {
         val: usize,
         x: usize,
         y: usize,
-    ) -> Option<()> {
+    ) -> Option<bool> {
         let id = x + y * self.board.size();
         if id == cid {
-            return Some(());
+            return Some(false);
         }
-        self.values[id].remove(val);
-        (!self.values[id].is_empty()).then_some(())
+        self.values[id].remove(val)
     }
 
     /// Removes values that are in conflict with the inequality
@@ -160,12 +168,11 @@ impl FCSolver<'_> {
         cond: Option<bool>,
         val: usize,
         id: usize,
-    ) -> Option<()> {
-        let _changed = match cond {
+    ) -> Option<bool> {
+        match cond {
             Some(true) => self.values[id].remove_lower(val),
             Some(false) => self.values[id].remove_greater(val),
-            None => return Some(()),
-        };
-        (!self.values[id].is_empty()).then_some(())
+            None => Some(false),
+        }
     }
 }

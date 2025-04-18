@@ -4,21 +4,27 @@ use termint::geometry::{Rect, Vec2};
 
 use crate::board::board_struct::Board;
 
-use super::domain::Domains;
+use super::domain::DomainTrait;
 
 pub mod arc;
 pub mod queue;
 
-pub struct AC3<'a> {
+pub struct AC3<'a, D>
+where
+    D: DomainTrait,
+{
     board: &'a mut Board,
-    values: &'a mut Domains,
+    values: &'a mut Vec<D>,
     queue: Queue,
 }
 
-impl<'a> AC3<'a> {
+impl<'a, D> AC3<'a, D>
+where
+    D: DomainTrait,
+{
     /// Prunes the given domain using the AC3 algorithm, starts with every
     /// relation in the queue
-    pub fn generate(board: &'a mut Board, values: &'a mut Domains) -> bool {
+    pub fn generate(board: &'a mut Board, values: &'a mut Vec<D>) -> bool {
         let mut ac = Self {
             board,
             values,
@@ -35,7 +41,7 @@ impl<'a> AC3<'a> {
     /// directly related cells in the queue
     pub fn eliminate(
         board: &'a mut Board,
-        values: &'a mut Domains,
+        values: &'a mut Vec<D>,
         pos: Vec2,
     ) -> bool {
         let mut ac = Self {
@@ -63,7 +69,10 @@ impl<'a> AC3<'a> {
     }
 }
 
-impl AC3<'_> {
+impl<D> AC3<'_, D>
+where
+    D: DomainTrait,
+{
     /// Processes the arcs in the queue
     fn process(&mut self) -> Option<()> {
         while let Some(arc) = self.queue.pop() {
@@ -115,10 +124,7 @@ impl AC3<'_> {
             _ => return Some(()),
         };
 
-        if self.values[s].remove(self.board[f].value()) {
-            if self.values[s].is_empty() {
-                return None;
-            }
+        if self.values[s].remove(self.board[f].value())? {
             self.push_arcs(s, f);
         }
         Some(())
@@ -133,16 +139,10 @@ impl AC3<'_> {
         let min = self.values[lower].min();
         let max = self.values[greater].max();
 
-        if self.values[lower].remove_greater(max) {
-            if self.values[lower].is_empty() {
-                return None;
-            }
+        if self.values[lower].remove_greater(max)? {
             self.push_arcs(lower, greater);
         }
-        if self.values[greater].remove_lower(min) {
-            if self.values[greater].is_empty() {
-                return None;
-            }
+        if self.values[greater].remove_lower(min)? {
             self.push_arcs(greater, lower);
         }
         Some(())

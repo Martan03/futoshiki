@@ -1,20 +1,18 @@
 pub mod bit_domain;
 pub mod hash_domain;
 
-pub type Domains = Vec<Box<dyn DomainTrait>>;
-
 pub trait DomainTrait: DomainClone {
     /// Removes a value from the domain. Returns whether the value was present
     /// in the domain.
-    fn remove(&mut self, value: usize) -> bool;
+    fn remove(&mut self, value: usize) -> Option<bool>;
 
     /// Removes all values greater than the given value from the domain.
     /// Returns whether any values were removed.
-    fn remove_greater(&mut self, value: usize) -> bool;
+    fn remove_greater(&mut self, value: usize) -> Option<bool>;
 
     /// Removes all values lower than the given value from the domain.
     /// Returns whether any values were removed.
-    fn remove_lower(&mut self, value: usize) -> bool;
+    fn remove_lower(&mut self, value: usize) -> Option<bool>;
 
     /// Returns the minimum value in the domain.
     fn min(&self) -> usize;

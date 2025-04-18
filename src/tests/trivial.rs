@@ -5,7 +5,7 @@ use crate::{
         ac3::AC3,
         ac3_solver::AC3Solver,
         bt_solver::BtSolver,
-        domain::{bit_domain::BitDomain, Domains},
+        domain::{bit_domain::BitDomain, DomainTrait},
         fc_solver::FCSolver,
         Solver,
     },
@@ -67,10 +67,8 @@ fn ac3_solver_test() {
 #[test]
 fn ac3_test() {
     let mut board = Board::trivial();
-    let mut values: Domains = vec![
-        Box::new(BitDomain((1 << board.size()) - 1));
-        board.size() * board.size()
-    ];
+    let mut values =
+        vec![BitDomain((1 << board.size()) - 1); board.size() * board.size()];
 
     AC3::generate(&mut board, &mut values);
 

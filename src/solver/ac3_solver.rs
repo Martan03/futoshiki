@@ -6,38 +6,39 @@ use crate::{
         ac3::AC3,
         domain::{
             bit_domain::BitDomain, hash_domain::HashDomain, DomainTrait,
-            Domains,
         },
         Solver,
     },
 };
 
-pub struct AC3Solver<'a> {
+pub struct AC3Solver<'a, D>
+where
+    D: DomainTrait + Clone,
+{
     board: &'a mut Board,
-    values: Domains,
+    values: Vec<D>,
 }
 
-impl<'a> AC3Solver<'a> {
+impl<'a> AC3Solver<'a, BitDomain> {
     /// Creates new AC3 solver with given board and bitmap domain
     pub fn bit(board: &'a mut Board) -> Self {
-        let value = Box::new(BitDomain::default(board.size()));
+        let value = BitDomain::default(board.size());
         Self::new(board, value)
-    }
-
-    /// Creates new AC3 solver with given board and hashset domain
-    pub fn hash(board: &'a mut Board) -> Self {
-        let value = Box::new(HashDomain::default(board.size()));
-        Self::new(board, value)
-    }
-
-    fn new(board: &'a mut Board, value: Box<dyn DomainTrait>) -> Self {
-        let mut values: Domains = vec![value; board.size() * board.size()];
-        AC3::generate(board, &mut values);
-        Self { board, values }
     }
 }
 
-impl<'a> Solver<'a> for AC3Solver<'a> {
+impl<'a> AC3Solver<'a, HashDomain> {
+    /// Creates new AC3 solver with given board and hashset domain
+    pub fn hash(board: &'a mut Board) -> Self {
+        let value = HashDomain::default(board.size());
+        Self::new(board, value)
+    }
+}
+
+impl<'a, D> Solver<'a> for AC3Solver<'a, D>
+where
+    D: DomainTrait + Clone,
+{
     fn solve(&mut self) -> bool {
         let Some(pos) = self.find_cell() else {
             return true;
@@ -63,7 +64,16 @@ impl<'a> Solver<'a> for AC3Solver<'a> {
     }
 }
 
-impl AC3Solver<'_> {
+impl<'a, D> AC3Solver<'a, D>
+where
+    D: DomainTrait + Clone,
+{
+    fn new(board: &'a mut Board, value: D) -> Self {
+        let mut values = vec![value; board.size() * board.size()];
+        AC3::generate(board, &mut values);
+        Self { board, values }
+    }
+
     /// Assigns given value to cell on given coordinates and removes the value
     /// from the neighbor domains
     fn assign(&mut self, val: usize, pos: Vec2) -> bool {

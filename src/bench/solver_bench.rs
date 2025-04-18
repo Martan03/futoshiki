@@ -1,4 +1,7 @@
-use std::collections::HashMap;
+use std::{
+    collections::{HashMap, HashSet},
+    time::Duration,
+};
 
 use termint::enums::Color;
 
@@ -14,7 +17,9 @@ use super::{bench_stat::BenchStat, bench_struct::Bench, charter::Charter};
 pub struct SolverBench {
     repeats: usize,
     boards: usize,
+    timeout: Duration,
     solvers: Vec<SolverType>,
+    disqualified: HashSet<SolverType>,
     charter: Charter,
 }
 
@@ -29,7 +34,9 @@ impl SolverBench {
         let mut bench = Self {
             repeats: args.repeats,
             boards: args.boards,
+            timeout: Duration::from_secs_f64(args.timeout),
             solvers,
+            disqualified: HashSet::new(),
             charter: Charter::empty("Solver benchmark"),
         };
 
@@ -67,12 +74,23 @@ impl SolverBench {
         board: Board,
     ) {
         for solver in self.solvers.iter() {
-            let stat = Bench::run(
-                || _ = solver.solve(&mut board.clone()),
+            if self.disqualified.contains(solver) {
+                continue;
+            }
+
+            let solver = *solver;
+            let board = board.clone();
+            let stat = Bench::run_with_timeout(
+                move || _ = solver.solve(&mut board.clone()),
                 self.repeats,
+                self.timeout,
             );
+            let Some(stat) = stat else {
+                self.disqualified.insert(solver);
+                continue;
+            };
             stats
-                .entry(*solver)
+                .entry(solver)
                 .and_modify(|existing_stat| *existing_stat += stat.clone())
                 .or_insert(stat.clone());
         }

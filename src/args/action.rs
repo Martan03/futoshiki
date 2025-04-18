@@ -1,6 +1,6 @@
 use super::{bench_args::BenchArgs, game_args::GameArgs};
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Action {
     Game(GameArgs),
     Benchmark(BenchArgs),
