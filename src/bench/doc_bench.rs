@@ -20,31 +20,50 @@ impl DocBench {
     }
 
     pub fn bench_domains() {
-        let mut charter = Charter::empty("Domain benchmark");
+        let mut speed_charter = Charter::empty("Domain benchmark");
+        let mut size_charter = Charter::empty("Domain size").y_label("Bytes");
+
         let repeats = 10000;
         let domains = get_domains();
 
         for size in [10, 20, 30, 40, 50, 60] {
             println!("Domain with {size} numbers, {repeats} repeats");
             let mut stats = HashMap::new();
+            let mut memory = HashMap::new();
 
             for (domain, get_domain) in domains.iter() {
-                let test_domain = get_domain(size);
+                let (test_domain, bytes) = get_domain(size);
+                memory.insert(format!("{domain} size"), bytes);
                 Self::bench_domain(&mut stats, domain, test_domain, size);
             }
 
+            println!("Benchmark:");
             let mut stats: Vec<_> = stats.iter().collect();
             stats.sort_by_key(|(_, stat)| stat.total_time);
             for (i, (domain, stat)) in stats.iter().enumerate() {
                 print!("{}{}. ", Color::Gray.to_fg(), i + 1);
 
                 let secs = stat.avg_time().as_secs_f64();
-                charter.push(domain.to_string(), size as i32, secs);
+                speed_charter.push(domain.to_string(), size as i32, secs);
                 Self::print_stat(domain, stat);
             }
-        }
 
-        _ = charter.plot("domains_benchmark.png");
+            println!("Memory:");
+            let mut memory: Vec<_> = memory.iter().collect();
+            memory.sort_by_key(|(_, size)| *size);
+            for (i, (domain, bytes)) in memory.iter().enumerate() {
+                print!("{}{}. ", Color::Gray.to_fg(), i + 1);
+
+                size_charter.push(
+                    domain.to_string(),
+                    size as i32,
+                    **bytes as f64,
+                );
+                Self::print_memory(domain, **bytes);
+            }
+        }
+        _ = speed_charter.plot("domains_benchmark.png");
+        _ = size_charter.plot_lin("domain_size.png");
     }
 
     fn bench_domain(
@@ -67,7 +86,7 @@ impl DocBench {
         stats.insert(format!("{} remove lower", domain), stat);
     }
 
-    fn print_stat(title: &String, stat: &BenchStat) {
+    fn print_stat(title: &str, stat: &BenchStat) {
         println!(
             "{}{title}:\n\
             {}└>\x1b[0m Time: [{}{:?} {}{:?} {}{:?}\x1b[0m]",
@@ -81,19 +100,35 @@ impl DocBench {
             stat.max_time
         );
     }
+
+    fn print_memory(title: &str, bytes: usize) {
+        println!(
+            "{}{title}:\n\
+            {}└>\x1b[0m Memory: {}{:?} B{} => {} b\x1b[0m",
+            Color::Green.to_fg(),
+            Color::Gray.to_fg(),
+            Color::White.to_fg(),
+            bytes,
+            Color::Gray.to_fg(),
+            bytes * 8,
+        );
+    }
 }
 
-fn get_domains() -> Vec<(String, Box<dyn Fn(usize) -> Box<dyn DomainTrait>>)> {
+fn get_domains(
+) -> Vec<(String, Box<dyn Fn(usize) -> (Box<dyn DomainTrait>, usize)>)> {
     vec![
         ("HashSet".to_string(), Box::new(get_hash_domain)),
         ("Bitmap".to_string(), Box::new(get_bit_domain)),
     ]
 }
 
-fn get_hash_domain(size: usize) -> Box<dyn DomainTrait> {
-    Box::new(HashDomain::default(size))
+fn get_hash_domain(size: usize) -> (Box<dyn DomainTrait>, usize) {
+    let domain = HashDomain::default(size);
+    let bucket_size = domain.0.capacity() * size_of::<usize>();
+    (Box::new(domain), size_of::<HashDomain>() + bucket_size)
 }
 
-fn get_bit_domain(size: usize) -> Box<dyn DomainTrait> {
-    Box::new(BitDomain::default(size))
+fn get_bit_domain(size: usize) -> (Box<dyn DomainTrait>, usize) {
+    (Box::new(BitDomain::default(size)), size_of::<BitDomain>())
 }

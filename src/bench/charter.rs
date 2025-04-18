@@ -11,6 +11,8 @@ use plotters::{
 pub struct Charter {
     title: String,
     lines: HashMap<String, Vec<(i32, f64)>>,
+    x_label: String,
+    y_label: String,
 }
 
 impl Charter {
@@ -18,7 +20,14 @@ impl Charter {
         Self {
             title: title.to_string(),
             lines: HashMap::new(),
+            x_label: String::from("Size"),
+            y_label: String::from("Secs."),
         }
+    }
+
+    pub fn y_label(mut self, label: &str) -> Self {
+        self.y_label = label.to_string();
+        self
     }
 
     pub fn push(&mut self, title: String, pos: i32, value: f64) {
@@ -47,8 +56,50 @@ impl Charter {
 
         chart
             .configure_mesh()
-            .x_desc("Size")
-            .y_desc("Secs.")
+            .x_desc(&self.x_label)
+            .y_desc(&self.y_label)
+            .draw()?;
+
+        for (i, (title, line)) in self.lines.iter().enumerate() {
+            let color = Palette99::pick(i);
+            chart
+                .draw_series(LineSeries::new(line.iter().copied(), &color))?
+                .label(title)
+                .legend(move |(x, y)| {
+                    PathElement::new([(x, y), (x + 20, y)], &color)
+                });
+        }
+
+        chart
+            .configure_series_labels()
+            .background_style(WHITE.mix(0.8))
+            .border_style(BLACK)
+            .position(SeriesLabelPosition::UpperLeft)
+            .draw()?;
+
+        Ok(())
+    }
+
+    pub fn plot_lin(
+        &self,
+        filename: &str,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        let root =
+            BitMapBackend::new(filename, (600, 470)).into_drawing_area();
+        root.fill(&WHITE)?;
+
+        let (x_range, y_range) = self.get_range();
+        let mut chart = ChartBuilder::on(&root)
+            .caption(&self.title, ("sans-serif", 50).into_font())
+            .margin(10)
+            .x_label_area_size(40)
+            .y_label_area_size(55)
+            .build_cartesian_2d(x_range, y_range)?;
+
+        chart
+            .configure_mesh()
+            .x_desc(&self.x_label)
+            .y_desc(&self.y_label)
             .draw()?;
 
         for (i, (title, line)) in self.lines.iter().enumerate() {
