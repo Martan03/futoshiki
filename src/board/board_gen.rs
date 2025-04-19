@@ -1,6 +1,9 @@
-use rand::{rngs::ThreadRng, seq::SliceRandom, Rng};
+use rand::{rngs::ThreadRng, Rng};
 
-use crate::tui::theme::Theme;
+use crate::{
+    solver::{bt_solver::BtSolver, Solver},
+    tui::theme::Theme,
+};
 
 use super::board_struct::Board;
 
@@ -17,43 +20,14 @@ impl BoardGen {
             board: Board::new(size, Theme::dark()),
         };
 
-        bgen.generate_board(0, 0);
+        BtSolver::generator(&mut bgen.board).solve();
+
         bgen.rem_vals();
         bgen.board
     }
 }
 
 impl BoardGen {
-    /// Generates random solved board
-    fn generate_board(&mut self, mut x: usize, mut y: usize) -> bool {
-        if x == self.board.size() {
-            if y + 1 == self.board.size() {
-                return true;
-            }
-            y += 1;
-            x = 0;
-        }
-
-        let id = x + y * self.board.size();
-        if self.board[id].value() > 0 {
-            return self.generate_board(x + 1, y);
-        }
-
-        let mut domain: Vec<usize> = (1..=self.board.size()).collect();
-        domain.shuffle(&mut self.rng);
-        for num in domain {
-            if !self.is_valid(num, x, y) {
-                continue;
-            }
-            self.board[id].set(num);
-            if self.generate_board(x + 1, y) {
-                return true;
-            }
-            self.board[id].set(0);
-        }
-        false
-    }
-
     /// Removes n values from the board based on the size of the board
     fn rem_vals(&mut self) {
         let gen_num =
@@ -105,7 +79,7 @@ impl BoardGen {
         );
     }
 
-    /// Removes value from random cell in the boards
+    /// Removes value from random cell in the board
     fn rem_val(&mut self) {
         let mut pos = self.rng.gen_range(0..self.board.cells.len());
         while self.board[pos].value() == 0 {
@@ -113,17 +87,5 @@ impl BoardGen {
         }
 
         self.board[pos].set(0);
-    }
-
-    /// Checks if value is unique in its row and column
-    fn is_valid(&self, val: usize, x: usize, y: usize) -> bool {
-        for pos in 0..self.board.size() {
-            if self.board[x + pos * self.board.size()].value() == val
-                || self.board[pos + y * self.board.size()].value() == val
-            {
-                return false;
-            }
-        }
-        true
     }
 }

@@ -3,7 +3,7 @@ use crate::board::board_struct::Board;
 use super::{
     ac3::AC3,
     domain::{bit_domain::BitDomain, hash_domain::HashDomain, DomainTrait},
-    values::{ConstValues, DomainValues, Values},
+    values::{ConstRngValues, ConstValues, DomainValues, Values},
     Solver,
 };
 
@@ -23,6 +23,18 @@ impl<'a> BtSolver<'a, ConstValues> {
         Self {
             board,
             values: ConstValues::new(size),
+        }
+    }
+}
+
+impl<'a> BtSolver<'a, ConstRngValues> {
+    /// Creates new instance of the backtracking solver used for generating
+    /// new board
+    pub fn generator(board: &'a mut Board) -> Self {
+        let size = board.size();
+        Self {
+            board,
+            values: ConstRngValues::new(size),
         }
     }
 }
