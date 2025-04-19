@@ -104,26 +104,31 @@ všech možných řešení metodou pokus-omyl. Ačkoli není nejefektivnější,
 klíčový základ pro pochopení dalších sofistikovanějších metod, které lze využít
 k~řešení hlavolamu Futoshiki.
 
-Následně se zaměříme na algoritmus Forward Checking a~jeho dvě možné
-implementace, kdy v~jedné variantě jsou domény uloženy jako hašovací množiny
-a~v druhé jako bitmapy. Tento algoritmus vylepšuje základní princip
-Backtrackingu tím, že předběžně kontroluje možné hodnoty, což vede ke snížení
-počtu zkoušených kombinací.
+Následně se zaměříme na algoritmy vylepšující Backtracking pomocí look-ahead
+technik, které se snaží zmenšit počet zkoušených kombinací tím, že dopředu
+odstraní hodnoty z~domén, neboli množin platných hodnot. Práce se také zaměří
+na různé implementace domén a~porovná jejich rychlost a~využití paměti.
 
-Nakonec bude popsáno možné vylepšení Forward Checkingu. Tento vylepšený
-algoritmus se nazývá Arc Consistency \#3. Vylepšení spočívá ve více striktní
-úpravě domén, což zabraňuje zbytečnému zkoušení hodnot u~kterých je jasné, že
-k~řešení nevedou.
+Jedním z~algoritmů využívající těchto technik je Forward Checking, který
+upravuje domény přímo ovlivněných polí, tedy polí ve stejném řádku či sloupci,
+nebo polí, které jsou v~nerovnosti s~daným polem.
 
-Všechny popsané algoritmy byly implementovány v~programu, který umožňuje řešení
-libovolné mřížky hlavolamu Futoshiki. Implementace obsahuje i~benchmark, pomocí
-kterého lze demonstrovat účinnost jednotlivých algoritmů v~různých herních
-scénářích. Více o~benchmarku bude zmíněno v~sekci
+Nakonec budou popsány algoritmy Arc Consistency, které v~porovnání s~algoritmem
+Forward Checking upravují domény více striktně. Mezi zástupce těchto algoritmů
+patří například Arc Consistency \#1 a~Arc Consistency \#3. Nejčastěji je však
+využíván algoritmus Arc Consistency \#3, díky jeho jednoduchosti, ale
+i~efektivitě. Z~tohoto důvodu byl implementován pouze tento algoritmus.
+
+Algoritmy Backtracking, Forward Checking a~Arc Consistency \#3 byly
+implementovány v~programu, který umožňuje řešení libovolné mřížky hlavolamu
+Futoshiki. Implementace obsahuje i~benchmark, pomocí kterého lze demonstrovat
+účinnost jednotlivých algoritmů v~různých herních scénářích. Více o~benchmarku
+bude zmíněno v~sekci
 \hyperref[sec:timeComplexity]{testování časové složitosti}.
 
 \section{Pravidla hry}
 
-Futoshiki~\cite{FutoshikiWiki}, známá také jako hra "větší/menší" (More or
+Futoshiki~\cite{FutoshikiWiki}, známá také jako hra "větší/menší"\ (More or
 Less), je logický hlavolam pocházející z~Japonska. Jeho název v~překladu
 znamená "nerovnost". Hra je založená na podobném principu jako sudoku. Hlavolam
 se skládá ze čtvercové mřížky, obvykle o~velikosti 4×4 nebo 5×5, přičemž může
@@ -186,10 +191,10 @@ algoritmických problémů, které jsou založeny na prohledávání stavového
 prostoru. Je to jednoduchý a~často využívaný algoritmus, který systematicky
 prohledává prostor řešení. Je založen na prohledávání do hloubky, tedy nejdříve
 se zkusí celá cesta, než bude prohledáváno jiné řešení. Z~tohoto důvodu se
-algoritmu Backtracking říká také metoda pokus-omyl - prohledá se jedna cesta
+algoritmu Backtracking říká také metoda pokus-omyl – prohledá se jedna cesta
 a~v~případě omylu se zkusí jiná.
 
-\subsection{Postup algoritmu}
+\subsection*{Postup algoritmu}
 
 Postup Backtrackingu se může lišit v závislosti na řešeném problému.
 Následující postup popisuje řešení mřížky Futoshiki. Na základě tohoto postupu
@@ -235,16 +240,16 @@ v~\hyperref[sec:lookAhead]{následující sekci}.
 Pro optimalizaci algoritmu Backtracking se využívají procedury zvané
 look-ahead~\cite{LookAheadWiki}. Tato procedura se pokouší zmenšit stavový
 prostor tím, že se pokusí předvídat účinky jednotlivých cest při hledání
-řešení. Obecně algoritmy využívající této techniky uchovávají domény platných
-hodnot u~každé proměnné. Tato doména se poté během provádění algoritmu mění na
-základě predikcí.
+řešení. Obecně algoritmy využívající této techniky uchovávají domény, neboli
+množiny platných hodnot, u~každé proměnné. Tato doména se poté během provádění
+algoritmu mění na základě predikcí.
 
 Mezi algoritmy využívající look-ahead techniky patří například Forward Checking
 a~algoritmy Arc Consistency, mezi které patří například Arc Consistency \#3.
 
 \subsection{Heuristiky}
 
-Některé algoritmy využívající technik look-ahead mohout využívat
+Algoritmy využívající technik look-ahead mohout využívat
 heuristiky~\cite{PrednaskyIZU}, které dále optimalizují proces hledání řešení.
 Heuristika určuje strategii výběru hracího pole a hodnoty, která bude dosazena
 do tohoto pole. Existují dvě hlavní kategorie heuristik: heuristiky pro výběr
@@ -285,7 +290,9 @@ v~doméně nachází. Tento problém je způsoben nutností projít celé pole n
 seznam, což je časově náročné. Tento problém lze vyřešit pomocí hašovacích
 množin, které využívají hašovací tabulky. Ověření, zda se hodnota nachází
 v~doméně, je efektivní s průměrnou časovou složitostí O(1), a~při mazání
-hodnoty není třeba přeskupovat prvky, na rozdíl od běžného pole.
+hodnoty není třeba přeskupovat prvky, na rozdíl od běžného pole. Avšak kvůli
+nutnosti počítat heš toto tvrzení nemusí být vždy pravda, což bude ukázáno
+v~sekci \hyperref[sec:domain-compare]{porovnání domén}.
 
 S rostoucí velikostí mřížky se zvyšuje i~využití paměti, kdy se při využití
 hašovacích množin či polí jedná o~poměrně dost paměti. Efektivnější způsob
@@ -298,12 +305,13 @@ velikosti, které závisí na velikosti použitého datového typu. V~mé implem
 jsem využil datový typ \texttt{usize}, kterého velikost závisí na architektuře
 systému. Například na 64-bitovém procesoru má velikost 64 bitů.
 
-Pro implementaci algoritmů s doménami jsem využil dva způsoby jejich ukládání:
-pomocí hašovacích množin a~bitmap. Implementace je podobná, u~hašovacích množin
-se využívají funkce pro práci s~množinami, zatímco u~bitmap se používají bitové
-operace.
+Pro implementaci algoritmů s~doménami jsou využil polymorfismu, tedy možnosti
+práce s~různými datovými typy, které sdílí stejné rozhraní, ale mají různé
+chování. Díky tomu je možné jednoduše přidat nový typ domén, aniž by se musel
+měnit kód samotných algoritmů.
 
 \subsubsection*{Porovnání domén}
+\label{sec:domain-compare}
 
 I~když na základě teorie by domény implementované pomocí bitmap měly být
 nejvíce efektivní, rozhodl jsem se toto teoretické tvrzení ověřit v~praxi.
@@ -336,7 +344,7 @@ reálný rozdíl je zkreslen. Přesto však lze vidět, že operace na hašovac�
 množinách jsou výrazně pomalejší, hlavně tedy s~rostoucí velikostí domény.
 
 Konkrétně jsou porovnány operace vymazání hodnoty a~vymazání hodnot
-větších/menších jak dané hodnota. Tyto operace jsou velmi často využiti
+větších/menších jak daná hodnota. Tyto operace jsou velmi často využity
 v~algoritmech pro řešení Futoshiki. Zajímavostí je to, že samotná implementace
 pro vymazání hodnot větších/menších jak daná hodnota, je pro implementace domén
 pomocí vektorů i~hašovacích množin stejná, přesto jsou hašovací množiny výrazně
@@ -388,24 +396,48 @@ heuristiky.
         zásobníku a~přesun na bod číslo 3.
 \end{enumerate}
 
+\subsubsection{Úprava přímo ovlivněných domén}
+
+Co jsou přímo ovlivněné domény již bylo popsáno, ale jak přesně se tyto domény
+upravují? Tento postup je klíčový k~pochopení algoritmu a~je využit jak při
+řešení, tak i~při generování domén před počátkem algoritmu. Mějme pole,
+na základě kterého chceme upravit všechny přímo ovlivněné domény. Postup je
+následující:
+
+\begin{enumerate}
+    \item Úprava všech domén polí, které jsou ve stejném řádku nebo sloupci
+        jako dané pole.
+    \begin{enumerate}
+        \item Úprava spočívá v~odebrání zapsané hodnoty v~daném poli ze
+            zmíněných domén.
+    \end{enumerate}
+    \item Úprava domén polí vyskytujících se v~nerovnosti s~daným polem.
+    \begin{enumerate}
+        \item Z~domény pole, které má být menší, se odstraní hodnoty vetší nebo
+            rovny zapsané hodnotě v~daném poli.
+        \item Z~domény pole, které má být větší, se odstraní hodnoty menší nebo
+            rovny zapsané hodnotě v~daném poli.
+    \end{enumerate}
+\end{enumerate}
+
 \subsubsection{Generování domény}
 
 Prvním krokem algoritmu je vygenerovat doménu pro každé pole. Nelze však domény
-inicializovat vytvořením domény obsahujících všechny hodnoty, jelikož
-algoritmus Forward Checking již počítá s tím, že kolidující hodnoty jsou již
-odstraněny. Proto je na počátku třeba domény nejen inicializovat, aby
+inicializovat vytvořením domén obsahujících všechny hodnoty, jelikož
+algoritmus Forward Checking počítá s tím, že kolidující hodnoty jsou již
+odstraněny. Proto je na počátku potřeba domény nejen inicializovat, aby
 obsahovaly všechny hodnoty, ale navíc i~upravit. To lze udělat iterací přes
 všechna vyplněná pole a~následnou úpravou všech přímo ovlivněných domén. Postup
 je stejný jako při zapisování hodnot do pole v~algoritmu samotném.
 
-\subsection{Arc Consistency \#3}
+\subsection{Arc Consistency}
 
-Algoritmus Arc Consistency \#3, známý také jako AC-3, rozšiřuje techniky
-snižování zkoušených kombinací Forward Checkingu. AC-3 pracuje iterativně
-s~množinou takzvaných oblouků (arc), kde každý oblouk reprezentuje vztah mezi
-dvěma proměnnými. Algoritmus poté zajišťuje, aby během celého běhu byly všechny
-domény konzistentní vzhledem ke všem omezením. Tento stav se nazývá Arc
-Consistency.
+Algoritmy Arc Consistency jsou takové algoritmy, které udržují všechny oblouky
+(arcs) mezi doménami konzistentní. Oblouk reprezentuje vztah mezi dvěma
+proměnnými. Tyto algoritmy v~porovnání s~algoritmem Forward Checking domény
+upravují více striktně. Jestliže je dosažena Arc Consistency, znamená to, že
+pro jakoukoliv hodnotu z~libovolné domény existuje alespoň jedna hodnota
+z~domén, které jsou s~danou doménou v~oblouku, tedy ve vztahu.
 
 Z~toho vyplývá, že po dosazení hodnoty do pole musí být upraveny všechny domény
 přímo i~nepřímo ovlivněných polí. Přímo ovlivněná pole byla popsána v~sekci
@@ -414,37 +446,73 @@ jsou taková pole, která nejsou bezprostředně v~relaci se změněným polem, 
 změny se k~nim dostanou přes jiné proměnné. V~praxi to znamená, že změny se
 propagují, dokud nenastane konzistentní stav, tedy dokud se mění domény.
 
-\subsubsection{Postup algoritmu}
+Existuje několik druhů algoritmů, které udržují domény v~konzistetním stavu.
+Nejjednodušší je algoritmus Arc Consistency \#1, který však kvůli své
+jednoduchosti není příliš efektivní. Asi nejpoužívanejším algoritmem pro
+dosažení tohoto stavu je Arc Consistency \#3, který kombinuje jak jednoduchost,
+tak i~efektivitu. Hlavním rozdílem mezi těmito algoritmy je způsob propagace
+změn, kdy Arc Consistency \#1 propaguje změny tím, že projde znovu všechny
+oblouky, zatímco Arc Consistency \#3 prochází pouze některé oblouky. Další
+algoritmy poté bývají již příliš komplikované, což je důvod, proč se Arc
+Consistency \#3 využívá nejčastěji.
 
-Na základě tohoto postupu byl algoritmus Arc Consistency \#3 implementován,
-kde úprava domén nepřímo ovlivněných polí je implementována pomocí rekurze.
-Jestliže dojde ke změně domény jsou upraveny i~všechny domény polí, které
-vystupují v~nerovnosti s~upraveným polem. Tento postup se rekurzivně opakuje,
-dokud se domény nepřestanou měnit a~tedy nedošlo ke konzistentního stavu.
+\subsubsection{Arc Consistency \#1}
 
-Implementace využívá stejné heuristiky jako Forward Checking. Pro výběr
-hracího pole je využita heuristiku nejvíce omezená proměnná. Z~domény tohoto
-pole hodnoty vybírám postupně, nevyužívám tedy žádnou speciální heuristiku.
+Pro lepší pochopení algoritmu Arc Consistency \#3 je vhodné popsat nejdříve
+jeho jednodušší variantu ve formě algoritmu Arc Consistency \#1, který je také
+známý jako AC-1. Tento algoritmus dosahuje konzistence všech oblouků
+následovně:
 
 \begin{enumerate}
-    \item Vygenerování domén pro každé pole a inicializace zásobníku stavů
-        mřížky.
-    \item Jestliže jsou všechna pole vyplněna, nalezeno řešení.
-    \item Zvolení pole na základě heuristiky výběru hracího pole.
+    \item Přidání všech oblouků do pole.
+    \item Iterace přes všechny oblouky.
     \begin{enumerate}
-        \item Jesliže doména je prázdná a~zásobník stavů mřížky je prázdný,
-            neexistuje řešení.
-        \item Jinak uložení aktuálního stavu mřížky.
+        \item Úprava domén na základě daného oblouku.
     \end{enumerate}
-    \item Zvolení hodnoty z~pole na základě heuristiky výběru hodnoty z~domény.
-    \begin{enumerate}
-        \item Odebrání zvolené hodnoty z~domény a~zápis hodnoty do pole.
-        \item Úprava domén přímo i nepřímo ovlivněných polí.
-        \item Přesun na bod číslo 2.
-    \end{enumerate}
-    \item Žádná z hodnot nevede k~řešení, obnovení a~odebrání stavu mřížky ze
-        zásobníku a~přesun na bod číslo 3.
+    \item Jesliže se změnila alespoň jedna doména, zpět na bod číslo 2.
+    \item Jinak jsou domény ve stavu Arc Consistency.
 \end{enumerate}
+
+\subsection{Arc Consistency \#3}
+
+Algoritmus Arc Consistency \#3, známý také jako AC-3, je nejčastěji využívaný
+algoritmus pro dosažení stavu Arc Consistency domén. Na rozdíl od algoritmy
+AC-1 propaguje změny více efektivně, tedy nemusí projít znovu všechny oblouky,
+ale pouze některé. Implementovaný algoritmus poté využívá stejné heuristiky
+jako Forward Checking, tedy pro výběr hracího pole je využita heuristiku
+nejvíce omezená proměnná. Z~domény tohoto pole jsou hodnoty vybírány postupně,
+není využita žádná speciální heuristika. Konkrétně tento algoritmus postupuje
+následovně:
+
+\begin{enumerate}
+    \item Přidání oblouků do fronty.
+    \begin{enumerate}
+        \item Jestliže se domény generují, přidají se všechny oblouky.
+        \item V~případě úpravy domén po zápisu do pole se do fronty přidají
+            pouze oblouky obsahující zapisované pole.
+    \end{enumerate}
+    \item Pokud je fronta oblouků prázdná, je dosažen stav Arc Consistency
+        a~vykonávání algoritmu končí.
+    \item Jinak se vyjme první oblouk a~provede se revize.
+    \begin{enumerate}
+        \item Ověření, že pro každou hodnotu v~první doméně oblouku existuje
+            alepoň jedna hodnota v~druhé doméně vyhovující danému oblouku
+            a~naopak.
+        \item Jestliže je nalezena nevyhovující hodnota, je z~domény
+            odstraněna, a~do fronty oblouků se přidají všechny oblouky
+            obsahující změněnou doménu, kromě aktuálně revidovaného oblouku.
+    \end{enumerate}
+    \item Skok na bod číslo 2.
+\end{enumerate}
+
+Postup tohoto algoritmu popisuje, jak se upravuje doména, aby byla ve stavu
+Arc Consistency. Není však již popsáno, jak přesně se tento algoritmus propojí
+s~řešením problému. Z~toho důvodu jsem implementoval dvě varianty využívající
+AC-3. V~první variantě se pomocí AC-3 vygenerují domény, které jsou poté
+využity algoritmem Backtracking pro vyřešení problému. Druhá implementovaná
+varianta již funguje velmi podobně algoritmu Forward Checking, tedy na počátku
+jsou vygenerovány domény a~poté po každém zápisu hodnoty do pole jsou domény
+na základě zmíněného postupu upraveny.
 
 \subsection{Look-ahead v praxi}
 
@@ -775,7 +843,7 @@ automat. Převod však může způsobit zvýšení počtu stavů.
 \chapter{Dvojdimenzionální skákající automat}
 
 Dvojdimenzionální skákající automat je automat, které vznikl spojením
-dvou typů automatů - skákající \ref{chap:jumpingAutomata} a~čtyřcestné
+dvou typů automatů – skákající \ref{chap:jumpingAutomata} a~čtyřcestné
 automaty \ref{chap:4fa}. Tento typ automatu je díky skokům vhodný pro rychlejší
 procházení dvojrozměrné pásky. V~této práci se skoky velice hodí pro rychlejší
 pohyb v~mřížce Futoshiki, bez kterých by automat musel postupně mřížku
@@ -806,19 +874,19 @@ obsaženy pravidla pro jednotlivé algoritmy.
 \section{Základní značení}
 
 \begin{itemize}
-    \item \(\#\#\) - hranice hrací mřížky
-    \item \(\#\) - hranice mezi hracími poli
-    \item \(N\) - nerovnost mezi poli
-    \item \(N_-\) - horizontální nerovnost mezi poli
-    \item \(N_|\) - vertikální nerovnost mezi poli
-    \item \(F\) - vyplněné herní pole
-    \item \(X\) - nevyplněné herní pole
-    \item \(L\) - předchozí herní pole
-    \item \(\{X\}\) - pole s~neprázdnou doménou
-    \item \(\{L\}\) - pole s~nejmenší doménou
-    \item \(\{\}\) - pole s~prázdnou doménou
-    \item \(E\) - pole bez domény
-    \item \(R\), \(L\), \(U\), \(D\) - směry pohybu v~mřížce
+    \item \(\#\#\) – hranice hrací mřížky
+    \item \(\#\) – hranice mezi hracími poli
+    \item \(N\) – nerovnost mezi poli
+    \item \(N_-\) – horizontální nerovnost mezi poli
+    \item \(N_|\) – vertikální nerovnost mezi poli
+    \item \(F\) – vyplněné herní pole
+    \item \(X\) – nevyplněné herní pole
+    \item \(L\) – předchozí herní pole
+    \item \(\{X\}\) – pole s~neprázdnou doménou
+    \item \(\{L\}\) – pole s~nejmenší doménou
+    \item \(\{\}\) – pole s~prázdnou doménou
+    \item \(E\) – pole bez domény
+    \item \(R\), \(L\), \(U\), \(D\) – směry pohybu v~mřížce
 \end{itemize}
 
 \section{Pravidla pro Backtracking}
