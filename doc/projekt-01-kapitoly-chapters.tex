@@ -176,7 +176,8 @@ Hra začíná s~libovolným počtem již vyplněných polí a~nerovností, při�
 počáteční rozmístění musí být v~souladu s~pravidly a~zaručovat existenci
 alespoň jednoho řešení. Následně hráč vyplňuje zbývající pole, zatímco
 nerovnosti se již nemění a~nepřidávají se žádné nové. Složená mřížka Futoshiki
-je takzvaný latinský čtverec~\cite{LatinSquareWiki}.
+je takzvaný latinský čtverec~\cite{LatinSquareWiki} – každé číslo je v~každém
+řádku i~sloupci pouze jednou.
 
 \begin{figure}[hbt]
 	\centering
@@ -193,6 +194,12 @@ prohledává prostor řešení. Je založen na prohledávání do hloubky, tedy 
 se zkusí celá cesta, než bude prohledáváno jiné řešení. Z~tohoto důvodu se
 algoritmu Backtracking říká také metoda pokus-omyl – prohledá se jedna cesta
 a~v~případě omylu se zkusí jiná.
+
+\begin{figure}[hbt]
+	\centering
+	\includegraphics[width=0.6\textwidth]{obrazky-figures/backtracking.pdf}
+	\caption{Vizualizace algoritmu backtracking}
+\end{figure}
 
 \subsection*{Postup algoritmu}
 
@@ -240,9 +247,9 @@ v~\hyperref[sec:lookAhead]{následující sekci}.
 Pro optimalizaci algoritmu Backtracking se využívají procedury zvané
 look-ahead~\cite{LookAheadWiki}. Tato procedura se pokouší zmenšit stavový
 prostor tím, že se pokusí předvídat účinky jednotlivých cest při hledání
-řešení. Obecně algoritmy využívající této techniky uchovávají domény, neboli
-množiny platných hodnot, u~každé proměnné. Tato doména se poté během provádění
-algoritmu mění na základě predikcí.
+řešení. Obecně algoritmy využívající této techniky uchovávají doménu u~každé
+proměnné. Doména je množina hodnot, kterých může daná proměnná nabývat. Tato
+doména se poté během provádění algoritmu mění na základě predikcí.
 
 Mezi algoritmy využívající look-ahead techniky patří například Forward Checking
 a~algoritmy Arc Consistency, mezi které patří například Arc Consistency \#3.
@@ -318,29 +325,20 @@ nejvíce efektivní, rozhodl jsem se toto teoretické tvrzení ověřit v~praxi.
 Implementoval jsem benchmark, který změří využití paměti domén pro různé
 velikosti a~který změří časovou náročnost nejčastěji využívaných operací domén.
 
-Při prohlédnutí grafu~\ref{fig:domain-size} obsahující paměťové využití domén,
-implementace pomocí hašovacích množin a~pomocí vektorů výrazně zaostávají za
-bitmapovou implementací, což je předpokládané. Bitmapová doména využívá pouze
+Při prohlédnutí prvního grafu z~obrázku~\ref{fig:domain-benchmark} obsahující
+paměťové využití domén, implementace pomocí hašovacích množin a~pomocí vektorů
+výrazně zaostávají za bitmapovou implementací. Bitmapová doména využívá pouze
 jedinou hodnotu čísla, zatímco hašovací množiny i~vektory mají těchto hodnot
 několik. V grafu je využita aproximace minimální velikosti hašovacích množin
 i~vektorů. To je z~důvodu, že tyto datové struktury často obsahují další
-pomocná či kontrolní data. Z grafu lze také vidět, že si hašovací množiny
-předalokují paměť, z~toho důvodu může být pro různé velikosti domén stejné
-využití paměti. Tato technika se využívá i~u~vektorů, v~případě na grafu však
-bylo alokováno pouze tolik paměti, kolik bylo potřeba.
+pomocná či kontrolní data. V~grafu lze také pozorovat, že si hašovací množiny
+předalokovávají paměť, což způsobuje stejné využití paměti u různých velikostí.
 
-\begin{figure}[hbt]
-	\centering
-	\includegraphics[width=1\textwidth]{obrazky-figures/domain_size.png}
-	\caption{Porovnání velikostí domén}
-    \label{fig:domain-size}
-\end{figure}
-
-Graf~\ref{fig:domain-benchmark} zobrazující časovou náročnost využívaných
-operací již obsahuje menší překvapení, kdy operace nad doménou implementovanou
-pomocí vektorů jsou výrazně rychlejší, než implementace pomocí hašovacích
-množin. Je také nutno podotknout, že osa \texttt{y}~je logaritmická, tedy
-reálný rozdíl je zkreslen. Přesto však lze vidět, že operace na hašovacích
+Druhý graf v~obrázku~\ref{fig:domain-benchmark} zobrazující časovou náročnost
+využívaných operací již obsahuje menší překvapení, kdy operace nad doménou
+implementovanou pomocí vektorů jsou výrazně rychlejší, než implementace pomocí
+hašovacích množin. Je také nutno podotknout, že osa \texttt{y}~je logaritmická,
+tedy reálný rozdíl je zkreslen. Přesto však lze vidět, že operace na hašovacích
 množinách jsou výrazně pomalejší, hlavně tedy s~rostoucí velikostí domény.
 
 Konkrétně jsou porovnány operace vymazání hodnoty a~vymazání hodnot
@@ -352,13 +350,6 @@ pomalejší. Důvod pro tento jev je, že vektory si prvky ukládají do souvisl
 bloku paměti, zatímco hašovací množiny ne. Hašovací množiny pak musí vypočítat
 haš prvku, na základě něho přistoupit k~prvku a~až poté vymazat.
 
-\begin{figure}[hbt]
-	\centering
-	\includegraphics[width=1\textwidth]{obrazky-figures/domains_benchmark.png}
-	\caption{Porovnání rychlosti operací domén}
-    \label{fig:domain-benchmark}
-\end{figure}
-
 \subsection{Forward Checking}
 \label{sec:forwardChecking}
 
@@ -366,7 +357,15 @@ Forward Checking~\cite{PrednaskyIZU} využívá již zmíněných look-ahead tec
 Tento algoritmus snižuje počet zkoušených kombinacích tím, že upravuje domény
 všech přímo ovlivněných polí po zápisu do pole. Přímo ovlivněná pole v~případě
 řešení Futoshiki jsou taková pole, která se nachází ve stejném řádku či sloupci
-a~nebo jsou v~nerovnosti s~polem, do kterého se zapisuje.
+a~nebo jsou v~nerovnosti s~polem, do kterého se zapisuje. Ilustrace přímo
+ovlivněných polí je zobrazena na obrázku~\ref{fig:futoshiki-direct}.
+
+\begin{figure}[hbt]
+	\centering
+	\includegraphics[width=0.4\textwidth]{obrazky-figures/futoshiki-direct.png}
+	\caption{Ilustrace přímo ovlivněných polí}
+    \label{fig:futoshiki-direct}
+\end{figure}
 
 \subsubsection{Postup algoritmu}
 
@@ -445,6 +444,15 @@ o~\hyperref[sec:forwardChecking]{Forward Checkingu}. Nepřímo ovlivněná pole
 jsou taková pole, která nejsou bezprostředně v~relaci se změněným polem, ale
 změny se k~nim dostanou přes jiné proměnné. V~praxi to znamená, že změny se
 propagují, dokud nenastane konzistentní stav, tedy dokud se mění domény.
+Ilustrace je v~obrázku~\ref{fig:futoshiki-indirect}, kde jsou zvýrazněna jak
+přímo ovlivněná pole, tak i~nepřímo, která jsou zvýrazněna fialově.
+
+\begin{figure}[hbt]
+	\centering
+	\includegraphics[width=0.4\textwidth]{obrazky-figures/futoshiki-indirect.png}
+	\caption{Ilustrace přímo a~nepřímo ovlivněných polí}
+    \label{fig:futoshiki-indirect}
+\end{figure}
 
 Existuje několik druhů algoritmů, které udržují domény v~konzistetním stavu.
 Nejjednodušší je algoritmus Arc Consistency \#1, který však kvůli své
@@ -528,6 +536,13 @@ Backtracking. Tento problém lze velice dobře pozorovat při porovnávání
 rychlosti složení různých velikostí mřížek Futoshiki se zmíněnými algoritmy.
 Více o~tomto porovnání je popsáno v~sekci
 \hyperref[sec:timeComplexity]{testování časové složitosti}.
+
+\begin{figure}[hbt]
+	\centering
+	\includegraphics[width=0.9\textwidth]{obrazky-figures/domain-benchmark.png}
+	\caption{Porovnání využití paměti a~rychlosti operací domén}
+    \label{fig:domain-benchmark}
+\end{figure}
 
 \chapter{Existující formy konečných automatů}
 
