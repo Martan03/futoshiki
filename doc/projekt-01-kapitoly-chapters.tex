@@ -486,11 +486,7 @@ následovně:
 Algoritmus Arc Consistency \#3, známý také jako AC-3, je nejčastěji využívaný
 algoritmus pro dosažení stavu Arc Consistency domén. Na rozdíl od algoritmy
 AC-1 propaguje změny více efektivně, tedy nemusí projít znovu všechny oblouky,
-ale pouze některé. Implementovaný algoritmus poté využívá stejné heuristiky
-jako Forward Checking, tedy pro výběr hracího pole je využita heuristiku
-nejvíce omezená proměnná. Z~domény tohoto pole jsou hodnoty vybírány postupně,
-není využita žádná speciální heuristika. Konkrétně tento algoritmus postupuje
-následovně:
+ale pouze některé. Konkrétně tento algoritmus postupuje následovně:
 
 \begin{enumerate}
     \item Přidání oblouků do fronty.
@@ -520,7 +516,10 @@ AC-3. V~první variantě se pomocí AC-3 vygenerují domény, které jsou poté
 využity algoritmem Backtracking pro vyřešení problému. Druhá implementovaná
 varianta již funguje velmi podobně algoritmu Forward Checking, tedy na počátku
 jsou vygenerovány domény a~poté po každém zápisu hodnoty do pole jsou domény
-na základě zmíněného postupu upraveny.
+na základě zmíněného postupu upraveny. Implementovaný algoritmus poté využívá
+stejné heuristiky jako Forward Checking, tedy pro výběr hracího pole je využita
+heuristiku nejvíce omezená proměnná. Z~domény tohoto pole jsou hodnoty vybírány
+postupně, není využita žádná speciální heuristika.
 
 \subsection{Look-ahead v praxi}
 
@@ -826,7 +825,8 @@ doleva a doprava, což opět dvojrozměrné automaty umožňují. Dále je využ
 dvojdimenzionálních automatů výhodné i~z~důvodu, že při řešení je třeba
 zohlednit omezení v~bezprostředním okolí buňky, což je opět přirozené
 použití dvojdimenzionálních automatů. Problematika by sice šla vyřešit i~pomocí
-jednodimenzionálních automatů, ale bylo by to mnohem složitější a~neefektivní.
+jednodimenzionálních automatů, ale bylo by to mnohem složitější a~méně
+efektivní.
 
 \subsection{Čtyřcestný konečný automat}
 \label{chap:4fa}
@@ -1205,6 +1205,7 @@ má být spuštěna. Aplikace podporuje tři druhy spuštění:
 \begin{enumerate}
     \item Spuštění hry
     \item Spuštění benchmarku
+    \item Vytvoření grafů do dokumentace
     \item Úprava výchozí konfigurace
 \end{enumerate}
 
@@ -1237,6 +1238,8 @@ za kterým mohou být následující argumenty:
         vícekrát (\hyperref[sec:argsAlgs]{dostupné algoritmy})
     \item \texttt{-r, --repeats [číslo]}: Nastaví počet opakování testu
     \item \texttt{-b, --boards [číslo]}: Nastaví počet testovaných mřížek
+    \item \texttt{-t, --timeout [sekundy]}: Nastaví časový limit provádění
+        algoritmu
 \end{itemize}
 
 \subsection*{Dostupné typy algoritmů}
@@ -1245,14 +1248,24 @@ za kterým mohou být následující argumenty:
 Argumenty vyžadující typ algoritmu podporují následující hodnoty:
 
 \begin{itemize}
-    \item \texttt{bt, backtrack, backtracking}: Backtracking
-    \item \texttt{fc, forward-check, forward-checking}: Forward Checking
-    \item \texttt{fcb, forward-check-bit, forward-checking-bit}: Forward
-        Checking s~bitovými operacemi
-    \item \texttt{ac3, arc-cons3, arc-consistency3}: Arc Consistency \#3
-    \item \texttt{ac3b, arc-cons3-bit, arc-consistency3-bit}: Arc Consistency
-        \#3 s~bitovými operacemi
+    \item \texttt{bt, backtracking}: Backtracking
+    \item \texttt{ac3-bt, ac3-backtracking}: Arc Consistency \#3 + Backtracking
+    \item \texttt{bit-ac3-bt, bit-ac3-backtracking}: Arc Consistency \#3
+        s~bitmapovými doménami + Backtracking
+    \item \texttt{fc, forward-checking}: Forward Checking
+    \item \texttt{bit-fc, bit-forward-checking}: Forward Checking s~bitmapovými
+        doménami
+    \item \texttt{ac3, arc-consistency3}: Arc Consistency \#3
+    \item \texttt{bit-ac3, bit-arc-consistency3}: Arc Consistency \#3
+        s~bitmapovými doménami
 \end{itemize}
+
+\subsection*{Argumenty vytvoření grafů do dokumentace}
+
+V~případě spuštění aplikace s~argumentem \texttt{doc} jsou spuštěny některé
+benchmarky, jejichž výsledné grafy jsou využity v~této práci. Konkrétně se
+jedná o~benchmarky domén, kdy se testuje využití paměti a~jejich časová
+náročnost.
 
 \subsection*{Argumenty konfigurace}
 
