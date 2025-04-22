@@ -1185,11 +1185,12 @@ V~rámci řešení jsou využity algoritmy uvedené v~kapitole
 
 V~první části bude čtenář seznámen se spouštěním aplikace, konkrétně
 s~veškerými podporovanými argumenty pro spuštění, díky kterým lze aplikaci
-před spuštěním nakonfigurovat.
+před spuštěním nakonfigurovat či spustit specifickou část implementace.
 
 Podrobně je také popsáno uživatelské prostředí aplikace, která je vytvořena
 jako terminálová aplikace, tedy veškeré prvky rozhraní jsou zobrazeny pomocí
-textu vytištěného do terminálu.
+textu vytištěného do terminálu. Konkrétně budou popsány veškeré stránky
+aplikace a~jejich ovládání.
 
 Nakonec bude popsán formát souboru konfigurace, který umožňuje nastavit výchozí
 hodnoty argumentů pro spuštění aplikace.
@@ -1242,6 +1243,9 @@ za kterým mohou být následující argumenty:
         algoritmu
 \end{itemize}
 
+Podrobný popis výstupu této části implementace bude popsán v~kapitole
+\hyperref[sec:timeComplexity]{testování časové složitosti}.
+
 \subsection*{Dostupné typy algoritmů}
 \label{sec:argsAlgs}
 
@@ -1265,7 +1269,8 @@ Argumenty vyžadující typ algoritmu podporují následující hodnoty:
 V~případě spuštění aplikace s~argumentem \texttt{doc} jsou spuštěny některé
 benchmarky, jejichž výsledné grafy jsou využity v~této práci. Konkrétně se
 jedná o~benchmarky domén, kdy se testuje využití paměti a~jejich časová
-náročnost.
+náročnost. Podrobný popis výstupu této části implementace bude popsán
+v~kapitole \hyperref[sec:timeComplexity]{testování časové složitosti}.
 
 \subsection*{Argumenty konfigurace}
 
@@ -1276,40 +1281,48 @@ vytvoří. Formát konfiguračního souboru je detailně popsán v~sekci
 
 \section{Vzhled a možnosti aplikace}
 
-Po spuštění hry se zobrazí mřížka Futoshiki, která má čtvercový tvar s~předem
-nastavenou velikostí. V~této mřížce je jedno z~polí zvýrazněno, to značí právě
-označené pole. Pro změnu označeného pole lze využít klávesy šipek nebo klávesy
-\texttt{hjkl}, které využívá textový editor \texttt{Vim} pro navigaci v~textu.
-Aplikaci lze kdykoliv ukončit stiskem kláves \texttt{Q} a~\texttt{Esc}.
-Aplikace obsahuje tři stránky:
+Po spuštění hry se zobrazí výchozí stránka aplikace, tedy stránka pro řešení
+mřížky Futoshiki. Aplikaci lze kdykoliv ukončit stiskem kláves \texttt{Q}
+nebo~\texttt{Esc}. Celkově aplikace obsahuje tři stránky:
 \begin{enumerate}
-    \item Vytváření mřížky
     \item Řešení mřížky
+    \item Vytváření mřížky
     \item Změna řešícího algoritmu
 \end{enumerate}
 
+\subsection{Řešení mřížky}
+
+Jak již bylo zmíněno, tato stránka je výchozí stránka po spuštění aplikace.
+Stránka obsahuje čtvercovou mřížku dle nastavené velikosti, kde zvýrazněné
+pole značí právě označené pole. Pro změnu označeného pole lze využít klávesy
+šipek nebo klávesy \texttt{hjkl}, které využívá textový editor \texttt{Vim}
+pro navigaci v~textu.
+
+Tato stránka umožňuje mřížku Futoshiki řešit. Uživateli však neumožňuje
+odstraňovat hodnoty vložené již z~počátku a~také upravovat nerovnosti. To
+umožňuje stránka vytváření mřížky
+
 \begin{figure}[hbt]
 	\centering
-	\includegraphics[width=0.4\textwidth]{obrazky-figures/futoshiki.png}
-	\caption{Vzhled aplikace po spuštění hry se světlým tématem}
+	\includegraphics[width=1\textwidth]{obrazky-figures/futoshiki-solver.png}
+	\caption{Vzhled stránky řešení mřížky se světlým tématem}
 	\label{futoshiki}
 \end{figure}
 
-\subsection{Vytváření mřížky}
-
-Tato stránka umožňuje uživateli vytvořit vlastní mřížku, kterou lze následně
-nechat složit jedním z~algoritmů. Na tuto stránku se lze dostat ze stránky hry
-stisknutím klávesy \texttt{B}. Pro následné vrácení na stránku hry lze opět
-stisknout klávesu \texttt{B}.
-
-\subsection*{Funkcionalita}
+\subsubsection*{Funkcionalita}
+\label{sec:board-solving}
 \begin{enumerate}
+    \item Generování mřížky:
+    \begin{itemize}
+        \item Stisknutím klávesy \texttt{Enter} se vygeneruje náhodná mřížka.
+    \end{itemize}
     \item Přidání hodnoty:
     \begin{itemize}
         \item Napsáním číselné hodnoty na klávesnici se hodnota přidá do
             označeného pole.
         \item Pokud hodnota přesáhne maximální povolenou hodnotu, odstraní
             se číslice z vyšších řádů.
+        \item Nelze přepisovat původní hodnoty, tedy tučně zvýrazněné hodnoty.
     \end{itemize}
     \item Smazání hodnoty:
     \begin{itemize}
@@ -1317,7 +1330,40 @@ stisknout klávesu \texttt{B}.
             \texttt{Delete}.
         \item Stiskem klávesy \texttt{Backspace} bude odstaněna číslice z~řádu
             jednotek.
+        \item Nelze mazat původní hodnoty, tedy tučně zvýrazněné hodnoty.
     \end{itemize}
+\end{enumerate}
+
+\subsubsection*{Dokončení řešení}
+
+Jestliže je mřížka úspěšně vyřešena, zobrazí se zpráva o~úspěšném složení.
+Pokud má uživatel problém se složením mřížky, lze využít nastaveného algoritmu
+stisknutím klávesy \texttt{S} a~tím zobrazit správné řešení. V~případě úspěchu
+bude vypsaná zpráva o~úspešném složení, v~opačném případě bude vypsaná zpráva,
+že mřížku nelze složit.
+
+\subsection{Vytváření mřížky}
+
+Tato stránka umožňuje uživateli vytvořit vlastní mřížku, kterou lze následně
+nechat složit jedním z~algoritmů. Na tuto stránku se lze dostat ze stránky
+řešení mřížky stisknutím klávesy \texttt{B}. Pro následné vrácení na stránku
+řešení mřížky lze opět stisknout klávesu \texttt{B}. Mřížka zobrazená na této
+stránce se ovládá stejným způsobem jako na stránce pro řešení mřížky.
+
+\begin{figure}[hbt]
+	\centering
+	\includegraphics[width=1\textwidth]{obrazky-figures/futoshiki-builder.png}
+	\caption{Vzhled stránky vytváření mřížky se světlým tématem}
+	\label{futoshiki-builder}
+\end{figure}
+
+\subsubsection*{Funkcionalita}
+\begin{enumerate}
+    \item Přidání a~mazání hodnot:
+    \begin{itemize}
+        \item Stejné jako u~řešení mřížky, lze však přepisovat všechny hodnoty.
+    \end{itemize}
+    \newpage
     \item Přidání nerovnosti:
     \begin{itemize}
         \item Právě označené pole bude prvním prvek nerovnosti.
@@ -1333,7 +1379,7 @@ stisknout klávesu \texttt{B}.
     \end{itemize}
 \end{enumerate}
 
-\subsection*{Spuštění řešení}
+\subsubsection*{Spuštění řešení}
 
 Po dokončení vytváření mřížky lze stisknutím klávesy \texttt{S} aktivovat
 aktuálně zvolený algoritmus, který následně mřížku vyřeší. V případě úspěchu
@@ -1341,56 +1387,40 @@ se do mřížky doplní zbývající hodnoty a~nad mřížku se vypíše zpráva
 složení. V opačném případě bude nad mřížku vypsaná zpráva, že mřížka není
 složitelná.
 
-\subsection{Řešení mřížky}
+\subsubsection*{Manuální složení}
 
-Tato stránka umožňuje mřížku Futoshiki řešit. Uživateli však neumožňuje
-odstraňovat hodnoty vložené již z~počátku a~také upravovat nerovnosti.
-
-\subsection*{Funkcionalita}
-\begin{enumerate}
-    \item Generování mřížky:
-    \begin{itemize}
-        \item Stisknutím klávesy \texttt{Enter} se vygeneruje náhodná mřížka.
-    \end{itemize}
-    \item Řešení mřížky:
-    \begin{itemize}
-        \item Hodnoty lze do polí zapisovat stejným způsobem jako při vytváření
-            mřížky.
-        \item Nelze přepisovat hodnoty, které byly vygenerovány a~nelze měnit
-            nerovnosti.
-    \end{itemize}
-\end{enumerate}
-
-\subsection*{Dokončení řešení}
-
-Jestliže je mřížka úspěšně vyřešena, zobrazí se zpráva o~úspěšném složení.
-Pokud má uživatel problém se složením mřížky, lze opět využít nastaveného
-algoritmu stisknutím klávesy \texttt{S} a~tím zobrazit správné řešení.
+Pro manuální složení právě vytvořené mřížky stačí přepnout pomocí klávesy
+\texttt{B} na stránku řešení mřížky. Hodnoty ve vytvořené mřížce se zobrazí
+tučně, což značí výchozí hodnoty, které nelze změnit. Poté již může uživatel
+mřížky manuálně složit způsobem, který byl popsán
+v~\hyperref[sec:board-solving]{popisu funkcionality} stránky řešení mřížky.
 
 \subsection{Změna řešícího algoritmu}
 
 Poslední stránkou v implementaci je stránka změny řešícího algoritmu. Díky
 této stránce nemusí uživatel hru zavírat a spouštět znovu s odpovídajícími
-argumenty, jenom aby změnil řešící algoritmus.
+argumenty, pouze aby změnil řešící algoritmus.
+
+\subsubsection*{Funkcionalita}
 
 \begin{enumerate}
     \item Přechod mezi stránkou výběru a stránkou hry:
     \begin{itemize}
         \item Stisknutím klávesy \texttt{Tab} se přepne stránka.
-        \item Pokud je aktuální stránka hra, přepne se na stránku výběru,
-            v~opačném případě se přejde na stránku hry.
+        \item Pokud je aktuální stránku řešení mřížky, přepne se na stránku
+            výběru, v~opačném případě se přejde na stránku řešení mřížky.
     \end{itemize}
     \item Výběr algoritmu:
     \begin{itemize}
         \item Výběr lze měnit pomocí kláves šipka nahoru a šipka dolů.
         \item Pro potvrzení výběru je třeba stisknout klávesu \texttt{Enter}.
-            Zároveň se automaticky přejde na stránku hry.
+            Zároveň se automaticky přejde na stránku řešení mřížky.
     \end{itemize}
 \end{enumerate}
 
 \begin{figure}[hbt]
 	\centering
-	\includegraphics[width=0.6\textwidth]{obrazky-figures/solvers.png}
+	\includegraphics[width=1\textwidth]{obrazky-figures/futoshiki-solvers.png}
 	\caption{Stránka výběru řešícího algoritmu}
 	\label{solvers}
 \end{figure}
@@ -1423,7 +1453,7 @@ téma aplikace na světlé, by pak mohl vypadat například takto:
 \begin{verbatim}
 {
     "defaultSize": 10,
-    "defaultSolver": "ArcConsistency3Bit",
+    "defaultSolver": "BitAC3",
     "defaultTheme": "Light"
 }
 \end{verbatim}

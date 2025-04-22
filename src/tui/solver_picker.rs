@@ -28,7 +28,7 @@ impl App {
         block.push(list, 0..);
 
         let mut wrapper = Layout::horizontal().center();
-        wrapper.push(block, 25);
+        wrapper.push(block, 37);
         let mut layout = Layout::vertical().center().bg(self.theme.background);
         layout.push(wrapper, 0..);
 
