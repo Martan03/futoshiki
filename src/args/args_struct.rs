@@ -16,7 +16,7 @@ pub struct Args {
 }
 
 impl Args {
-    /// Parses arguments
+    /// Parses arguments and returns the parsed arguments.
     pub fn parse(mut args: Pareg) -> Result<Args> {
         let mut parsed = Self::default();
 
@@ -49,7 +49,7 @@ impl Args {
         Ok(parsed)
     }
 
-    /// Displays help
+    /// Displays help.
     pub fn help() {
         println!(
             "Welcome to help for {} by {}\n",
@@ -95,5 +95,25 @@ impl Args {
             "ac3b  arc-cons3-bit  arc-consistency3-bit" =>
                 "Arc Consistency #3 solver implementation using bitmaps"
         );
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use pareg::Pareg;
+
+    use crate::args::{action::Action, args_struct::Args};
+
+    fn parse_action(args: &[&str]) -> Action {
+        let pareg = Pareg::new(args.iter().map(|v| v.to_string()).collect());
+        Args::parse(pareg).unwrap().action
+    }
+
+    #[test]
+    fn args_parse_variants() {
+        assert!(matches!(parse_action(&["-s", "10"]), Action::Game(_)));
+        assert!(matches!(parse_action(&["bench"]), Action::Benchmark(_)));
+        assert!(matches!(parse_action(&["doc"]), Action::Doc));
+        assert!(matches!(parse_action(&["-h"]), Action::Help));
     }
 }
