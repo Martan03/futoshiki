@@ -17,7 +17,7 @@ use super::{bench_stat::BenchStat, bench_struct::Bench, charter::Charter};
 pub struct SolverBench {
     repeats: usize,
     boards: usize,
-    timeout: Duration,
+    timeout: Option<Duration>,
     solvers: Vec<SolverType>,
     disqualified: HashSet<SolverType>,
     charter: Charter,
@@ -34,7 +34,7 @@ impl SolverBench {
         let mut bench = Self {
             repeats: args.repeats,
             boards: args.boards,
-            timeout: Duration::from_secs_f64(args.timeout),
+            timeout: args.timeout.map(Duration::from_secs_f64),
             solvers,
             disqualified: HashSet::new(),
             charter: Charter::empty("Solver benchmark"),
@@ -80,13 +80,20 @@ impl SolverBench {
 
             let solver = *solver;
             let board = board.clone();
-            let stat = Bench::run_with_timeout(
-                move || _ = solver.solve(&mut board.clone()),
-                self.repeats,
-                self.timeout,
-            );
+            let stat = match self.timeout {
+                Some(timeout) => Bench::run_with_timeout(
+                    move || _ = solver.solve(&mut board.clone()),
+                    self.repeats,
+                    timeout,
+                ),
+                None => Some(Bench::run(
+                    move || _ = solver.solve(&mut board.clone()),
+                    self.repeats,
+                )),
+            };
             let Some(stat) = stat else {
                 self.disqualified.insert(solver);
+                stats.remove(&solver);
                 continue;
             };
             stats

@@ -56,3 +56,28 @@ impl Bench {
         self.stat.add(start.elapsed());
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use std::{thread::sleep, time::Duration};
+
+    use super::Bench;
+
+    #[test]
+    fn run_with_timeout_times_out() {
+        let func = || sleep(Duration::from_millis(10));
+
+        let stat = Bench::run_with_timeout(func, 5, Duration::from_millis(1));
+
+        assert_eq!(stat, None);
+    }
+
+    #[test]
+    fn run_with_timeout_pass() {
+        let func = || sleep(Duration::from_millis(1));
+
+        let stat = Bench::run_with_timeout(func, 5, Duration::from_millis(2));
+
+        assert!(stat.is_some());
+    }
+}

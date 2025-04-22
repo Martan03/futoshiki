@@ -152,7 +152,7 @@ impl Charter {
             })
             .unwrap_or(100.0);
 
-        let padding = (y_max - y_min) * 0.001;
+        let padding = (y_max - y_min) * 0.01;
 
         (x_min..x_max, (y_min - padding).max(0.)..y_max)
     }

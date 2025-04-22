@@ -21,11 +21,12 @@ V~druhé kapitole se práce zaměří na podrobný popis hry Futoshiki včetně
 pravidel pro úspešné vyřešení. Dále budou v~této kapitole detailně popsány
 algoritmy sloužící pro vyřešení mřížky Futoshiki, konkrétně algoritmus
 Backtracking a~jeho vylepšení s~využitím Look-ahead procedur ve formě algoritmů
-Forward Checking a~Arc Consistency \#3. Look-ahead procedury se snaží zmenšit
-počet zkoušených kombinací tím, že se pokusí předvídat účinky jednotlivých cest
-při hledání řešení. Díky tomu se eliminují prohledávané cesty ještě před jejich
-prozkoumáním. V~kapitole budou také popsány výhody a~nevýhody algoritmů
-z~hlediska výpočetní a~časové složitosti.
+Forward Checking a~algoritmů Arc Consistency, mezi které se řadí například
+algoritmy Arc Consistency \#1 a~Arc Consistency \#3. Look-ahead procedury se
+snaží zmenšit počet zkoušených kombinací tím, že se pokusí předvídat účinky
+jednotlivých cest při hledání řešení. Díky tomu se eliminují prohledávané cesty
+ještě před jejich prozkoumáním. V~kapitole budou také popsány výhody a~nevýhody
+algoritmů z~hlediska výpočetní složitosti.
 
 Třetí kapilota popíše existující konečné automaty, které jsou často vnímané
 jako základní stavební bloky pro modelování výpočetních procesů. Tyto automaty
@@ -124,7 +125,7 @@ implementovány v~programu, který umožňuje řešení libovolné mřížky hla
 Futoshiki. Implementace obsahuje i~benchmark, pomocí kterého lze demonstrovat
 účinnost jednotlivých algoritmů v~různých herních scénářích. Více o~benchmarku
 bude zmíněno v~sekci
-\hyperref[sec:timeComplexity]{testování časové složitosti}.
+\hyperref[sec:timeComplexity]{benchmark řešících algoritmů}.
 
 \section{Pravidla hry}
 
@@ -233,7 +234,7 @@ ohledu na to, zda je již z počátku zjevné, že daná možnost k~řešení ne
 
 Nevýhoda tohoto algoritmu lze například pozorovat u~větších mřížek futoshiki.
 Více o~jeho časové složitosti je popsáno v~sekci
-\hyperref[sec:timeComplexity]{testování časové složitosti}.
+\hyperref[sec:timeComplexity]{benchmark řešících algoritmů}.
 
 Z~tohoto důvodu se pro problémy s~velkými stavovými prostory využívají
 algoritmy, které implementují další techniky k~zúžení stavového prostoru, čímž
@@ -299,7 +300,7 @@ množin, které využívají hašovací tabulky. Ověření, zda se hodnota nach
 v~doméně, je efektivní s průměrnou časovou složitostí O(1), a~při mazání
 hodnoty není třeba přeskupovat prvky, na rozdíl od běžného pole. Avšak kvůli
 nutnosti počítat heš toto tvrzení nemusí být vždy pravda, což bude ukázáno
-v~sekci \hyperref[sec:domain-compare]{porovnání domén}.
+v~sekci \hyperref[sec:domain-benchmark]{benchmark domén}.
 
 S rostoucí velikostí mřížky se zvyšuje i~využití paměti, kdy se při využití
 hašovacích množin či polí jedná o~poměrně dost paměti. Efektivnější způsob
@@ -316,39 +317,6 @@ Pro implementaci algoritmů s~doménami jsou využil polymorfismu, tedy možnost
 práce s~různými datovými typy, které sdílí stejné rozhraní, ale mají různé
 chování. Díky tomu je možné jednoduše přidat nový typ domén, aniž by se musel
 měnit kód samotných algoritmů.
-
-\subsubsection*{Porovnání domén}
-\label{sec:domain-compare}
-
-I~když na základě teorie by domény implementované pomocí bitmap měly být
-nejvíce efektivní, rozhodl jsem se toto teoretické tvrzení ověřit v~praxi.
-Implementoval jsem benchmark, který změří využití paměti domén pro různé
-velikosti a~který změří časovou náročnost nejčastěji využívaných operací domén.
-
-Při prohlédnutí prvního grafu z~obrázku~\ref{fig:domain-benchmark} obsahující
-paměťové využití domén, implementace pomocí hašovacích množin a~pomocí vektorů
-výrazně zaostávají za bitmapovou implementací. Bitmapová doména využívá pouze
-jedinou hodnotu čísla, zatímco hašovací množiny i~vektory mají těchto hodnot
-několik. V grafu je využita aproximace minimální velikosti hašovacích množin
-i~vektorů. To je z~důvodu, že tyto datové struktury často obsahují další
-pomocná či kontrolní data. V~grafu lze také pozorovat, že si hašovací množiny
-předalokovávají paměť, což způsobuje stejné využití paměti u různých velikostí.
-
-Druhý graf v~obrázku~\ref{fig:domain-benchmark} zobrazující časovou náročnost
-využívaných operací již obsahuje menší překvapení, kdy operace nad doménou
-implementovanou pomocí vektorů jsou výrazně rychlejší, než implementace pomocí
-hašovacích množin. Je také nutno podotknout, že osa \texttt{y}~je logaritmická,
-tedy reálný rozdíl je zkreslen. Přesto však lze vidět, že operace na hašovacích
-množinách jsou výrazně pomalejší, hlavně tedy s~rostoucí velikostí domény.
-
-Konkrétně jsou porovnány operace vymazání hodnoty a~vymazání hodnot
-větších/menších jak daná hodnota. Tyto operace jsou velmi často využity
-v~algoritmech pro řešení Futoshiki. Zajímavostí je to, že samotná implementace
-pro vymazání hodnot větších/menších jak daná hodnota, je pro implementace domén
-pomocí vektorů i~hašovacích množin stejná, přesto jsou hašovací množiny výrazně
-pomalejší. Důvod pro tento jev je, že vektory si prvky ukládají do souvislého
-bloku paměti, zatímco hašovací množiny ne. Hašovací množiny pak musí vypočítat
-haš prvku, na základě něho přistoupit k~prvku a~až poté vymazat.
 
 \subsection{Forward Checking}
 \label{sec:forwardChecking}
@@ -534,14 +502,7 @@ s~menším stavovým prostorem hodí algoritmu s~co nejmenší režií, jako je 
 Backtracking. Tento problém lze velice dobře pozorovat při porovnávání
 rychlosti složení různých velikostí mřížek Futoshiki se zmíněnými algoritmy.
 Více o~tomto porovnání je popsáno v~sekci
-\hyperref[sec:timeComplexity]{testování časové složitosti}.
-
-\begin{figure}[hbt]
-	\centering
-	\includegraphics[width=0.9\textwidth]{obrazky-figures/domain-benchmark.png}
-	\caption{Porovnání využití paměti a~rychlosti operací domén}
-    \label{fig:domain-benchmark}
-\end{figure}
+\hyperref[sec:timeComplexity]{benchmark řešících algoritmů}.
 
 \chapter{Existující formy konečných automatů}
 
@@ -1244,7 +1205,7 @@ za kterým mohou být následující argumenty:
 \end{itemize}
 
 Podrobný popis výstupu této části implementace bude popsán v~kapitole
-\hyperref[sec:timeComplexity]{testování časové složitosti}.
+\hyperref[sec:timeComplexity]{benchmark řešících algoritmů}.
 
 \subsection*{Dostupné typy algoritmů}
 \label{sec:argsAlgs}
@@ -1270,7 +1231,7 @@ V~případě spuštění aplikace s~argumentem \texttt{doc} jsou spuštěny něk
 benchmarky, jejichž výsledné grafy jsou využity v~této práci. Konkrétně se
 jedná o~benchmarky domén, kdy se testuje využití paměti a~jejich časová
 náročnost. Podrobný popis výstupu této části implementace bude popsán
-v~kapitole \hyperref[sec:timeComplexity]{testování časové složitosti}.
+v~kapitole \hyperref[sec:timeComplexity]{benchmark řešících algoritmů}.
 
 \subsection*{Argumenty konfigurace}
 
@@ -1468,13 +1429,36 @@ výkonnost je porovnána při různých velikostech hrací mřížky.
 
 Testovány jsou i~další nepostradatelné části aplikace, jako je například
 ověřovač řešení, který testuje, zda je daná mřížka složena v~soulady
-s~pravidly. Dále je testován také generátor mřížky, aby bylo zaručeno, že daná
+s~pravidly. Dále je testován generátor mřížky, aby bylo zaručeno, že daná
 mřížka je složitelná.
 
-\section{Správnost řešení}
+Testování je rozděleno na tři části:
+\begin{enumerate}
+    \item Jednotkové testy
+    \item Integrační testy
+    \item Benchmark
+\end{enumerate}
 
-Při testování správnosti řešení se zaměřuji na několik klíčových částí
-aplikace: implementované řešící algoritmy, ověřovač složení a~generátor mřížky.
+\section{Jednotkové testy}
+
+Jednotkové testy (unit testy) jsou malé automatizované testy, které ověřují
+správné chování konkrétních funkcí nebo metod. Testuje se, zda tyto části
+programu fungují správně izolovaně, tedy nezávisle na zbytku systému.
+
+Těchto testů je v~implementaci obsaženo mnoho, z~toho důvodu nebudou všechny
+testy popsány. Byly však využity pro testování různých částí implementace, jako
+je například testování domén, kdy pro každý typ domény byly otestovány všechny
+jejich funkce.
+
+\section{Integrační testy}
+
+Integrační testy ověřují správnou spolupráci jednotlivých částí implementace.
+Oproti jednotkovým testům se tedy netestují jednotlivé části implementace, ale
+jejich soubor a~zda spolupracují dle očekávání.
+
+Integračních testů již v~implementaci není tolik a~proto budou testy popsány
+více detailně. Mezi implementované integrační testy patří: testy řešících
+algoritmů, ověřovače složení a~generátoru mřížky.
 
 \subsection*{Testování algoritmů}
 
@@ -1498,12 +1482,68 @@ které byly následně složeny pomocí jednoho z~algoritmů. Výsledné složen
 byly zkontrolovány ověřovačem složení, což zajišťuje, že každá vygenerovaná
 mřížka je řešitelná a~splňuje pravidla hry.
 
-\section{Časová náročnost}
+\section{Benchmark}
+
+Mezi testování pomocí benchmarku patří hlavně testování časové složitosti.
+Konkrétně se testuje časová náročnost a~využití paměti jednotlivých typů domén
+a~časová náročnost implementovaných řešících algoritmů.
+
+\subsection{Benchmark domén}
+\label{sec:domain-benchmark}
+
+I~když na základě teorie by domény implementované pomocí bitmap měly být
+nejvíce efektivní, rozhodl jsem se toto teoretické tvrzení ověřit v~praxi.
+Proto jsem implementoval benchmark, který změří využití paměti domén pro různé
+velikosti a~který změří časovou náročnost nejčastěji využívaných operací domén.
+Tento benchmark je proveden po spuštění aplikace s~argumentem \texttt{doc}, což
+vypíše výsledky do terminálu a~vygeneruje odpovídající grafy.
+
+Při prohlédnutí grafu na obrázku~\ref{fig:domain-size} obsahující
+paměťové využití domén, implementace pomocí hašovacích množin a~pomocí vektorů
+výrazně zaostávají za bitmapovou implementací. Bitmapová doména využívá pouze
+jedinou hodnotu čísla, zatímco hašovací množiny i~vektory mají těchto hodnot
+několik. V grafu je využita aproximace minimální velikosti hašovacích množin
+i~vektorů. To je z~důvodu, že tyto datové struktury často obsahují další
+pomocná či kontrolní data. V~grafu lze také pozorovat, že si hašovací množiny
+předalokovávají paměť, což způsobuje stejné využití paměti u různých velikostí.
+
+\begin{figure}[hbt]
+	\centering
+	\includegraphics[width=0.9\textwidth]{obrazky-figures/domain_size.png}
+	\caption{Porovnání využití paměti domén}
+    \label{fig:domain-size}
+\end{figure}
+
+Graf na obrázku~\ref{fig:domain-benchmark} zobrazující časovou náročnost
+využívaných operací již obsahuje menší překvapení, kdy operace nad doménou
+implementovanou pomocí vektorů jsou výrazně rychlejší, než implementace pomocí
+hašovacích množin. Je také nutno podotknout, že osa \texttt{y}~je logaritmická,
+tedy reálný rozdíl je zkreslen. Přesto však lze vidět, že operace na hašovacích
+množinách jsou výrazně pomalejší, hlavně tedy s~rostoucí velikostí domény.
+
+\begin{figure}[hbt]
+	\centering
+	\includegraphics[width=0.9\textwidth]{obrazky-figures/domains_benchmark.png}
+	\caption{Porovnání časové složitosti operací domén}
+    \label{fig:domain-benchmark}
+\end{figure}
+
+Konkrétně jsou porovnány operace vymazání hodnoty a~vymazání hodnot
+větších/menších jak daná hodnota. Tyto operace jsou velmi často využity
+v~algoritmech pro řešení Futoshiki. Zajímavostí je to, že samotná implementace
+pro vymazání hodnot větších/menších jak daná hodnota, je pro implementace domén
+pomocí vektorů i~hašovacích množin stejná, přesto jsou hašovací množiny výrazně
+pomalejší. Důvod pro tento jev je, že vektory si prvky ukládají do souvislého
+bloku paměti, zatímco hašovací množiny ne. Hašovací množiny pak musí vypočítat
+haš prvku, na základě něho přistoupit k~prvku a~až poté vymazat.
+
+\section{Benchmark řešících algoritmů}
 \label{sec:timeComplexity}
 
-Testování časové náročnosti je prováděno po spuštění aplikace s~argumentem
-\texttt{bench}. Tento režim umožňuje měřit výkonnost zvolených algoritmů (při
-výchozím nastavení všech algoritmů) na různých velikostech mřížek.
+Testování časové náročnosti řešících algoritmů je prováděno po spuštění
+aplikace s~argumentem \texttt{bench}. Tento režim umožňuje měřit výkonnost
+zvolených algoritmů (při výchozím nastavení všech algoritmů) na různých
+velikostech mřížek.
 
 Pro každou velikost mřížky je náhodně vygenerována mřížka, kterou následně
 vyřeší každý algoritmus. Aby se minimalizoval vliv náhodných výkyvů, je test
@@ -1517,6 +1557,21 @@ Kromě textového výstupu aplikace automaticky generuje graf, který vizualizuj
 průměrné časy jednotlivých algoritmů pro různé velikosti mřížek. Tento graf
 usnadňuje porovnání efektivity algoritmů při řešení s~různě velkými mřížkami.
 
+\subsection{Zhodnocení}
+
+Jak ukazuje graf~\ref{fig:benchmark}, menší mřížky zvládnou všechny algoritmy
+rychle. Rozdíl mezi jednotlivými algoritmy je velice malý, avšak Backtracking
+je nejrychlejší a~to díky své jednoduchosti a~absenci režie, jako je generování
+domén polí. S~rostoucí velikostí mřížky však jeho výkon výrazně klesá, což je
+dáno jeho systematickým prohledáváním všech možností, kdy počet možností, které
+je třeba vyzkoušet, exponenciálně roste.
+
+Na větších mřížkách jsou rozdíly mezi algoritmy výraznější. Je také důležité
+zmínit, že osa \texttt{y}~je logaritmická, což může zkreslovat reálně rozdíly.
+Nejrychlejší algoritmus pro řešení větších mřížek je Arc Consistency \#3, kdy
+rozdíly mezi implementací s~využitím bitmap a~hašovacích množin není příliš
+znatelný.
+
 \begin{figure}[hbt]
 	\centering
 	\includegraphics[width=1\textwidth]{obrazky-figures/benchmark.png}
@@ -1524,22 +1579,8 @@ usnadňuje porovnání efektivity algoritmů při řešení s~různě velkými m
         Srovnání časové náročnosti všech algoritmů při různých velikostech
         mřížky (4×4 až 10×10).
     }
-	\label{benchmark}
+	\label{fig:benchmark}
 \end{figure}
-
-\subsection{Zhodnocení}
-
-Jak ukazuje graf, menší mřížky zvládnou všechny algoritmy rychle. Backtracking
-je však nejrychlejší a~to díky své jednoduchosti a~absenci režie, jako je
-generování domén polí. S~rostoucí velikostí mřížky však jeho výkon výrazně
-klesá, což je dáno jeho systematickým prohledáváním všech možností, kdy počet
-možností, které je třeba vyzkoušet, exponenciálně roste.
-
-Na větších mřížkách jsou rozdíly mezi algoritmy výraznější. Je také důležité
-zmínit, že osa \texttt{y}~je logaritmická, což může zkreslovat reálně rozdíly.
-Backtracking je při velikosti 10×10 pomalejší přibližně o~deset sekund než
-další nejpomalejší algoritmus. Nejlépe si vedly algoritmy Forward Checking
-a~Arc Consistency \#3 a~to v~jejich implementaci s~bitmapami.
 
 \chapter{Závěr}
 
@@ -1551,17 +1592,18 @@ Na začátku práce je popsána hra Futoshiki a~její pravidla, která je potře
 splnit pro úspešné složení mřížky. Následně jsou detailně popsány algoritmy
 sloužící pro vyřešení libovolné mřížky. Jedná se o~algoritmus Backtracking
 a~o~jeho vylepšení s~využitím Look-ahead technik ve formě algoritmů Forward
-Checking a~Arc Consistency \#3.
+Checking a~algoritmů Arc Consistency, konkrétně Arc Consistency \#1 a~častěji
+používaná varianta Arc Consistency \#3.
 
 Look-ahead techniky se snaží zmenšit počet zkoušených kombinací tím, že se
 pokusí předvídat účinky jednotlivých kroků při hledání řešení. Tento efekt lze
 pozorovat především při větších mřížkách, což bylo dokázáno v~kapitole
-\hyperref[sec:timeComplexity]{časová náročnost}, která obsahuje graf s~výsledky
-testování časové náročnosti jednotlivých algoritmů. Při menších mřížkách je
-však Backtracking rychlejší než algoritmy využívající look-ahead techniky, což
-je způsobeno tím, že Backtracking je jednodušší a~neobsahuje režii spojenou
-s~předpovídáním budoucích kroků. Proto je i Backtracking velice užitečný,
-hlavně tedy pro řešení problémů s~menším stavovým prostorem.
+\hyperref[sec:timeComplexity]{benchmark řešících algoritmů}, která obsahuje
+graf s~výsledky testování časové náročnosti jednotlivých algoritmů. Při menších
+mřížkách je však Backtracking rychlejší než algoritmy využívající look-ahead
+techniky, což je způsobeno tím, že Backtracking je jednodušší a~neobsahuje
+režii spojenou s~předpovídáním budoucích kroků. Proto je i Backtracking velice
+užitečný, hlavně tedy pro řešení problémů s~menším stavovým prostorem.
 
 Další kapitola se věnuje popisu konečných automatů, ve které jsou představeny
 deterministické konečné automaty, nedeterministické konečné automaty a
@@ -1588,9 +1630,7 @@ mřížky, čímž se zvyšuje efektivita řešení.
 Navazující kapitola obsahuje již konkrétní pravidla pro dvojrozměrný skákající
 automat. Nejdříve jsou popsány základní symboly, které jsou použity jako
 vstupní abeceda. Následně jsou popsána pravidla pro řešení mřížky pomocí
-algoritmu Backtracking a~pravidla pro řešení pomocí Forward Checking. Nakonec
-jsou obsažena pravidla pro Arc Consistency \#3. Ten je velmi podobný, jako
-Forward Checking, z~toho důvodu jsou popsána pouze rozlišná pravidla.
+algoritmu Backtracking a~pravidla pro řešení pomocí Forward Checking.
 
 Kapitola šestá se zaměřuje na implementaci aplikace pro řešení hry Futoshiki.
 Aplikace je napsána v~programovacím jazyce Rust a~využívá knihovnu
@@ -1603,17 +1643,18 @@ mřížky a~změna řešícího algoritmu. Na závěr této kapitoly je popsán 
 konfiguračního souboru, který umožňuje nastavit výchozí hodnoty argumentů pro
 spuštění aplikace.
 
-V~poslední kapitole se práce zaměří na testování implementace. Testována byla
-správnost implementovaných algoritmů a~jejich časová náročnost. Čtenář byl
-detailně seznámen, jak byly testovány jednotlivé algoritmy, ověřovač složení
-a~generátor mřížky. Dále bylo popsáno testování časové náročnosti, které bylo
-provedeno pomocí speciálního spuštění aplikace s~argumentem \texttt{bench}.
-Tento druh spuštění umožňuje spustit benchmark, kde se testují zvolené
-algoritmy na zvolených velikostech mřížek. Výsledky testování, obsahující
-minimální, maximální a~průměrný čas, jsou následně vytisknuty do terminálu.
-Z~průměrných časů je následně také vygenerován graf, který zobrazuje časovou
-náročnost jednotlivých algoritmů. Tento graf umožňuje snadné porovnání
-efektivity algoritmů při řešení různě velkých mřížek.
+V~poslední kapitole se práce zaměří na testování implementace. Testování bylo
+rozděleno na tři části: jednotkové testy, integrační testy a~benchmark. V
+jednotkových testech se ověřuje správnost jednotlivých funkcí či metod,
+například metody domén. V~integračních testech se již ověřuje správnost větších
+celků implementace, jako třeba správnost implementovaných algoritmů, generátoru
+mřížek nebo ověřovače složení. Nakonec byl také implementován benchmark, který
+testuje časovou složitost a~využití paměti domén a nakonec i~benchmark řešících
+algoritmů. Výsledky testování, obsahující minimální, maximální a~průměrný čas,
+jsou následně vytisknuty do terminálu. Z~průměrných časů je následně také
+vygenerován graf, který zobrazuje časovou náročnost jednotlivých algoritmů.
+Tento graf umožňuje snadné porovnání efektivity algoritmů při řešení různě
+velkých mřížek.
 
 %===============================================================================
 
