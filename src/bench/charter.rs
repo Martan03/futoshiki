@@ -7,6 +7,7 @@ use plotters::{
     style::{Color, IntoFont, Palette, Palette99, BLACK, WHITE},
 };
 
+/// Helper struct for creating charts.
 #[derive(Debug, Clone)]
 pub struct Charter {
     title: String,
@@ -16,6 +17,7 @@ pub struct Charter {
 }
 
 impl Charter {
+    /// Creates an empty chart with given title.
     pub fn empty(title: &str) -> Self {
         Self {
             title: title.to_string(),
@@ -25,11 +27,14 @@ impl Charter {
         }
     }
 
+    /// Sets label for the y axis.
     pub fn y_label(mut self, label: &str) -> Self {
         self.y_label = label.to_string();
         self
     }
 
+    /// Pushes point to the line with given title. Creates new line when
+    /// it doesn't exist.
     pub fn push(&mut self, title: String, pos: i32, value: f64) {
         if let Some(line) = self.lines.get_mut(&title) {
             line.push((pos, value));
@@ -38,6 +43,8 @@ impl Charter {
         }
     }
 
+    /// Plots the chart into the file with given filename with logarithmic
+    /// y axis.
     pub fn plot(
         &self,
         filename: &str,
@@ -79,7 +86,7 @@ impl Charter {
 
         Ok(())
     }
-
+    /// Plots the chart into the file with given filename with linear y axis.
     pub fn plot_lin(
         &self,
         filename: &str,
@@ -122,6 +129,7 @@ impl Charter {
         Ok(())
     }
 
+    /// Gets chart axis values range
     fn get_range(&self) -> (Range<i32>, Range<f64>) {
         let x_min = self
             .lines

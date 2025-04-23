@@ -7,6 +7,9 @@ use super::{
     Solver,
 };
 
+/// Implements backtracking solver, which supports both domains and static
+/// values. Domains are used in combination with AC-3, where AC-3 generates
+/// the domains and backtracking then solves it, without any further pruning.
 pub struct BtSolver<'a, V>
 where
     V: Values,

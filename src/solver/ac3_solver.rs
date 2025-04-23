@@ -11,6 +11,8 @@ use crate::{
     },
 };
 
+/// Implements forward checking like algorithm, which uses AC-3 on each step
+/// to prune the domains.
 pub struct AC3Solver<'a, D>
 where
     D: DomainTrait + Clone,

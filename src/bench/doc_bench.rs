@@ -12,14 +12,17 @@ use crate::{
 
 use super::{bench_stat::BenchStat, charter::Charter};
 
+/// Implements methods for running the benchmarks used in the documentation.
 #[derive(Debug, Clone)]
 pub struct DocBench;
 
 impl DocBench {
+    /// Runs all benchmarks used in documentation.
     pub fn run() {
         Self::bench_domains();
     }
 
+    /// Runs domains benchmarks - memory usage & time complexity.
     pub fn bench_domains() {
         let mut speed_charter = Charter::empty("Domain benchmark");
         let mut size_charter = Charter::empty("Domain size").y_label("Bytes");
@@ -60,7 +63,7 @@ impl DocBench {
                     size as i32,
                     **bytes as f64,
                 );
-                Self::print_memory(domain, **bytes);
+                Self::print_memory(domain, bytes);
             }
         }
         _ = speed_charter.plot("domains_benchmark.png");
@@ -102,7 +105,7 @@ impl DocBench {
         );
     }
 
-    fn print_memory(title: &str, bytes: usize) {
+    fn print_memory(title: &str, bytes: &usize) {
         println!(
             "{}{title}:\n\
             {}└>\x1b[0m Memory: {}{:?} B{} => {} b\x1b[0m",

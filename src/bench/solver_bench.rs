@@ -13,6 +13,8 @@ use crate::{
 
 use super::{bench_stat::BenchStat, bench_struct::Bench, charter::Charter};
 
+/// Implements methods for running the time complexity solver algorithms
+/// benchmark.
 #[derive(Debug, Clone)]
 pub struct SolverBench {
     repeats: usize,
@@ -24,6 +26,7 @@ pub struct SolverBench {
 }
 
 impl SolverBench {
+    /// Runs the time complexity solver algorithms benchmark.
     pub fn run(args: BenchArgs) {
         let mut solvers: Vec<SolverType> =
             args.solvers.iter().copied().collect();

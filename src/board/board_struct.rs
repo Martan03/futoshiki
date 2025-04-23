@@ -55,8 +55,9 @@ impl Board {
 
         let sel = self.selected.x + self.selected.y * self.size;
         let mut val = self[sel].value() * 10 + value;
-        if val > self.size {
-            val = value;
+
+        while val > self.size && val >= 10 {
+            val %= 10_usize.pow((val as f64).log10().floor() as u32)
         }
 
         _ = self[sel].set(val);
@@ -222,5 +223,53 @@ impl Board {
         board.ver_conds[5] = Some(false);
         board.ver_conds[6] = Some(false);
         board
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use termint::geometry::Vec2;
+
+    use crate::tui::theme::Theme;
+
+    use super::Board;
+
+    #[test]
+    fn board_push() {
+        let mut board = Board::new(12, Theme::dark());
+        board.set_selected(Vec2::new(3, 2));
+
+        board.push(1);
+        assert_eq!(board.cells[27].value(), 1);
+        board.push(1);
+        assert_eq!(board.cells[27].value(), 11);
+
+        board.push(2);
+        assert_eq!(board.cells[27].value(), 12);
+
+        board.push(5);
+        assert_eq!(board.cells[27].value(), 5);
+    }
+
+    #[test]
+    fn board_pop() {
+        let mut board = Board::new(12, Theme::dark());
+        board.set_selected(Vec2::new(0, 0));
+        board.cells[0].set(12);
+
+        board.pop();
+        assert_eq!(board.cells[0].value(), 1);
+        board.pop();
+        assert_eq!(board.cells[0].value(), 0);
+    }
+
+    #[test]
+    fn board_clear() {
+        let mut board = Board::new(12, Theme::dark());
+        board.set_selected(Vec2::new(0, 0));
+        board.cells[0].set(12);
+
+        board.clear();
+        assert_eq!(board.cells[0].value(), 0);
     }
 }

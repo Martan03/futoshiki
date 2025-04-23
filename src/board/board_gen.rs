@@ -7,13 +7,14 @@ use crate::{
 
 use super::board_struct::Board;
 
+/// Struct used for generating a board
 pub struct BoardGen {
     rng: ThreadRng,
     board: Board,
 }
 
 impl BoardGen {
-    /// Generates new board
+    /// Generates new board using backtracking.
     pub fn generate(size: usize) -> Board {
         let mut bgen = Self {
             rng: rand::thread_rng(),
@@ -28,7 +29,7 @@ impl BoardGen {
 }
 
 impl BoardGen {
-    /// Removes n values from the board based on the size of the board
+    /// Removes n values from the board based on the size of the board.
     fn rem_vals(&mut self) {
         let gen_num =
             ((self.board.size * self.board.size) as f64 * 0.8) as usize;
@@ -41,7 +42,7 @@ impl BoardGen {
         }
     }
 
-    /// Adds condition on random place
+    /// Adds condition on random place.
     /// (randomly selects vertical or horizontal)
     fn add_cond(&mut self) {
         match self.rng.gen_range(0..2) {
@@ -50,7 +51,7 @@ impl BoardGen {
         }
     }
 
-    /// Adds horizontal condition to random place in the board
+    /// Adds horizontal condition to random place in the board.
     fn add_hor_cond(&mut self) {
         let mut pos = self.rng.gen_range(0..self.board.hor_conds.len());
         while self.board.hor_conds[pos].is_some() {
@@ -64,7 +65,7 @@ impl BoardGen {
         );
     }
 
-    /// Adds vertical condition to random place in the board
+    /// Adds vertical condition to random place in the board.
     fn add_ver_cond(&mut self) {
         let mut pos = self.rng.gen_range(0..self.board.ver_conds.len());
         while self.board.ver_conds[pos].is_some() {
@@ -79,7 +80,7 @@ impl BoardGen {
         );
     }
 
-    /// Removes value from random cell in the board
+    /// Removes value from random cell in the board.
     fn rem_val(&mut self) {
         let mut pos = self.rng.gen_range(0..self.board.cells.len());
         while self.board[pos].value() == 0 {

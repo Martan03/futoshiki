@@ -64,3 +64,24 @@ impl From<i32> for Cell {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::Cell;
+
+    #[test]
+    fn cell_set_when_enabled() {
+        let mut cell = Cell::default();
+
+        assert!(cell.set(10));
+        assert_eq!(cell.value, 10);
+    }
+
+    #[test]
+    fn cell_set_when_disabled() {
+        let mut cell = Cell::new(5);
+
+        assert!(!cell.set(10));
+        assert_eq!(cell.value, 5);
+    }
+}

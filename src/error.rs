@@ -2,6 +2,7 @@ use thiserror::Error;
 
 pub type Result<T> = std::result::Result<T, Error>;
 
+/// Error type that wraps all the other errors.
 #[derive(Debug, Error)]
 pub enum Error {
     #[error(transparent)]

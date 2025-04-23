@@ -2,6 +2,7 @@ use termint::geometry::{Rect, Vec2};
 
 use crate::board::board_struct::Board;
 
+/// Struct that implements methods for checking, whether the board is solved.
 pub struct Checker<'a> {
     board: &'a Board,
 }

@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{error::Error, solver::SolverType, tui::ThemeType};
 
+/// Struct containing all the configurable arguments.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Config {
     #[serde(default = "default_size", rename = "defaultSize")]

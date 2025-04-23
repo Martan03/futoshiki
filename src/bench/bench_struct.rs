@@ -2,12 +2,14 @@ use std::time::{Duration, Instant};
 
 use super::bench_stat::BenchStat;
 
+/// Implements methods for running the time complexity benchmark
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct Bench {
     stat: BenchStat,
 }
 
 impl Bench {
+    /// Runs the benchmark on given function given repeats
     pub fn run<F>(func: F, cnt: usize) -> BenchStat
     where
         F: Fn(),
@@ -20,6 +22,8 @@ impl Bench {
         bench.stat
     }
 
+    /// Runs the benchmark on given function given repeats, but each function
+    /// run has given timeout.
     pub fn run_with_timeout<F>(
         func: F,
         cnt: usize,

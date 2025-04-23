@@ -10,6 +10,7 @@ use crate::{
     },
 };
 
+/// Implements forward checking solver.
 pub struct FCSolver<'a, D>
 where
     D: DomainTrait + Clone,

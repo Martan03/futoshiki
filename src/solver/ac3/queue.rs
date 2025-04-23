@@ -2,6 +2,8 @@ use std::collections::{HashSet, VecDeque};
 
 use super::arc::Arc;
 
+/// Struct implementing unique queue. When item is already in queue, it won't
+/// be pushed in the queue again.
 #[derive(Debug)]
 pub struct Queue {
     queue: VecDeque<Arc>,
@@ -16,12 +18,14 @@ impl Queue {
         }
     }
 
+    /// Pushes given arc to the queue when not in queue already
     pub fn push(&mut self, item: Arc) {
         if self.set.insert(item.clone()) {
             self.queue.push_back(item);
         }
     }
 
+    /// Pops first item from the queue, returns None when queue empty.
     pub fn pop(&mut self) -> Option<Arc> {
         if let Some(item) = self.queue.pop_front() {
             self.set.remove(&item);
