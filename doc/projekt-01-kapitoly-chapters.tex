@@ -587,7 +587,7 @@ Nedeterministický konečný automat~\cite{AutomataTheory} je pětice
     \item \(Q\) je konečná neprázdná množina stavů.
     \item \(\Sigma\) je vstupní abeceda, konečná množina vstupních symbolů.
     \item \(\delta\) je přechodová relace ve tvaru
-        \(Q \times (\Sigma \cup \varepsilon) \rightarrow \mathcal{P}(Q)\).
+        \(Q \times (\Sigma \cup \{\varepsilon\}) \rightarrow Q\).
     \item \(Q_0\) je množina počátečních stavů, kde \(Q_0 \subseteq Q\).
     \item \(F\) je množina koncových nebo přijímacích stavů, kde
         \(F \subseteq Q\).
@@ -677,12 +677,7 @@ po vstupní pásce. Na základě aktuálního stavu automatu a~symbolu, na kter�
 ukazuje čtecí hlavice, se provede skok, odpovídající jednomu z~definovaných
 pravidel, na libovolný symbol na pásce. Na rozdíl od klasických konečných
 automatů tak nečte pásku postupně, ale umožňuje posun na libovolnou pozici.
-Jesliže byl znak již jednou přečten,
-
-
-
-
-nemůže být přečten znovu.
+Jesliže byl znak již jednou přečten, nemůže být přečten znovu.
 
 \subsection*{Definice}
 
@@ -699,34 +694,6 @@ kde:
         \end{itemize}
     \item \(s\) je počáteční stav, kde \(s \in Q\).
     \item \(F\) je množina konečných stavů, kde \(F \subseteq Q\).
-\end{itemize}
-
-\subsection{Skákající automat s opakovaným čtením}
-
-Pro řešení některých problémů je potřeba, aby skákající automat mohl číst
-vstupní pásku opakovaně. To znamená, že čtecí hlavice může skákat na libovolné
-místo na pásce a~přitom může číst symboly, které již byly přečteny.
-
-\subsubsection*{Definice}
-
-Skákající automat s opakovaným čtením lze definovat jako pětice
-\(M = (Q, \Sigma, R, s F)\), kde:
-\begin{itemize}
-    \item \(Q\) je konečná množina stavů.
-    \item \(\Sigma\) je konečná množina vstupních symbolů.
-    \item \(R \subseteq Q \times \Sigma^* \times Q\) je konečná ternární
-        relace, nazývaná množinou pravidel.
-        \begin{itemize}
-            \item Každé pravidlo \((p, y, q) \in R\) je zapsáno jako
-                \(py \rightarrow q\).
-            \item Jestliže je aktuální stav automatu \(q\) a~na vstupu je
-                symbol odpovídající symbolu \(y\), automat přejde do stavu
-                \(q\).
-            \item Vstupní ukazatel zůstane na stejné pozici a~nepřečte vstupní
-                symbol.
-        \end{itemize}
-    \item \(s\)~je počáteční stav, kde \(s \in Q\).
-    \item \(F\)~je množina konečných stavů, kde \(F \subseteq Q\).
 \end{itemize}
 
 \section{Dvojdimenzionální automaty}
@@ -825,6 +792,10 @@ automat. Převod však může způsobit zvýšení počtu stavů.
     \item \(q_r\) je neakceptující stav, kde \(q_r \in Q\).
     \item \(\delta\) je přechodová funkce ve tvaru
         \((Q \setminus \{q_a, q_r\} \times \Sigma) \implies (Q \times \Delta)\).
+    \begin{itemize}
+        \item Přechod je značen znakem \(\implies\) místo \(\rightarrow\), díky
+            čemuž je jasné, že se jedná o~dvojdimnzionální automat.
+    \end{itemize}
 \end{itemize}
 
 \chapter{Dvojdimenzionální skákající automat}
@@ -843,10 +814,16 @@ Sedmice \((Q, \Sigma, \Delta, R_1, R_2, s, F)\), kde:
     \item \(Q\) je konečná množina stavů.
     \item \(\Sigma\) je konečná množina vstupních symbolů.
     \item \(\Delta\) je množina povolených směrů.
-    \item \(R_1\) množina pravidel pro pohyb ve tvaru
-        \((Q \times \Sigma) \implies (Q \times \Delta)\).
-    \item \(R_2\) množina pravidel pro skoky ve tvaru
-        \(Q \implies (Q \times \Sigma)\).
+    \item \(R_1\) je relace z \((Q \times \Sigma)\) do \((Q \times \Delta)\).
+    \begin{itemize}
+        \item Místo \(((Q_1, a), (Q_2, b))\), píšeme \(Q_1a \implies Q_2b\).
+        \item Určuje pravidla pro pohyb automatu po pásce.
+    \end{itemize}
+    \item \(R_2\) je relace z \(Q\) do \((Q \times \Sigma)\).
+    \begin{itemize}
+        \item Místo \((Q_1, (Q_2, b))\), píšeme \(Q_1 \implies Q_2b\).
+        \item Určuje pravidla pro skok automatu po pásce.
+    \end{itemize}
     \item \(s\) je počáteční stav, kde \(s \in Q\).
     \item \(F\) je množina konečných stavů, kde \(F \subseteq Q\).
 \end{itemize}
