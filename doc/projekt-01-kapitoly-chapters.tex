@@ -486,10 +486,11 @@ AC-3. V~první variantě se pomocí AC-3 vygenerují domény, které jsou poté
 využity algoritmem Backtracking pro vyřešení problému. Druhá implementovaná
 varianta již funguje velmi podobně algoritmu Forward Checking, tedy na počátku
 jsou vygenerovány domény a~poté po každém zápisu hodnoty do pole jsou domény
-na základě zmíněného postupu upraveny. Implementovaný algoritmus poté využívá
-stejné heuristiky jako Forward Checking, tedy pro výběr hracího pole je využita
-heuristiku nejvíce omezená proměnná. Z~domény tohoto pole jsou hodnoty vybírány
-postupně, není využita žádná speciální heuristika.
+na základě zmíněného postupu upraveny. Této variantě se říká Maintaining Arc
+Consistency, neboli zachování konzistence oblouků. Implementovaný algoritmus
+poté využívá stejné heuristiky jako Forward Checking, tedy pro výběr hracího
+pole je využita heuristiku nejvíce omezená proměnná. Z~domény tohoto pole jsou
+hodnoty vybírány postupně, není využita žádná speciální heuristika.
 
 \subsection{Look-ahead v praxi}
 
@@ -1592,6 +1593,22 @@ mřížkách je však Backtracking rychlejší než algoritmy využívající lo
 techniky, což je způsobeno tím, že Backtracking je jednodušší a~neobsahuje
 režii spojenou s~předpovídáním budoucích kroků. Proto je i Backtracking velice
 užitečný, hlavně tedy pro řešení problémů s~menším stavovým prostorem.
+
+Nejčastěji používané algoritmy pro řešení Futoshiki jsou Backtracking a~Forward
+Checking s~využitím různých heuristik. Tedy při porovnání časové náročnosti
+je mnou implementovaný algoritmus využívající Arc Consistency \#3 rychlejší,
+pouze však u~větších mřížek, kde se může projevit jeho síla.
+
+Možné vylepšení algoritmů Forward Checking a~Arc Consistency je využití
+efektivnějších heuristik, které by umožnily rychleji najít řešení. Heuristiky
+však přidají další režii, která by mohla zpomalit algoritmy, tedy teoreticky
+by toto řešení pomohlo při větších mřížkách.
+
+Další možností vylepšení je využití více efektivních algoritmů, jako jsou
+například pokročilejší algoritmy pro Arc Consistency, konkrétně algoritmy
+Arc Consistency \#4, \#5 a \#6. Tyto algoritmy by mohly zvýšit efektivitu
+řešení, avšak složitost jejich implementace a režie algoritmů by byly výrazně
+vyšší.
 
 Další kapitola se věnuje popisu konečných automatů, ve které jsou představeny
 deterministické konečné automaty, nedeterministické konečné automaty a
