@@ -8,70 +8,66 @@
 
 \chapter{Úvod}
 
-V~této práci se čtenář dozví informace o~hře Futoshiki, její pravidla
-a~o~různých metodách, které slouží pro řešení této hry. Dále jsou v práci
-zahrnuty také informace o~konečných automatech, které budou využity pro
-vytvoření specifického automatu na řešení hry Futoshiki. Na základě tohoto
-automatu budou vytvořena pravidla pro řešení mřížky Futoshiki pomocí
-jednotlivých algoritmů. Cílem této práce je poukázat, že hra Futoshiki je
-řešitelná pomocí automatů a~ukázat vhodnost využití dvoudimenzionálních
-automatů.
+V~této práci se čtenář dozví informace o~hře Futoshiki, jejích pravidlech
+a~o~různých metodách, které slouží k~řešení této hry. Dále jsou v~práci
+zahrnuty informace o~konečných automatech, které budou využity pro vytvoření
+specifického automatu k~řešení hry Futoshiki. Na základě tohoto automatu budou
+vytvořena pravidla pro řešení mřížky Futoshiki pomocí jednotlivých algoritmů.
+Cílem této práce je poukázat na to, že hra Futoshiki je řešitelná pomocí
+automatů, a~ukázat vhodnost využití dvoudimenzionálních automatů.
 
-V~druhé kapitole se práce zaměří na podrobný popis hry Futoshiki včetně
-pravidel pro úspešné vyřešení. Dále budou v~této kapitole detailně popsány
-algoritmy sloužící pro vyřešení mřížky Futoshiki, konkrétně algoritmus
-Backtracking a~jeho vylepšení s~využitím Look-ahead procedur ve formě algoritmů
-Forward Checking a~algoritmů Arc Consistency, mezi které se řadí například
+Ve~druhé kapitole se práce zaměří na podrobný popis hry Futoshiki, včetně
+popisu pravidel pro úspešné vyřešení. Dále budou v~této kapitole detailně
+popsány algoritmy sloužící pro vyřešení mřížky Futoshiki, konkrétně algoritmus
+Backtracking a~jeho vylepšení s~využitím Look-ahead procedur ve formě algoritmu
+Forward Checking a~algoritmů Arc Consistency, mezi které patří například
 algoritmy Arc Consistency \#1 a~Arc Consistency \#3. Look-ahead procedury se
 snaží zmenšit počet zkoušených kombinací tím, že se pokusí předvídat účinky
-jednotlivých cest při hledání řešení. Díky tomu se eliminují prohledávané cesty
-ještě před jejich prozkoumáním. V~kapitole budou také popsány výhody a~nevýhody
-algoritmů z~hlediska výpočetní složitosti.
+jednotlivých cest při hledání řešení. Díky tomu jsou eliminovány cesty, které
+nevedou k~řešení, ještě před jejich prozkoumáním. V~kapitole budou rovněž
+popsány výhody a~nevýhody algoritmů z~hlediska výpočetní složitosti.
 
-Třetí kapilota popíše existující konečné automaty, které jsou často vnímané
+Třetí kapitola popisuje existující konečné automaty, které jsou často vnímány
 jako základní stavební bloky pro modelování výpočetních procesů. Tyto automaty
-jsou důležité pro následnou derivaci automatu využitého pro řešení Futoshiki.
+jsou důležité pro následnou derivaci automatu využitého k~řešení Futoshiki.
 Jsou zde popsány deterministické a nedeterministické konečné automaty, ale také
-dvojcestný konečný automat, který nám ukáže princip pohybu na vstupní pásce,
-který se využívá i~u~vícedimenzionálních automatů. Nakonec bude popsán
-skákající automat a~čtyřcestný automat, využívající princip pohybu dvojcestného
-automatu na dvojrozměrné vstupní pásce.
+dvojcestné konečné automaty, které ilustrují princip pohybu na vstupní pásce,
+využívaný i~u~vícedimenzionálních automatů. Nakonec bude popsán skákající
+automat a~čtyřcestný automat, využívající princip pohybu dvojcestného automatu
+na dvojrozměrné vstupní pásce.
 
 Ve čtvrté kapitole je popsán již výsledný automat, který je vytvořen na základě
 skákajícího automatu a~čtyřcestného automatu. Konkrétně se jedná
-o~dvojdimenzionální skákájící automat, který umožňuje jak pohyb po mřížce ve
-čtyřech směrech, stejně jako čtyřcestný automat, ale také skoky. Díky skokům
-může automat přeskočit určitou oblast vstupní pásky a~rychleji se dostat do
-požadované části mřížky, čímž se zvyšuje efektivita hledání řešení. Tento
-automat je následně využit pro řešení mřížky Futoshiki.
+o~dvojdimenzionální skákájící automat, který umožňuje pohyb po mřížce ve
+čtyřech směrech stejně jako čtyřcestný automat, ale navíc umožňuje i~skoky.
+Díky skokům může automat přeskočit určitou oblast vstupní pásky a~rychleji se
+dostat do požadované části mřížky, čímž se zvyšuje efektivita hledání řešení.
+Tento automat je následně využit k~řešení mřížky Futoshiki.
 
-Následující kapitola obsahuje pravidla pro automat samotný. Jsou zde definovány
+Následující kapitola obsahuje pravidla pro samotný automat. Jsou zde definovány
 základní symboly automatu, které jsou využity v~pravidlech. Tyto symboly slouží
 například k~reprezentaci hodnot v~mřížce a~nerovností mezi buňkami. Následují
 pravidla automatu pro řešení mřížky Futoshiki pomocí algoritmu Backtracking
-a~pravidla pro řešení pomocí algoritmu Forward Checking. Pravidla pro
-algoritmus Arc Consistency \#3 jsou velmi podobná jako pro Forward Checking,
-z~toho důvodu jsou popsána pouze rozdílná pravidla. To je z~důvodu podobnosti
-algoritmů, kde Arc Consistency \#3 má pouze více striktní úpravy domén.
+a~pravidla pro řešení pomocí algoritmu Forward Checking.
 
-Detailní popis implementace samotné je obsažen v kapitole šesté. Implementace
-byla vyvinuta v~jazyce Rust s~pomocí knihovny termint. Knihovna slouží pro
+Detailní popis samotné implementace je obsažen v kapitole šesté. Implementace
+byla vyvinuta v~jazyce Rust s~pomocí knihovny termint, která slouží pro
 jednodušší tvorbu terminálových uživatelských rozhraní. Rust byl zvolen zejména
 díky své efektivitě a~bezpečnosti při práci s~pamětí, kdy v~porovnání s~jazykem
 C~je Rust téměř stejně efektivní, avšak mnohem více bezpečný při práci
 s~pamětí.
 
 První část této kapitoly se věnuje popisu spouštění aplikace. Jsou zde popsány
-veškeré argumenty pro spuštění hry, ale také benchmarku nebo úpravy
-konfigurace. Spuštěním aplikace s~popsanými argumenty se mění nastavení hry,
-jako je třeba velikost mřížky nebo řešící algoritmus, a nastavení benchmarku,
-například testované velikosti či algoritmy.
+veškeré argumenty pro spuštění hry, benchmarku nebo úpravy konfigurace.
+Spuštěním aplikace s~popsanými argumenty se mění nastavení hry, jako je třeba
+velikost mřížky nebo řešící algoritmus, a nastavení benchmarku, například
+testované velikosti či algoritmy.
 
 Následně je popsán vzhled aplikace, která je implementována jako terminálová
-aplikace. Detailně bude čtenář seznámen s~jednotlivými stránkami aplikace,
-konkrétně se stránkami pro vytvoření mřížky, řešení mřížky a~pro změnu řešícího
-algoritmu. U jednotlivých stránek bude popsáno ovládání, jako například pohyb
-na mřížce a zápis hodnoty, ale také funkcionalita stránky.
+aplikace. Čtenář bude detailně seznámen s~jednotlivými stránkami aplikace,
+konkrétně se stránkami pro vytvoření mřížky, řešení mřížky a~změnu řešícího
+algoritmu. U jednotlivých stránek bude popsáno ovládání, například pohyb po
+mřížce a~zápis hodnoty, ale také funkcionalita stránky.
 
 Nakonec bude popsána struktura konfiguračního souboru, který nastavuje výchozí
 nastavení hry. To se hodí v~případě opakovaného spouštění aplikace se stejnými
@@ -79,17 +75,19 @@ argumenty. Uživatel si může tyto argumenty uložit do konfiguračního soubor
 a~při následném spuštění se hodnoty z~konfiguračního souboru využijí jako
 výchozí.
 
-Poslední kapitola této práce se zaměří na testování. Hlavní důraz byl kladen
-na správnost implementovaných algoritmů a~na jejich časovou náročnost. Čtenář
-se dozví, jak se testovala správnost implementace jednotlivých částí aplikace,
-tedy implementovaných algoritmů, ověřovače složení a~generátoru mřížky.
-Následně bude popsáno testování časové náročnosti, které bylo provedeno pomocí
-implementovaného benchmarku. Výsledek benchmarku, tedy graf obsahující průměrné
-časy jednotlivých algoritmů pro mřížky od velikosti 4×4 až po velikost 10×10,
-je také obsažen v~této kapitole. Nakonec kapitola obsahuje porovnání
-jednotlivých algoritmů a~jejich časové náročnosti v~závislosti na velikosti
-hrací mřížky. Z~tohoto srovnání vyplývá, jaké algoritmy jsou vhodné pro
-řešení konkrétní velikosti mřížky.
+Poslední kapitola této práce se zaměří na testování. Testování bylo rozděleno
+na tři části: jednotkové testy, integrační testy a~benchmark, kde se testovala
+časová a~paměťová náročnost. Hlavní důraz byl kladen na správnost
+implementovaných algoritmů a~jejich časovou náročnost. Čtenář se dozví, jak
+byla testována správnost implementace jednotlivých částí aplikace, tedy
+implementovaných algoritmů, ověřovače složení a~generátoru mřížky. Správné
+fungování testují jak jednotkové testy, tak i~testy integrační. Následně bude
+popsáno testování pomocí benchmarku. Nejprve bude porovnáno využití paměti
+domén a~následně časové složitosti operací nad doménami, přičemž testování
+probíhá na třech různých typech domén. Dále se testuje časová náročnost
+řešících algoritmů. Výsledný graf obsahuje průměrné časy jednotlivých algoritmů
+pro mřížky od velikosti 4×4 až po velikost 10×10. Z~tohoto srovnání vyplývá,
+které algoritmy jsou vhodné pro řešení konkrétní velikosti mřížky.
 
 \chapter{Futoshiki a algoritmy pro řešení}
 \label{sec:futoshikiAlgs}
@@ -349,7 +347,7 @@ heuristiky.
     \item Jestliže jsou všechna pole vyplněna, nalezeno řešení.
     \item Zvolení pole na základě heuristiky výběru hracího pole.
     \begin{enumerate}
-        \item Jesliže doména je prázdná a~zásobník stavů mřížky je prázdný,
+        \item Jestliže doména je prázdná a~zásobník stavů mřížky je prázdný,
             neexistuje řešení.
         \item Jinak uložení aktuálního stavu mřížky.
     \end{enumerate}
@@ -711,7 +709,7 @@ hrací mřížky pro různé hlavolamy, včetně mřížky Futoshiki.
 \subsubsection{Vstup}
 
 Vstupem dvojdimenzionálního automatu je dvojrozměrná matice symbolů, někdy
-také označována jako obrázek. Matice obsahuje prvky z~dané abecedy \(\Sigma\).
+označovaná také jako obrázek. Matice obsahuje prvky z~dané abecedy \(\Sigma\).
 Všechny množiny takových matic jsou označovány jako \(\Sigma^{**}\).
 
 \[
@@ -1090,29 +1088,29 @@ Pravidla pro řešení hry
     \(Q_{80} \implies Q_{81}U\) & Posun nahoru pro ověření nerovnosti \\
     \(Q_{81}N \implies Q_{81}U\) & Pokud nerovnost, uložení typu nerovnosti
         a~posun nahoru \\
-    \(Q_{81}\{X\} \implies Q_{81}L\) & Úprava domény aby platila uložená
+    \(Q_{81}\{X\} \implies Q_{81}L\) & Úprava domény aby byla splněna uložená
         nerovnost \\
     \(Q_{81} \implies Q_{82}\{L\}\) & Jinak skok na původní pole \\
     & \\
     \(Q_{82} \implies Q_{83}L\) & Posun doleva pro ověření nerovnosti \\
     \(Q_{83}N \implies Q_{83}L\) & Pokud nerovnost, uložení typu nerovnosti
         a~posun doleva \\
-    \(Q_{83}\{X\} \implies Q_{83}U\) & Úprava domény aby platila uložená
+    \(Q_{83}\{X\} \implies Q_{83}U\) & Úprava domény aby byla splněna uložená
         nerovnost \\
     \(Q_{83} \implies Q_{84}\{L\}\) & Jinak skok na původní pole \\
     & \\
     \(Q_{84} \implies Q_{85}R\) & Posun doprava pro ověření nerovnosti \\
     \(Q_{85}N \implies Q_{85}R\) & Pokud nerovnost, uložení typu nerovnosti
         a~posun doprava \\
-    \(Q_{85}\{X\} \implies Q_{85}U\) & Úprava domény aby platila uložená
+    \(Q_{85}\{X\} \implies Q_{85}U\) & Úprava domény aby byla splněna uložená
         nerovnost \\
     \(Q_{85} \implies Q_{86}\{L\}\) & Jinak skok na původní pole \\
     & \\
     \(Q_{86} \implies Q_{87}D\) & Posun dolů pro ověření nerovnosti \\
     \(Q_{87}N \implies Q_{87}D\) & Pokud nerovnost, uložení typu nerovnosti
         a~posun dolů \\
-    \(Q_{87}\{X\} \implies Q_{87}L\) & Úprava domény aby platila uložená
-        nerovnost \\
+    \(Q_{87}\{X\} \implies Q_{87}L\) & Úprava domény aby byla splněna uložená
+        nerovnost\\
     \(Q_{87} \implies Q_{71}\{L\}\) & Jinak skok na původní pole a zapsání
         hodnoty \\
 \end{tabular}
@@ -1445,7 +1443,7 @@ Integrační testy ověřují správnou spolupráci jednotlivých částí imple
 Oproti jednotkovým testům se tedy netestují jednotlivé části implementace, ale
 jejich soubor a~zda spolupracují dle očekávání.
 
-Integračních testů již v~implementaci není tolik a~proto budou testy popsány
+Integračních testů již v~implementaci není tolik, a~proto budou testy popsány
 více detailně. Mezi implementované integrační testy patří: testy řešících
 algoritmů, ověřovače složení a~generátoru mřížky.
 
@@ -1467,8 +1465,8 @@ správně složena či nikoli.
 \subsection*{Testování generování mřížky}
 
 V~testování generátoru mřížky bylo nejdříve vytvořeno několik náhodných mřížek,
-které byly následně složeny pomocí jednoho z~algoritmů. Výsledné složené mřížky
-byly zkontrolovány ověřovačem složení, což zajišťuje, že každá vygenerovaná
+které byly následně složeny pomocí jednoho z~algoritmů. Výsledně složené mřížky
+byly zkontrolovány ověřovačem složení, který zajišťuje, že každá vygenerovaná
 mřížka je řešitelná a~splňuje pravidla hry.
 
 \section{Benchmark}
@@ -1484,8 +1482,8 @@ I~když na základě teorie by domény implementované pomocí bitmap měly být
 nejvíce efektivní, rozhodl jsem se toto teoretické tvrzení ověřit v~praxi.
 Proto jsem implementoval benchmark, který změří využití paměti domén pro různé
 velikosti a~který změří časovou náročnost nejčastěji využívaných operací domén.
-Tento benchmark je proveden po spuštění aplikace s~argumentem \texttt{doc}, což
-vypíše výsledky do terminálu a~vygeneruje odpovídající grafy.
+Tento benchmark se provádí po spuštění aplikace s~argumentem \texttt{doc},
+který vypíše výsledky do terminálu a~vygeneruje odpovídající grafy.
 
 Při prohlédnutí grafu na obrázku~\ref{fig:domain-size} obsahující
 paměťové využití domén, implementace pomocí hašovacích množin a~pomocí vektorů
