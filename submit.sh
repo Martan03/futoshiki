@@ -1,19 +1,26 @@
 #!/usr/bin/bash
 
+dir=submit
 login=xsleza26
-mkdir $login
+sources=$dir/$login
+
+rm -rf $sources
+mkdir -p $sources
 
 cd doc
-make
-cp $login.pdf ../$login/$login.pdf
 make clean
 cd ..
 
-cp -r src doc README.md Cargo.toml $login
+# cargo build -r
+# cp target/release/futoshiki $sources/futoshiki
 
-cd $login
-zip -r $login.zip .
+cp -r src doc README.md Cargo.toml futoshiki $sources
 
+cd doc
+make
 cd ..
-mv $login/$login.zip .
-rm -r $login
+cp doc/$login.pdf $dir
+
+cd $dir
+zip -9 -r $login.zip $login
+rm -rf $login
