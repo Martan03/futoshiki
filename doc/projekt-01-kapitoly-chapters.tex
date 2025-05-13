@@ -8,70 +8,66 @@
 
 \chapter{Úvod}
 
-V~této práci se čtenář dozví informace o~hře Futoshiki, její pravidla
-a~o~různých metodách, které slouží pro řešení této hry. Dále jsou v práci
-zahrnuty také informace o~konečných automatech, které budou využity pro
-vytvoření specifického automatu na řešení hry Futoshiki. Na základě tohoto
-automatu budou vytvořena pravidla pro řešení mřížky Futoshiki pomocí
-jednotlivých algoritmů. Cílem této práce je poukázat, že hra Futoshiki je
-řešitelná pomocí automatů a~ukázat vhodnost využití dvoudimenzionálních
-automatů.
+V~této práci se čtenář dozví informace o~hře Futoshiki, jejích pravidlech
+a~o~různých metodách, které slouží k~řešení této hry. Dále jsou v~práci
+zahrnuty informace o~konečných automatech, které budou využity pro vytvoření
+specifického automatu k~řešení hry Futoshiki. Na základě tohoto automatu budou
+vytvořena pravidla pro řešení mřížky Futoshiki pomocí jednotlivých algoritmů.
+Cílem této práce je poukázat na to, že hra Futoshiki je řešitelná pomocí
+automatů, a~ukázat vhodnost využití dvoudimenzionálních automatů.
 
-V~druhé kapitole se práce zaměří na podrobný popis hry Futoshiki včetně
-pravidel pro úspešné vyřešení. Dále budou v~této kapitole detailně popsány
-algoritmy sloužící pro vyřešení mřížky Futoshiki, konkrétně algoritmus
-Backtracking a~jeho vylepšení s~využitím Look-ahead procedur ve formě algoritmů
-Forward Checking a~algoritmů Arc Consistency, mezi které se řadí například
+Ve~druhé kapitole se práce zaměří na podrobný popis hry Futoshiki, včetně
+popisu pravidel pro úspěšné vyřešení. Dále budou v~této kapitole detailně
+popsány algoritmy sloužící pro vyřešení mřížky Futoshiki, konkrétně algoritmus
+Backtracking a~jeho vylepšení s~využitím Look-ahead procedur ve formě algoritmu
+Forward Checking a~algoritmů Arc Consistency, mezi které patří například
 algoritmy Arc Consistency \#1 a~Arc Consistency \#3. Look-ahead procedury se
 snaží zmenšit počet zkoušených kombinací tím, že se pokusí předvídat účinky
-jednotlivých cest při hledání řešení. Díky tomu se eliminují prohledávané cesty
-ještě před jejich prozkoumáním. V~kapitole budou také popsány výhody a~nevýhody
-algoritmů z~hlediska výpočetní složitosti.
+jednotlivých cest při hledání řešení. Díky tomu jsou eliminovány cesty, které
+nevedou k~řešení, ještě před jejich prozkoumáním. V~kapitole budou rovněž
+popsány výhody a~nevýhody algoritmů z~hlediska výpočetní složitosti.
 
-Třetí kapilota popíše existující konečné automaty, které jsou často vnímané
+Třetí kapitola popisuje existující konečné automaty, které jsou často vnímány
 jako základní stavební bloky pro modelování výpočetních procesů. Tyto automaty
-jsou důležité pro následnou derivaci automatu využitého pro řešení Futoshiki.
+jsou důležité pro následnou derivaci automatu využitého k~řešení Futoshiki.
 Jsou zde popsány deterministické a nedeterministické konečné automaty, ale také
-dvojcestný konečný automat, který nám ukáže princip pohybu na vstupní pásce,
-který se využívá i~u~vícedimenzionálních automatů. Nakonec bude popsán
-skákající automat a~čtyřcestný automat, využívající princip pohybu dvojcestného
-automatu na dvojrozměrné vstupní pásce.
+dvojcestné konečné automaty, které ilustrují princip pohybu na vstupní pásce,
+využívaný i~u~více dimenzionálních automatů. Nakonec bude popsán skákající
+automat a~čtyřcestný automat, využívající princip pohybu dvojcestného automatu
+na dvojrozměrné vstupní pásce.
 
 Ve čtvrté kapitole je popsán již výsledný automat, který je vytvořen na základě
 skákajícího automatu a~čtyřcestného automatu. Konkrétně se jedná
-o~dvojdimenzionální skákájící automat, který umožňuje jak pohyb po mřížce ve
-čtyřech směrech, stejně jako čtyřcestný automat, ale také skoky. Díky skokům
-může automat přeskočit určitou oblast vstupní pásky a~rychleji se dostat do
-požadované části mřížky, čímž se zvyšuje efektivita hledání řešení. Tento
-automat je následně využit pro řešení mřížky Futoshiki.
+o~dvoudimenzionální skákající automat, který umožňuje pohyb po mřížce ve
+čtyřech směrech stejně jako čtyřcestný automat, ale navíc umožňuje i~skoky.
+Díky skokům může automat přeskočit určitou oblast vstupní pásky a~rychleji se
+dostat do požadované části mřížky, čímž se zvyšuje efektivita hledání řešení.
+Tento automat je následně využit k~řešení mřížky Futoshiki.
 
-Následující kapitola obsahuje pravidla pro automat samotný. Jsou zde definovány
+Následující kapitola obsahuje pravidla pro samotný automat. Jsou zde definovány
 základní symboly automatu, které jsou využity v~pravidlech. Tyto symboly slouží
 například k~reprezentaci hodnot v~mřížce a~nerovností mezi buňkami. Následují
 pravidla automatu pro řešení mřížky Futoshiki pomocí algoritmu Backtracking
-a~pravidla pro řešení pomocí algoritmu Forward Checking. Pravidla pro
-algoritmus Arc Consistency \#3 jsou velmi podobná jako pro Forward Checking,
-z~toho důvodu jsou popsána pouze rozdílná pravidla. To je z~důvodu podobnosti
-algoritmů, kde Arc Consistency \#3 má pouze více striktní úpravy domén.
+a~pravidla pro řešení pomocí algoritmu Forward Checking.
 
-Detailní popis implementace samotné je obsažen v kapitole šesté. Implementace
-byla vyvinuta v~jazyce Rust s~pomocí knihovny termint. Knihovna slouží pro
+Detailní popis samotné implementace je obsažen v kapitole šesté. Implementace
+byla vyvinuta v~jazyce Rust s~pomocí knihovny termint, která slouží pro
 jednodušší tvorbu terminálových uživatelských rozhraní. Rust byl zvolen zejména
 díky své efektivitě a~bezpečnosti při práci s~pamětí, kdy v~porovnání s~jazykem
 C~je Rust téměř stejně efektivní, avšak mnohem více bezpečný při práci
 s~pamětí.
 
 První část této kapitoly se věnuje popisu spouštění aplikace. Jsou zde popsány
-veškeré argumenty pro spuštění hry, ale také benchmarku nebo úpravy
-konfigurace. Spuštěním aplikace s~popsanými argumenty se mění nastavení hry,
-jako je třeba velikost mřížky nebo řešící algoritmus, a nastavení benchmarku,
-například testované velikosti či algoritmy.
+veškeré argumenty pro spuštění hry, benchmarku nebo úpravy konfigurace.
+Spuštěním aplikace s~popsanými argumenty se mění nastavení hry, jako je třeba
+velikost mřížky nebo řešící algoritmus, a nastavení benchmarku, například
+testované velikosti či algoritmy.
 
 Následně je popsán vzhled aplikace, která je implementována jako terminálová
-aplikace. Detailně bude čtenář seznámen s~jednotlivými stránkami aplikace,
-konkrétně se stránkami pro vytvoření mřížky, řešení mřížky a~pro změnu řešícího
-algoritmu. U jednotlivých stránek bude popsáno ovládání, jako například pohyb
-na mřížce a zápis hodnoty, ale také funkcionalita stránky.
+aplikace. Čtenář bude detailně seznámen s~jednotlivými stránkami aplikace,
+konkrétně se stránkami pro vytvoření mřížky, řešení mřížky a~změnu řešícího
+algoritmu. U jednotlivých stránek bude popsáno ovládání, například pohyb po
+mřížce a~zápis hodnoty, ale také funkcionalita stránky.
 
 Nakonec bude popsána struktura konfiguračního souboru, který nastavuje výchozí
 nastavení hry. To se hodí v~případě opakovaného spouštění aplikace se stejnými
@@ -79,23 +75,25 @@ argumenty. Uživatel si může tyto argumenty uložit do konfiguračního soubor
 a~při následném spuštění se hodnoty z~konfiguračního souboru využijí jako
 výchozí.
 
-Poslední kapitola této práce se zaměří na testování. Hlavní důraz byl kladen
-na správnost implementovaných algoritmů a~na jejich časovou náročnost. Čtenář
-se dozví, jak se testovala správnost implementace jednotlivých částí aplikace,
-tedy implementovaných algoritmů, ověřovače složení a~generátoru mřížky.
-Následně bude popsáno testování časové náročnosti, které bylo provedeno pomocí
-implementovaného benchmarku. Výsledek benchmarku, tedy graf obsahující průměrné
-časy jednotlivých algoritmů pro mřížky od velikosti 4×4 až po velikost 10×10,
-je také obsažen v~této kapitole. Nakonec kapitola obsahuje porovnání
-jednotlivých algoritmů a~jejich časové náročnosti v~závislosti na velikosti
-hrací mřížky. Z~tohoto srovnání vyplývá, jaké algoritmy jsou vhodné pro
-řešení konkrétní velikosti mřížky.
+Poslední kapitola této práce se zaměří na testování. Testování bylo rozděleno
+na tři části: jednotkové testy, integrační testy a~benchmark, kde se testovala
+časová a~paměťová náročnost. Hlavní důraz byl kladen na správnost
+implementovaných algoritmů a~jejich časovou náročnost. Čtenář se dozví, jak
+byla testována správnost implementace jednotlivých částí aplikace, tedy
+implementovaných algoritmů, ověřovače složení a~generátoru mřížky. Správné
+fungování testují jak jednotkové testy, tak i~testy integrační. Následně bude
+popsáno testování pomocí benchmarku. Nejprve bude porovnáno využití paměti
+domén a~následně časové složitosti operací nad doménami, přičemž testování
+probíhá na třech různých typech domén. Dále se testuje časová náročnost
+řešících algoritmů. Výsledný graf obsahuje průměrné časy jednotlivých algoritmů
+pro mřížky od velikosti 4×4 až po velikost 10×10. Z~tohoto srovnání vyplývá,
+které algoritmy jsou vhodné pro řešení konkrétní velikosti mřížky.
 
 \chapter{Futoshiki a algoritmy pro řešení}
 \label{sec:futoshikiAlgs}
 
 Tato kapitola se podrobně zaměřuje na pravidla hry Futoshiki a~algoritmy, které
-jsou používány k~jejímu řešení. Nejprve se seznámíme s~pravidly, která jsou
+se používají k~jejímu řešení. Nejprve se seznámíme s~pravidly, která jsou
 nezbytná pro pochopení herních mechanismů, což nám umožní lépe porozumět
 následně popsaným algoritmům pro řešení hlavolamu.
 
@@ -106,34 +104,34 @@ klíčový základ pro pochopení dalších sofistikovanějších metod, které 
 k~řešení hlavolamu Futoshiki.
 
 Následně se zaměříme na algoritmy vylepšující Backtracking pomocí look-ahead
-technik, které se snaží zmenšit počet zkoušených kombinací tím, že dopředu
-odstraní hodnoty z~domén, neboli množin platných hodnot. Práce se také zaměří
-na různé implementace domén a~porovná jejich rychlost a~využití paměti.
+procedur. Tyto procedury se snaží zmenšit počet zkoušených kombinací tím, že
+dopředu odstraňují hodnoty z~domén, tedy z~množin platných hodnot. Práce se také
+zaměřuje na různé implementace domén.
 
-Jedním z~algoritmů využívající těchto technik je Forward Checking, který
-upravuje domény přímo ovlivněných polí, tedy polí ve stejném řádku či sloupci,
+Jedním z~algoritmů využívajících těchto technik je Forward Checking, který
+upravuje domény přímo ovlivněných polí – tedy polí ve stejném řádku či sloupci,
 nebo polí, které jsou v~nerovnosti s~daným polem.
 
-Nakonec budou popsány algoritmy Arc Consistency, které v~porovnání s~algoritmem
-Forward Checking upravují domény více striktně. Mezi zástupce těchto algoritmů
-patří například Arc Consistency \#1 a~Arc Consistency \#3. Nejčastěji je však
-využíván algoritmus Arc Consistency \#3, díky jeho jednoduchosti, ale
-i~efektivitě. Z~tohoto důvodu byl implementován pouze tento algoritmus.
+Nakonec budou popsány algoritmy Arc Consistency, které oproti algoritmu Forward
+Checking upravují domény přísněji. Mezi zástupce těchto algoritmů patří
+například Arc Consistency \#1 a~Arc Consistency \#3. Nejčastěji se však využívá
+algoritmus Arc Consistency \#3, a~to díky své jednoduchosti i~efektivitě.
+Z~tohoto důvodu byl implementován pouze tento algoritmus.
 
 Algoritmy Backtracking, Forward Checking a~Arc Consistency \#3 byly
 implementovány v~programu, který umožňuje řešení libovolné mřížky hlavolamu
-Futoshiki. Implementace obsahuje i~benchmark, pomocí kterého lze demonstrovat
-účinnost jednotlivých algoritmů v~různých herních scénářích. Více o~benchmarku
-bude zmíněno v~sekci
+Futoshiki. Implementace obsahuje také benchmark, pomocí kterého lze
+demonstrovat účinnost jednotlivých algoritmů v~různých herních scénářích. Více
+o~benchmarku bude zmíněno v~sekci
 \hyperref[sec:timeComplexity]{benchmark řešících algoritmů}.
 
 \section{Pravidla hry}
 
-Futoshiki~\cite{FutoshikiBook1}\cite{FutoshikiBook2}, známá také jako hra
-"větší/menší"\ (More or Less), je logický hlavolam pocházející z~Japonska. Jeho
-název v~překladu znamená "nerovnost". Hra je založená na podobném principu jako
-sudoku. Hlavolam se skládá ze čtvercové mřížky, obvykle o~velikosti 4×4 nebo
-5×5, přičemž může být i~větší.
+Futoshiki~\cite{FutoshikiBook1}~\cite{FutoshikiBook2}, známá také jako hra
+,,větší/menší''\ (More or Less), je logický hlavolam pocházející z~Japonska.
+Jeho název v~překladu znamená ,,nerovnost''. Hra je založena na podobném
+principu jako sudoku. Hlavolam se skládá ze čtvercové mřížky, obvykle
+o~velikosti 4×4 nebo 5×5, přičemž může být i~větší.
 
 Pro úspěšné vyřešení je třeba každé pole v~mřížce vyplnit číslem od 1 do
 velikosti mřížky, přičemž musí platit následující pravidla:
@@ -177,8 +175,8 @@ Hra začíná s~libovolným počtem již vyplněných polí a~nerovností, při�
 počáteční rozmístění musí být v~souladu s~pravidly a~zaručovat existenci
 alespoň jednoho řešení. Následně hráč vyplňuje zbývající pole, zatímco
 nerovnosti se již nemění a~nepřidávají se žádné nové. Složená mřížka Futoshiki
-je takzvaný latinský čtverec~\cite{LatinSquareWiki} – každé číslo je v~každém
-řádku i~sloupci pouze jednou.
+je takzvaný latinský čtverec~\cite{LatinSquareWiki} – každé číslo se vyskytuje
+v~každém řádku i~sloupci právě jednou.
 
 \begin{figure}[hbt]
 	\centering
@@ -188,12 +186,12 @@ je takzvaný latinský čtverec~\cite{LatinSquareWiki} – každé číslo je v~
 
 \section{Backtracking}
 
-Backtracking~\cite{PrednaskyIZU}\cite{BacktrackingWiki} je způsob řešení
-algoritmických problémů, které jsou založeny na prohledávání stavového
-prostoru. Je to jednoduchý a~často využívaný algoritmus, který systematicky
-prohledává prostor řešení. Je založen na prohledávání do hloubky, tedy nejdříve
-se zkusí celá cesta, než bude prohledáváno jiné řešení. Z~tohoto důvodu se
-algoritmu Backtracking říká také metoda pokus-omyl – prohledá se jedna cesta
+Backtracking~\cite{PrednaskyIZU}~\cite{BacktrackingWiki} je způsob řešení
+algoritmických problémů založených na prohledávání stavového prostoru. Jde
+o~jednoduchý a~často využívaný algoritmus, který systematicky prohledává
+prostor řešení. Je založen na prohledávání do hloubky, tedy nejdříve se zkusí
+celá jedna cesta, než bude zkoušeno jiné řešení. Z~tohoto důvodu se algoritmu
+Backtracking někdy říká také metoda pokus-omyl – prohledá se jedna cesta
 a~v~případě omylu se zkusí jiná.
 
 \begin{figure}[hbt]
@@ -211,7 +209,7 @@ byla následně implementována rekurzivní varianta algoritmu.
 \begin{enumerate}
     \item Posun na první nevyplněné pole. Pokud neexistuje, bylo nalezeno
         řešení.
-    \item Postupné dosazování hodnot (1~až velikost mřížky) a~otestování, zda
+    \item Postupné dosazování hodnot (1~až velikost mřížky) a~ověření, zda
         dosazená hodnota porušuje některé z~pravidel.
     \begin{enumerate}
         \item Pokud ano, zkouší se jiná hodnota.
@@ -227,18 +225,18 @@ byla následně implementována rekurzivní varianta algoritmu.
 \subsection{Backtracking v praxi}
 
 Algoritmus je velmi populární, jelikož lze využít pro řešení velkého množství
-problémů a~jeho implementace je velice jednoduchá. Avšak kvůli jeho
-exponenciální časové složitosti je vhodný pouze pro problémy, které mají malý
-stavový prostor. To je dáno tím, že algoritmus zkouší všechny možnosti, bez
-ohledu na to, zda je již z počátku zjevné, že daná možnost k~řešení nevede.
+problémů a~jeho implementace je velice jednoduchá. Kvůli své exponenciální
+časové složitosti je však vhodný pouze pro problémy s~malým stavovým prostorem.
+To je dáno tím, že algoritmus zkouší všechny možnosti, bez ohledu na to, zda je
+již od počátku zřejmé, že daná možnost k~řešení nevede.
 
-Nevýhoda tohoto algoritmu lze například pozorovat u~větších mřížek futoshiki.
+Nevýhoda tohoto algoritmu se například projevuje u~větších mřížek futoshiki.
 Více o~jeho časové složitosti je popsáno v~sekci
 \hyperref[sec:timeComplexity]{benchmark řešících algoritmů}.
 
 Z~tohoto důvodu se pro problémy s~velkými stavovými prostory využívají
-algoritmy, které implementují další techniky k~zúžení stavového prostoru, čímž
-se zlepšuje výpočetní náročnost. Tyto procedury pro zužování stavového prostoru
+algoritmy, které implementují další techniky ke zúžení stavového prostoru, čímž
+se zlepšuje výpočetní náročnost. Tyto procedury pro zúžení stavového prostoru
 se nazývají look-ahead a~jsou popsány
 v~\hyperref[sec:lookAhead]{následující sekci}.
 
@@ -246,20 +244,20 @@ v~\hyperref[sec:lookAhead]{následující sekci}.
 \label{sec:lookAhead}
 
 Pro optimalizaci algoritmu Backtracking se využívají procedury zvané
-look-ahead~\cite{LookAheadWiki}. Tato procedura se pokouší zmenšit stavový
-prostor tím, že se pokusí předvídat účinky jednotlivých cest při hledání
-řešení. Obecně algoritmy využívající této techniky uchovávají doménu u~každé
-proměnné. Doména je množina hodnot, kterých může daná proměnná nabývat. Tato
-doména se poté během provádění algoritmu mění na základě predikcí.
+look-ahead~\cite{LookAheadWiki}. Tyto procedury se snaží zmenšit stavový
+prostor tím, že předvídají účinky jednotlivých cest při hledání řešení.
+Algoritmy využívající těchto technik obvykle uchovávají u~každé proměnné
+takzvanou doménu, což je množina hodnot, kterých daná proměnná může nabývat.
+Tato doména se poté během provádění algoritmu může mění na základě predikcí.
 
 Mezi algoritmy využívající look-ahead techniky patří například Forward Checking
 a~algoritmy Arc Consistency, mezi které patří například Arc Consistency \#3.
 
 \subsection{Heuristiky}
 
-Algoritmy využívající technik look-ahead mohout využívat
-heuristiky~\cite{PrednaskyIZU}, které dále optimalizují proces hledání řešení.
-Heuristika určuje strategii výběru hracího pole a hodnoty, která bude dosazena
+Algoritmy využívající techniky look-ahead mohou dále využívat
+heuristiky~\cite{PrednaskyIZU}, které optimalizují proces hledání řešení.
+Heuristiky určují strategii výběru hracího pole a hodnoty, která bude dosazena
 do tohoto pole. Existují dvě hlavní kategorie heuristik: heuristiky pro výběr
 hracího pole a~heuristiky pro výběr hodnoty z~domény.
 
@@ -273,7 +271,7 @@ Mezi heuristiky pro výběr hracího pole patří:
         možných hodnot.
     \item \textbf{Nejvíce omezující proměnná}: Heuristika volí hrací pole,
         které má největší vliv na omezení ostatních polí, tedy pole, které
-        ovlivňuje nejvíce ostatních hodnot v~mřížce.
+        ovlivňuje nejvíce ostatních proměnných v~mřížce.
 \end{itemize}
 
 \subsubsection{Heuristiky výběru hodnoty z domény}
@@ -292,41 +290,42 @@ Mezi heuristiky pro výběr hodnoty z domény patří:
 \subsection{Ukládání domén}
 
 Uložení domén může probíhat několika způsoby. Mezi klasické způsoby patří
-ukládání hodnot do pole nebo seznamu, což však může být problematické, pokud
-je potřeba efektivně vylučovat hodnoty z~domény nebo ověřovat, zda se hodnota
-v~doméně nachází. Tento problém je způsoben nutností projít celé pole nebo
-seznam, což je časově náročné. Tento problém lze vyřešit pomocí hašovacích
-množin, které využívají hašovací tabulky. Ověření, zda se hodnota nachází
-v~doméně, je efektivní s průměrnou časovou složitostí O(1), a~při mazání
-hodnoty není třeba přeskupovat prvky, na rozdíl od běžného pole. Avšak kvůli
-nutnosti počítat heš toto tvrzení nemusí být vždy pravda, což bude ukázáno
-v~sekci \hyperref[sec:domain-benchmark]{benchmark domén}.
+ukládání hodnot do pole nebo seznamu. Tento způsob však může být neefektivní,
+pokud je potřeba často vylučovat hodnoty z~domény nebo ověřovat, zda se v~ní
+nachází určitá hodnota. Tento problém je způsoben nutností projít celé pole
+nebo seznam, což je časově náročné. Tento nedostatek lze řešit pomocí
+hašovacích množin, které využívají hašovací tabulky. Ověření, zda se hodnota
+nachází v~doméně, je efektivní, s průměrnou časovou složitostí \(O(1)\), a~při
+mazání hodnoty není třeba přeskupovat prvky, na rozdíl od běžného pole. Avšak
+kvůli nutnosti výpočtu haše toto tvrzení nemusí být vždy platit, což bude
+ukázáno v~sekci \hyperref[sec:domain-benchmark]{benchmark domén}.
 
-S rostoucí velikostí mřížky se zvyšuje i~využití paměti, kdy se při využití
+S~rostoucí velikostí mřížky se zvyšuje i~využití paměti, kdy se při využití
 hašovacích množin či polí jedná o~poměrně dost paměti. Efektivnější způsob
-ukládání domén je možný pomocí bitmap, které vylepšují využití paměti tím, že
-doménu reprezentují jako jedno číslo místo celého pole čísel. V~tomto případě
-každé číslo v~doméně je reprezentováno jedním bitem. Jestliže je tedy v~doméně
+uložení domén je možný pomocí bitmap, které vylepšují využití paměti tím, že
+doménu reprezentují jako jediné číslo místo celého pole čísel. V~bitmapě je
+každé číslo domény reprezentováno jedním bitem. Jestliže je tedy v~doméně
 obsaženo číslo 4, bit na čtvrté pozici bude nastaven na hodnotu 1. V~opačném
-případě bude nastavet na hodnotu 0. Mezi nevýhody bitmap patří omezení
+případě bude nastaven na hodnotu 0. Mezi nevýhody bitmap patří omezení
 velikosti, které závisí na velikosti použitého datového typu. V~mé implementaci
-jsem využil datový typ \texttt{usize}, kterého velikost závisí na architektuře
+jsem využil datový typ \texttt{usize}, jehož velikost závisí na architektuře
 systému. Například na 64-bitovém procesoru má velikost 64 bitů.
 
-Pro implementaci algoritmů s~doménami jsou využil polymorfismu, tedy možnosti
-práce s~různými datovými typy, které sdílí stejné rozhraní, ale mají různé
-chování. Díky tomu je možné jednoduše přidat nový typ domén, aniž by se musel
-měnit kód samotných algoritmů.
+Pro implementaci algoritmů s~doménami jsem využil polymorfismus, tedy možnost
+pracovat s~různými datovými typy, které sdílejí stejné rozhraní, ale mají
+odlišné chování. Díky tomu je možné jednoduše přidat nový typ domény, aniž by
+se musel měnit kód samotných algoritmů.
 
 \subsection{Forward Checking}
 \label{sec:forwardChecking}
 
 Forward Checking~\cite{PrednaskyIZU} využívá již zmíněných look-ahead technik.
-Tento algoritmus snižuje počet zkoušených kombinacích tím, že upravuje domény
-všech přímo ovlivněných polí po zápisu do pole. Přímo ovlivněná pole v~případě
-řešení Futoshiki jsou taková pole, která se nachází ve stejném řádku či sloupci
-a~nebo jsou v~nerovnosti s~polem, do kterého se zapisuje. Ilustrace přímo
-ovlivněných polí je zobrazena na obrázku~\ref{fig:futoshiki-direct}.
+Tento algoritmus snižuje počet zkoušených kombinacích tím, že po zápisu hodnoty
+do pole upraví domény všech přímo ovlivněných polí. V~případě řešení Futoshiki
+jsou přímo ovlivněná pole taková pole, která se nacházejí ve stejném řádku
+či sloupci, případně jsou v~nerovnosti s~polem, do kterého se hodnota zapisuje.
+Ilustrace přímo ovlivněných polí je zobrazena na
+obrázku~\ref{fig:futoshiki-direct}.
 
 \begin{figure}[hbt]
 	\centering
@@ -334,34 +333,6 @@ ovlivněných polí je zobrazena na obrázku~\ref{fig:futoshiki-direct}.
 	\caption{Ilustrace přímo ovlivněných polí}
     \label{fig:futoshiki-direct}
 \end{figure}
-
-\subsubsection{Postup algoritmu}
-
-Na základě následujícího postupu algoritmu Forward Checking pro řešení mřížky
-Futoshiki byl algoritmus implementován. V~implementaci je poté pro výběr
-hracího pole využita heuristika nejvíce omezená proměnná. Z~domény tohoto pole
-jsou hodnoty vybírány postupně, nejsou tedy využívány žádné speciální
-heuristiky.
-
-\begin{enumerate}
-    \item Vygenerování domén pro každé pole a inicializace zásobníku stavů
-        mřížky.
-    \item Jestliže jsou všechna pole vyplněna, nalezeno řešení.
-    \item Zvolení pole na základě heuristiky výběru hracího pole.
-    \begin{enumerate}
-        \item Jesliže doména je prázdná a~zásobník stavů mřížky je prázdný,
-            neexistuje řešení.
-        \item Jinak uložení aktuálního stavu mřížky.
-    \end{enumerate}
-    \item Zvolení hodnoty z~pole na základě heuristiky výběru hodnoty z~domény.
-    \begin{enumerate}
-        \item Odebrání zvolené hodnoty z~domény a~zápis hodnoty do pole.
-        \item Úprava domén přímo ovlivněných polí.
-        \item Přesun na bod číslo 2.
-    \end{enumerate}
-    \item Žádná z hodnot nevede k~řešení, obnovení a~odebrání stavu mřížky ze
-        zásobníku a~přesun na bod číslo 3.
-\end{enumerate}
 
 \subsubsection{Úprava přímo ovlivněných domén}
 
@@ -375,8 +346,8 @@ následující:
     \item Úprava všech domén polí, které jsou ve stejném řádku nebo sloupci
         jako dané pole.
     \begin{enumerate}
-        \item Úprava spočívá v~odebrání zapsané hodnoty v~daném poli ze
-            zmíněných domén.
+        \item Úprava spočívá v~odebrání hodnoty, která byla zapsána do daného
+            pole, ze zmíněných domén.
     \end{enumerate}
     \item Úprava domén polí vyskytujících se v~nerovnosti s~daným polem.
     \begin{enumerate}
@@ -397,24 +368,54 @@ obsahovaly všechny hodnoty, ale navíc i~upravit. To lze udělat iterací přes
 všechna vyplněná pole a~následnou úpravou všech přímo ovlivněných domén. Postup
 je stejný jako při zapisování hodnot do pole v~algoritmu samotném.
 
+
+\subsubsection{Postup algoritmu}
+
+Na základě následujícího postupu algoritmu Forward Checking pro řešení mřížky
+Futoshiki byl algoritmus implementován. V~implementaci je poté pro výběr
+hracího pole využita heuristika nejvíce omezená proměnná. Z~domény tohoto pole
+jsou hodnoty vybírány postupně, nejsou tedy využívány žádné speciální
+heuristiky.
+
+\begin{enumerate}
+    \item Vygenerování domén pro každé pole a inicializace zásobníku stavů
+        mřížky.
+    \item Jestliže jsou všechna pole vyplněna, nalezeno řešení.
+    \item Zvolení pole na základě heuristiky výběru hracího pole.
+    \begin{enumerate}
+        \item Jestliže doména zvoleného pole je prázdná a~zásobník stavů mřížky
+            je prázdný, neexistuje řešení.
+        \item Jinak uložení aktuálního stavu mřížky.
+    \end{enumerate}
+    \item Zvolení hodnoty z~domény pole na základě heuristiky.
+    \begin{enumerate}
+        \item Odebrání zvolené hodnoty z~domény a~zápis hodnoty do pole.
+        \item Úprava domén přímo ovlivněných polí.
+        \item Přesun na bod číslo 2.
+    \end{enumerate}
+    \item Žádná z hodnot nevede k~řešení, obnovení a~odebrání stavu mřížky ze
+        zásobníku a~přesun na bod číslo 3.
+\end{enumerate}
+
 \subsection{Arc Consistency}
 
 Algoritmy Arc Consistency~\cite{ConsistencyTechniques} jsou takové algoritmy,
 které udržují všechny oblouky (arcs) mezi doménami konzistentní. Oblouk
 reprezentuje vztah mezi dvěma proměnnými. Tyto algoritmy v~porovnání
 s~algoritmem Forward Checking domény upravují více striktně. Jestliže je
-dosažena Arc Consistency, znamená to, že pro jakoukoliv hodnotu z~libovolné
-domény existuje alespoň jedna hodnota z~domén, které jsou s~danou doménou
-v~oblouku, tedy ve vztahu.
+dosažen stav Arc Consistency, znamená to, že pro každou hodnotu v~libovolné
+doméně existuje alespoň jedna hodnota v~doménách, které jsou s~danou doménou
+ve~vztahu, tedy jsou spojené obloukem.
 
 Z~toho vyplývá, že po dosazení hodnoty do pole musí být upraveny všechny domény
 přímo i~nepřímo ovlivněných polí. Přímo ovlivněná pole byla popsána v~sekci
 o~\hyperref[sec:forwardChecking]{Forward Checkingu}. Nepřímo ovlivněná pole
-jsou taková pole, která nejsou bezprostředně v~relaci se změněným polem, ale
-změny se k~nim dostanou přes jiné proměnné. V~praxi to znamená, že změny se
+jsou taková pole, která nejsou v~bezprostředním vztahu se změněným polem, ale
+změny se k~nim dostanou skrze jiné proměnné. V~praxi to znamená, že změny se
 propagují, dokud nenastane konzistentní stav, tedy dokud se mění domény.
-Ilustrace je v~obrázku~\ref{fig:futoshiki-indirect}, kde jsou zvýrazněna jak
-přímo ovlivněná pole, tak i~nepřímo, která jsou zvýrazněna fialově.
+Obrázek~\ref{fig:futoshiki-indirect} obsahuje mřížku Futoshiki, kde jsou
+zvýrazněna jak přímo ovlivněná pole, tak i~nepřímo – ta jsou zvýrazněna
+fialově.
 
 \begin{figure}[hbt]
 	\centering
@@ -423,22 +424,22 @@ přímo ovlivněná pole, tak i~nepřímo, která jsou zvýrazněna fialově.
     \label{fig:futoshiki-indirect}
 \end{figure}
 
-Existuje několik druhů algoritmů, které udržují domény v~konzistetním stavu.
-Nejjednodušší je algoritmus Arc Consistency \#1, který však kvůli své
-jednoduchosti není příliš efektivní. Asi nejpoužívanejším algoritmem pro
-dosažení tohoto stavu je Arc Consistency \#3, který kombinuje jak jednoduchost,
-tak i~efektivitu. Hlavním rozdílem mezi těmito algoritmy je způsob propagace
-změn, kdy Arc Consistency \#1 propaguje změny tím, že projde znovu všechny
-oblouky, zatímco Arc Consistency \#3 prochází pouze některé oblouky. Další
-algoritmy poté bývají již příliš komplikované, což je důvod, proč se Arc
-Consistency \#3 využívá nejčastěji.
+Existuje několik variant algoritmů, které udržují domény v~konzistentním stavu.
+Nejjednodušší z~ních je algoritmus Arc Consistency~\#1, který však kvůli své
+jednoduchosti není příliš efektivní. Nejčastěji používaným algoritmem je Arc
+Consistency~\#3, který kombinuje jednoduchost a~efektivitu. Hlavním rozdílem
+mezi těmito algoritmy je způsob propagace změn, kdy Arc Consistency~\#1
+propaguje změny tím, že projde znovu všechny oblouky, zatímco Arc
+Consistency~\#3 prochází pouze některé z~nich. Další algoritmy poté bývají již
+příliš komplikované, což je důvod, proč se Arc Consistency~\#3 využívá
+nejčastěji.
 
 \subsubsection{Arc Consistency \#1}
 
-Pro lepší pochopení algoritmu Arc Consistency \#3 je vhodné popsat nejdříve
-jeho jednodušší variantu ve formě algoritmu Arc Consistency
-\#1~\cite{ConsistencyTechniques}, který je také známý jako AC-1. Tento
-algoritmus dosahuje konzistence všech oblouků následovně:
+Pro lepší pochopení algoritmu Arc Consistency~\#3 je vhodné popsat nejdříve
+jeho jednodušší variantu ve formě algoritmu Arc
+Consistency~\#1~\cite{ConsistencyTechniques}, který je také známý jako AC-1.
+Tento algoritmus dosahuje konzistence všech oblouků následovně:
 
 \begin{enumerate}
     \item Přidání všech oblouků do pole.
@@ -446,13 +447,13 @@ algoritmus dosahuje konzistence všech oblouků následovně:
     \begin{enumerate}
         \item Úprava domén na základě daného oblouku.
     \end{enumerate}
-    \item Jesliže se změnila alespoň jedna doména, zpět na bod číslo 2.
+    \item Jestliže se změnila alespoň jedna doména, zpět na bod číslo 2.
     \item Jinak jsou domény ve stavu Arc Consistency.
 \end{enumerate}
 
-\subsection{Arc Consistency \#3}
+\subsubsection{Arc Consistency \#3}
 
-Algoritmus Arc Consistency \#3~\cite{ConsistencyTechniques}, známý také jako
+Algoritmus Arc Consistency~\#3~\cite{ConsistencyTechniques}, známý také jako
 AC-3, je nejčastěji využívaný algoritmus pro dosažení stavu Arc Consistency
 domén. Na rozdíl od algoritmy AC-1 propaguje změny více efektivně, tedy nemusí
 projít znovu všechny oblouky, ale pouze některé. Konkrétně tento algoritmus
@@ -470,7 +471,7 @@ postupuje následovně:
     \item Jinak se vyjme první oblouk a~provede se revize.
     \begin{enumerate}
         \item Ověření, že pro každou hodnotu v~první doméně oblouku existuje
-            alepoň jedna hodnota v~druhé doméně vyhovující danému oblouku
+            alespoň jedna hodnota v~druhé doméně vyhovující danému oblouku
             a~naopak.
         \item Jestliže je nalezena nevyhovující hodnota, je z~domény
             odstraněna, a~do fronty oblouků se přidají všechny oblouky
@@ -486,23 +487,24 @@ AC-3. V~první variantě se pomocí AC-3 vygenerují domény, které jsou poté
 využity algoritmem Backtracking pro vyřešení problému. Druhá implementovaná
 varianta již funguje velmi podobně algoritmu Forward Checking, tedy na počátku
 jsou vygenerovány domény a~poté po každém zápisu hodnoty do pole jsou domény
-na základě zmíněného postupu upraveny. Implementovaný algoritmus poté využívá
-stejné heuristiky jako Forward Checking, tedy pro výběr hracího pole je využita
-heuristiku nejvíce omezená proměnná. Z~domény tohoto pole jsou hodnoty vybírány
-postupně, není využita žádná speciální heuristika.
+na základě zmíněného postupu upraveny. Této variantě se říká Maintaining Arc
+Consistency, neboli zachování konzistence oblouků. Implementovaný algoritmus
+poté využívá stejné heuristiky jako Forward Checking, tedy pro výběr hracího
+pole je využita heuristiku nejvíce omezená proměnná. Z~domény tohoto pole jsou
+hodnoty vybírány postupně, není využita žádná speciální heuristika.
 
 \subsection{Look-ahead v praxi}
 
-Využití look-ahead technik, jak už využitím algoritmu Forward Checking, tak
-i~algoritmu Arc Consistency \#3, je velice užitečné. Díky těmto technikám se
-stavový prostor může zúžit i~několikanásobně a~tím výrazně zlepšit výpočetní
+Využití look-ahead technik, ať už využitím algoritmu Forward Checking, tak
+i~algoritmu Arc Consistency~\#3, je velice užitečné. Díky těmto technikám může
+dojít k~výraznému zúžení stavového prostoru, což výrazně zrychluje výpočetní
 rychlost.
 
 Nevýhodou těchto technik je však potřebná režie, kdy čím pokročilejší techniky
 jsou využity, tím více režie je potřeba. Z~tohoto důvodu se pro problémy
 s~menším stavovým prostorem hodí algoritmu s~co nejmenší režií, jako je třeba
 Backtracking. Tento problém lze velice dobře pozorovat při porovnávání
-rychlosti složení různých velikostí mřížek Futoshiki se zmíněnými algoritmy.
+rychlosti řešení různých velikostí mřížek Futoshiki se zmíněnými algoritmy.
 Více o~tomto porovnání je popsáno v~sekci
 \hyperref[sec:timeComplexity]{benchmark řešících algoritmů}.
 
@@ -514,19 +516,19 @@ Nejdříve budou popsány deterministické a~nedeterministické konečné automa
 následně bude popsán dvojcestný konečný automat. Na závěr kapitoly bude čtenář
 seznámen se skákajícím automatem a~čtyřcestným automatem, na základě kterých je
 navrhnut automat pro řešení mřížky Futoshiki. Čtyřcestné automaty poskytnou
-teoretický základ pro dvojdimenzionální automaty.
+teoretický základ pro dvoudimenzionální automaty.
 
 \section{Konečný automat}
 
-Konečné automaty jsou základní matematické modely sloužící k popisu a analýze
-regulárních jazyků. Reprezentují abstraktní stroje, které zpracovávají vstupní
-řetězce symbolů a rozhodují, zda patří do jazyka, který automat popisuje.
-Rozlišujeme dva hlavní typy konečných automatů: deterministický konečný automat
-(DKA), v němž každý stav má jednoznačně definovaný přechod pro každý symbol, a
-nedeterministický konečný automat (NKA), jenž umožňuje více přechodů nebo i
-jejich absenci pro konkrétní symbol. Oba typy mají stejný vyjadřovací
-potenciál, protože každý nedeterministický konečný automat lze převést na
-ekvivalentní deterministický.
+Konečné automaty~\cite{AutomataTheory} jsou základní matematické modely
+sloužící k~popisu a analýze regulárních jazyků. Reprezentují abstraktní stroje,
+které zpracovávají vstupní řetězce symbolů a~rozhodují, zda patří do jazyka,
+který automat popisuje. Rozlišujeme dva hlavní typy konečných automatů:
+deterministický konečný automat (DKA), v~němž každý stav má jednoznačně
+definovaný přechod pro každý symbol, a~nedeterministický konečný automat (NKA),
+jenž umožňuje více přechodů nebo i~jejich absenci pro konkrétní symbol. Oba
+typy mají stejný vyjadřovací potenciál, protože každý nedeterministický konečný
+automat lze převést na ekvivalentní deterministický.
 
 Čtení vstupní pásky probíhá pomocí čtecí hlavice, která je na začátku umístěna
 na první symbol. Ta se postupně pohybuje směrem na konec pásky. Vrácení na
@@ -571,12 +573,13 @@ Graf pro tento deterministický konečný automat vypadá následovně:
 \noindent
 Z~grafu lze následně určit všechny hodnoty z~pětice DKA:
 \begin{itemize}
-    \item \(Q = \{S0, S1, S2\}\)
+    \item \(Q = \{S_0, S_1, S_2\}\)
     \item \(\Sigma = \{a, b\}\)
-    \item \(\delta = \{S0a \rightarrow S0, S0b \rightarrow S1, S1a \rightarrow
-        S0, S1b \rightarrow S2, S2a \rightarrow S0, S2b \rightarrow S2\}\)
-    \item \(q_0 = S0\)
-    \item \(F = \{S2\}\)
+    \item \(\delta = \{S_0a \rightarrow S_0, S_0b \rightarrow S_1, S_1a
+        \rightarrow S_0, S_1b \rightarrow S_2, S_2a \rightarrow S_0, S_2b
+        \rightarrow S_2\}\)
+    \item \(q_0 = S_0\)
+    \item \(F = \{S_2\}\)
 \end{itemize}
 
 \subsection{Nedeterministický konečný automat}
@@ -587,7 +590,7 @@ Nedeterministický konečný automat~\cite{AutomataTheory} je pětice
     \item \(Q\) je konečná neprázdná množina stavů.
     \item \(\Sigma\) je vstupní abeceda, konečná množina vstupních symbolů.
     \item \(\delta\) je přechodová relace ve tvaru
-        \(Q \times (\Sigma \cup \varepsilon) \rightarrow \mathcal{P}(Q)\).
+        \(Q \times (\Sigma \cup \{\varepsilon\}) \rightarrow Q\).
     \item \(Q_0\) je množina počátečních stavů, kde \(Q_0 \subseteq Q\).
     \item \(F\) je množina koncových nebo přijímacích stavů, kde
         \(F \subseteq Q\).
@@ -610,39 +613,39 @@ Graf pro tento nedeterministický konečný automat vypadá následovně:
 \end{figure}
 
 \noindent
-Jesliže je automat ve stavu \(S0\) a~přečte symbol \(a\), může přejít do
-stavu \(S0\), ale i~\(S1\). To je z důvodu, že předem nevíme, zda se jedná
+Jestliže je automat ve stavu \(S_0\) a~přečte symbol \(a\), může přejít do
+stavu \(S_0\), ale i~\(S_1\). To je z důvodu, že předem nevíme, zda se jedná
 o~symbol, který začíná ukončovací podřetězec "ab". Z~grafu lze následně určit
 všechny hodnoty z~pětice NKA:
 \begin{itemize}
-    \item \(Q = \{S0, S1, S2\}\)
+    \item \(Q = \{S_0, S_1, S_2\}\)
     \item \(\Sigma = \{a, b\}\)
-    \item \(\delta = \{S0a \rightarrow S0, S0b \rightarrow S0, S0a \rightarrow
-        S1, S1b \rightarrow S2\}\)
-    \item \(q_0 = S0\)
-    \item \(F = \{S2\}\)
+    \item \(\delta = \{S_0a \rightarrow S_0, S_0b \rightarrow S_0, S_0a
+        \rightarrow S_1, S_1b \rightarrow S_2\}\)
+    \item \(Q_0 = \{S_0\}\)
+    \item \(F = \{S_2\}\)
 \end{itemize}
 
 \section{Dvojcestný konečný automat}
 
-Dvojcestné konečné automaty rozšiřují klasické konečné automaty tím, že čtecí
-hlavice se může pohybovat po vstupní pásce nejen směrem ke konci pásky, ale
-také zpět směrem k~začátku. To znamená, že čtecí hlava může číst symboly
-z~pásky a~přitom se pohybovat v~obou směrech, tedy doprava i~doleva. To jim
-umožňuje prozkoumávat části vstupu vícekrát. Stejně jako klasické konečné
-automaty se i~dvojcestné konečné automaty dělí na deterministické
-a~nedeterministické.
+Dvojcestné konečné automaty~\cite{AutomataTheory} rozšiřují klasické
+konečné automaty tím, že se čtecí hlavice může pohybovat po vstupní pásce nejen
+směrem ke konci pásky, ale také zpět směrem k~začátku. To znamená, že čtecí
+hlava může číst symboly z~pásky a~přitom se pohybovat v~obou směrech, tedy
+doprava i~doleva. To jim umožňuje prozkoumávat části vstupu vícekrát. Stejně
+jako klasické konečné automaty se i~dvojcestné konečné automaty dělí na
+deterministické a~nedeterministické.
 
 I~když dvojcestné automaty působí výkonněji než jednocestné automaty, mají
 stejnou vyjadřovací sílu: přijímají pouze regulární jazyky. To je dáno tím, že
 každý dvojcestný automat lze převést na ekvivalentní jednocestný automat.
 Převod však může způsobit zvýšení počtu stavů.
 
-Vstupní řetězec je ohraničen z obou stran speciálními symboly \{ |-, -| \},
-které nejsou součástí vstupní abecedy \(\Sigma\). Tyto symboly slouží k
-indikaci začátku a konce vstupu a čtecí hlavice se za ně nesmí dostat. Pokud by
-čtecí hlavice narazila na jeden z těchto symbolů, automat zůstane na stejném
-místě nebo přejde do koncového stavu.
+Vstupní řetězec je ohraničen z obou stran speciálními symboly
+\{ \(\vdash\), \(\dashv\) \}, které nejsou součástí vstupní abecedy \(\Sigma\).
+Tyto symboly slouží k indikaci začátku a konce vstupu a čtecí hlavice se za ně
+nesmí dostat. Pokud by čtecí hlavice narazila na jeden z těchto symbolů,
+automat zůstane na stejném místě nebo přejde do koncového stavu.
 
 \begin{figure}[hbt]
 	\centering
@@ -653,7 +656,7 @@ místě nebo přejde do koncového stavu.
 \subsection*{Definice}
 
 Dvojcestné konečné automaty~\cite{AutomataTheory} jsou definované jako osmice
-\((Q, \Sigma, |-, -|, \delta, q_0, q_a, q_r)\), kde:
+\((Q, \Sigma, \vdash, \dashv, \delta, q_0, q_a, q_r)\), kde:
 \begin{itemize}
     \item \(Q\) je konečná množina stavů.
     \item \(\Sigma\) je konečná množina vstupních symbolů.
@@ -677,16 +680,11 @@ po vstupní pásce. Na základě aktuálního stavu automatu a~symbolu, na kter�
 ukazuje čtecí hlavice, se provede skok, odpovídající jednomu z~definovaných
 pravidel, na libovolný symbol na pásce. Na rozdíl od klasických konečných
 automatů tak nečte pásku postupně, ale umožňuje posun na libovolnou pozici.
-Jesliže byl znak již jednou přečten,
-
-
-
-
-nemůže být přečten znovu.
+Jestliže byl znak již jednou přečten, nemůže být přečten znovu.
 
 \subsection*{Definice}
 
-Skákající automaty jsou definované jako pětice \(M = (Q, \Sigma, R, s F)\),
+Skákající automaty jsou definované jako pětice \(M = (Q, \Sigma, R, s, F)\),
 kde:
 \begin{itemize}
     \item \(Q\) je konečná množina stavů.
@@ -701,37 +699,9 @@ kde:
     \item \(F\) je množina konečných stavů, kde \(F \subseteq Q\).
 \end{itemize}
 
-\subsection{Skákající automat s opakovaným čtením}
+\section{Dvoudimenzionální automaty}
 
-Pro řešení některých problémů je potřeba, aby skákající automat mohl číst
-vstupní pásku opakovaně. To znamená, že čtecí hlavice může skákat na libovolné
-místo na pásce a~přitom může číst symboly, které již byly přečteny.
-
-\subsubsection*{Definice}
-
-Skákající automat s opakovaným čtením lze definovat jako pětice
-\(M = (Q, \Sigma, R, s F)\), kde:
-\begin{itemize}
-    \item \(Q\) je konečná množina stavů.
-    \item \(\Sigma\) je konečná množina vstupních symbolů.
-    \item \(R \subseteq Q \times \Sigma^* \times Q\) je konečná ternární
-        relace, nazývaná množinou pravidel.
-        \begin{itemize}
-            \item Každé pravidlo \((p, y, q) \in R\) je zapsáno jako
-                \(py \rightarrow q\).
-            \item Jestliže je aktuální stav automatu \(q\) a~na vstupu je
-                symbol odpovídající symbolu \(y\), automat přejde do stavu
-                \(q\).
-            \item Vstupní ukazatel zůstane na stejné pozici a~nepřečte vstupní
-                symbol.
-        \end{itemize}
-    \item \(s\)~je počáteční stav, kde \(s \in Q\).
-    \item \(F\)~je množina konečných stavů, kde \(F \subseteq Q\).
-\end{itemize}
-
-\section{Dvojdimenzionální automaty}
-
-Dvojdimenzionální automaty~\cite{RozenbergGrzegorz1997HoFL} jsou rozšířením
+Dvoudimenzionální automaty~\cite{RozenbergGrzegorz1997HoFL} jsou rozšířením
 klasických konečných automatů o~dvojrozměrnou vstupní pásku. Tento typ automatu
 je schopen zpracovávat dvojrozměrné vstupy, což je užitečné pro různé aplikace,
 jako je například rozpoznávání obrazů nebo analýza dat v~oblasti strojového
@@ -742,8 +712,8 @@ hrací mřížky pro různé hlavolamy, včetně mřížky Futoshiki.
 
 \subsubsection{Vstup}
 
-Vstupem dvojdimenzionálního automatu je dvojrozměrná matice symbolů, někdy
-také označována jako obrázek. Matice obsahuje prvky z~dané abecedy \(\Sigma\).
+Vstupem dvoudimenzionálního automatu je dvojrozměrná matice symbolů, někdy
+označovaná také jako obrázek. Matice obsahuje prvky z~dané abecedy \(\Sigma\).
 Všechny množiny takových matic jsou označovány jako \(\Sigma^{**}\).
 
 \[
@@ -761,7 +731,7 @@ Jestliže máme obrázek \(p \in \Sigma^{**}\), potom \(l_1(p)\) značí počet 
 a~\(l_2(p)\) značí počet sloupců obrázku \(p\). Velikost obrázku \(p\) je potom
 dvojice \((l_1(p), l_2(p))\). Obrázek s~nulovou velikostí, tedy s~nulovým
 počtem řádků či sloupců, je prázdný obrázek. Ten se označuje jako~\(\lambda\).
-Jesliže platí \(1 \leq i \leq l_1(p)\) a \(1 \leq j \leq l_2(p)\), potom
+Jestliže platí \(1 \leq i \leq l_1(p)\) a \(1 \leq j \leq l_2(p)\), potom
 \(p_{i, j}\) označuje souřadnice obrázku.
 
 \subsubsection{Hranice}
@@ -783,21 +753,6 @@ s~velikostí \((m + 2, n + 2)\). Ten je vytvořený obkreslením obrázku
         \#  & \#      & \#      & \#  & \#      & \#
     \end{bmatrix}
 \]
-
-\subsection{Dvojdimenzionální automaty a Futoshiki}
-
-V úvodu této kapitoly bylo zmíněno, že dvojdimenzionální automaty jsou vhodné
-pro řešení dvojrozměrných problémů, jako je například mřížka Futoshiki. Proč je
-však vhodné tento typ automatů pro řešení Futoshiki využít? Samotná mřížka
-Futoshiki je uspořádána jako dvojdimenzionální mřížka, což odpovídá
-dvojrozměrné vstupní pásce, kterou dvojdimenzionální automaty přijímají.
-Po mřížce je přirozené se pohybovat ve čtyřech směrech, tedy nahoru, dolů,
-doleva a doprava, což opět dvojrozměrné automaty umožňují. Dále je využití
-dvojdimenzionálních automatů výhodné i~z~důvodu, že při řešení je třeba
-zohlednit omezení v~bezprostředním okolí buňky, což je opět přirozené
-použití dvojdimenzionálních automatů. Problematika by sice šla vyřešit i~pomocí
-jednodimenzionálních automatů, ale bylo by to mnohem složitější a~méně
-efektivní.
 
 \subsection{Čtyřcestný konečný automat}
 \label{chap:4fa}
@@ -825,11 +780,30 @@ automat. Převod však může způsobit zvýšení počtu stavů.
     \item \(q_r\) je neakceptující stav, kde \(q_r \in Q\).
     \item \(\delta\) je přechodová funkce ve tvaru
         \((Q \setminus \{q_a, q_r\} \times \Sigma) \implies (Q \times \Delta)\).
+    \begin{itemize}
+        \item Přechod je značen znakem \(\implies\) místo \(\rightarrow\), díky
+            čemuž je jasné, že se jedná o~dvoudimenzionální automat.
+    \end{itemize}
 \end{itemize}
 
-\chapter{Dvojdimenzionální skákající automat}
+\subsection{Dvoudimenzionální automaty a Futoshiki}
 
-Dvojdimenzionální skákající automat je automat, které vznikl spojením
+V úvodu této kapitoly bylo zmíněno, že dvoudimenzionální automaty jsou vhodné
+pro řešení dvojrozměrných problémů, jako je například mřížka Futoshiki. Proč je
+však vhodné tento typ automatů pro řešení Futoshiki využít? Samotná mřížka
+Futoshiki je uspořádána jako dvoudimenzionální mřížka, což odpovídá
+dvojrozměrné vstupní pásce, kterou dvoudimenzionální automaty přijímají.
+Po mřížce je přirozené se pohybovat ve čtyřech směrech, tedy nahoru, dolů,
+doleva a doprava, což opět dvojrozměrné automaty umožňují. Dále je využití
+dvoudimenzionálních automatů výhodné i~z~důvodu, že při řešení je třeba
+zohlednit omezení v~bezprostředním okolí buňky, což je opět přirozené
+použití dvoudimenzionálních automatů. Mřížka Futoshiki by sice šla vyřešit
+i~pomocí jednodimenzionálních automatů, ale bylo by to mnohem složitější a~méně
+efektivní.
+
+\chapter{Dvoudimenzionální skákající automat}
+
+Dvoudimenzionální skákající automat je automat, které vznikl spojením
 dvou typů automatů – skákající \ref{chap:jumpingAutomata} a~čtyřcestné
 automaty \ref{chap:4fa}. Tento typ automatu je díky skokům vhodný pro rychlejší
 procházení dvojrozměrné pásky. V~této práci se skoky velice hodí pro rychlejší
@@ -843,20 +817,29 @@ Sedmice \((Q, \Sigma, \Delta, R_1, R_2, s, F)\), kde:
     \item \(Q\) je konečná množina stavů.
     \item \(\Sigma\) je konečná množina vstupních symbolů.
     \item \(\Delta\) je množina povolených směrů.
-    \item \(R_1\) množina pravidel pro pohyb ve tvaru
-        \((Q \times \Sigma) \implies (Q \times \Delta)\).
-    \item \(R_2\) množina pravidel pro skoky ve tvaru
-        \(Q \implies (Q \times \Sigma)\).
+    \item \(R_1\) je relace z \((Q \times \Sigma)\) do \((Q \times \Delta)\).
+    \begin{itemize}
+        \item Místo \(((Q_1, a), (Q_2, b))\), píšeme \(Q_1a \implies Q_2b\).
+        \item Určuje pravidla pro pohyb automatu po pásce.
+    \end{itemize}
+    \item \(R_2\) je relace z \(Q\) do \((Q \times \Sigma)\).
+    \begin{itemize}
+        \item Místo \((Q_1, (Q_2, b))\), píšeme \(Q_1 \implies Q_2b\).
+        \item Určuje pravidla pro skok automatu po pásce.
+    \end{itemize}
     \item \(s\) je počáteční stav, kde \(s \in Q\).
     \item \(F\) je množina konečných stavů, kde \(F \subseteq Q\).
 \end{itemize}
 
-\chapter{Pravidla dvojdimenzionálního skákajícího automatu}
+\chapter{Pravidla dvoudimenzionálního skákajícího automatu}
 
-V~této kapitole se podrobně zaměříme na pravidla přechodů dvojdimenzionálního
+V~této kapitole se podrobně zaměříme na pravidla přechodů dvoudimenzionálního
 skákajícího automatu, který je navrhnut pro řešení hlavolamu Futoshiki.
 Nejdříve si definujeme základní značení, tedy abecedu symbolů a následně budou
-obsaženy pravidla pro jednotlivé algoritmy.
+obsaženy pravidla pro jednotlivé algoritmy, konkrétně pro algoritmy
+Backtracking a~Forward Checking. Tato pravidla jsou založena na popisu
+algoritmů z~kapitoly
+\hyperref[sec:futoshikiAlgs]{Futoshiki a algoritmy pro řešení}.
 
 \section{Základní značení}
 
@@ -864,15 +847,12 @@ obsaženy pravidla pro jednotlivé algoritmy.
     \item \(\#\#\) – hranice hrací mřížky
     \item \(\#\) – hranice mezi hracími poli
     \item \(N\) – nerovnost mezi poli
-    \item \(N_-\) – horizontální nerovnost mezi poli
-    \item \(N_|\) – vertikální nerovnost mezi poli
     \item \(F\) – vyplněné herní pole
     \item \(X\) – nevyplněné herní pole
-    \item \(L\) – předchozí herní pole
+    \item \(P\) – předchozí herní pole
     \item \(\{X\}\) – pole s~neprázdnou doménou
     \item \(\{L\}\) – pole s~nejmenší doménou
     \item \(\{\}\) – pole s~prázdnou doménou
-    \item \(E\) – pole bez domény
     \item \(R\), \(L\), \(U\), \(D\) – směry pohybu v~mřížce
 \end{itemize}
 
@@ -899,7 +879,7 @@ obsaženy pravidla pro jednotlivé algoritmy.
         na původní pole \\
     \(Q_{12} \implies Q_{12}D\) & Jinak posun dolů \\
     \(Q_{13} \implies Q_{14}X\) & Skok na původní pole, přesun do stavu
-        horizontálního ověření \\
+        ověření řádku \\
 \end{tabular}
 
 \subsubsection*{Ověření řádku}
@@ -962,11 +942,11 @@ obsaženy pravidla pro jednotlivé algoritmy.
         konce mřížky \\
     \(Q_{BT2}\{\} \implies Q_{BT2}L\) & Odebrání hodnoty z~aktuálního pole,
         přesun na předchozí pole \\
-    \(Q_{BT2}\{X\} \implies Q_{12}U\) & Vyjmutí první hodnoty z~domény a~její
+    \(Q_{BT2}\{X\} \implies Q_{11}U\) & Vyjmutí první hodnoty z~domény a~její
         uložení \\
     \(Q_{BT2} \implies Q_{BT2}L\) & Jinak posun doleva \\
     \(Q_{BT3} \implies Q_{BT4}R\) & Posun doprava pro ověření konce mřížky \\
-    \(Q_{BT4}\#\# \implies Q_{FB}\) & Konec mřížky, přesun do konečného stavu
+    \(Q_{BT4}\#\# \implies Q_{FF}\) & Konec mřížky, přesun do konečného stavu
         selhání \\
     \(Q_{BT4} \implies Q_{BT5}U\) & Jinak pokračování v~přesunu na předchozí
         pole \\
@@ -977,176 +957,172 @@ obsaženy pravidla pro jednotlivé algoritmy.
 
 \section{Pravidla pro Forward Checking}
 
+Pravidla automatu pro Forward Checking by se dala rozdělit na dvě části:
+vytvoření domén a~řešení hry. Nejdříve si popíšeme vytvoření domén, na které
+následně naváže část řešení hry, kde se využívají již vygenerované domény pro
+složení dané mřížky.
+
 \subsection{Vytvoření domén}
 
-\subsubsection*{Vytvoření domén řádků a sloupců}
-
 \begin{tabular}{@{}p{4cm} p{10.5cm}@{}}
-    \(Q_0\#\# \implies Q_{01}R\) & Posun doprava pro vynechání okraje mřížky \\
-    \(Q_{01}\#\# \implies Q_{11}D\) & Posun dolů pro vynechání okraje mřížky \\
+    \(Q_0 \implies Q_{11}F\) & Vytvoření domén polí obsahující všechny hodnoty,
+        skok na první vyplněné pole a uložení jeho hodnoty \\
+    \(Q_{10} \implies Q_{11}F\) & Skok na první nevyplněné pole, které ještě
+        nebylo navštíveno a~uložení jeho hodnoty \\
+    \(Q_{10} \implies Q_{71}\{L\}\) & Jinak skok na pole s~nejmenší doménou
+        a~uložení stavu mřížky \\
 
-    & \\
-    \(Q_{10}\#\# \implies Q_{19}R\) & Posun doprava a~přesun do stavu
-        ověření konce mřížky \\
-    \(Q_{11}F \implies Q_{11}R\) & Odstranění hodnoty z~domény řádku a~sloupce
-        a~posun doprava \\
-    \(Q_{11}\#\# \implies Q_{20}D\) & Posun dolů pokud hranice mřížky \\
-    \(Q_{11} \implies Q_{11}R\) & Jinak posun doprava \\
-    \(Q_{19}\# \implies Q_{11}D\) & Následuje další řádek, přesun do stavu
-        úpravy domén \\
-    \(Q_{19} \implies Q_{39}U\) & Konec mřížky, přesun do stavu
-        vytvoření domén polí \\
-
-    & \\
-    \(Q_{20}\#\# \implies Q_{29}L\) & Posun doleva a~přesun do stavu ověření
-        konce mřížky \\
-    \(Q_{21}F \implies Q_{21}L\) & Odstranění hodnoty z~domény řádku a~sloupce
-        a~posun doleva \\
-    \(Q_{21}\#\# \implies Q_{10}D\) & Posun dolů pokud hranice mřížky \\
-    \(Q_{21} \implies Q_{21}L\) & Jinak posun doleva \\
-    \(Q_{29}\# \implies Q_{21}D\) & Následuje další řádek, přesun do stavu
-        úpravy domén \\
-    \(Q_{29} \implies Q_{49}U\) & Konec mřížky, přesun do stavu
-        vytvoření domén polí \\
 \end{tabular}
 
-\subsubsection*{Vytvoření domén polí}
-
+\subsubsection*{Úprava domén ve stejném řádku a sloupci}
 \begin{tabular}{@{}p{4cm} p{10.5cm}@{}}
-    \(Q_{30}\#\# \implies Q_{39}R\) & Posun doprava a~přesun do stavu ověření
-        konce mřížky \\
-    \(Q_{31}E \implies Q_{31}R\) & Vytvoření domény na základě domén řádku
-        a~sloupce \\
-    \(Q_{31}\#\# \implies Q_{40}U\) & Posun nahoru pokud hranice mřížky \\
-    \(Q_{31} \implies Q_{31}R\) & Jinak posun doprava \\
-    \(Q_{39}\# \implies Q_{31}L\) & Existuje předchozí řádek, přesun do stavu
-        vytváření domén polí \\
-    \(Q_{39} \implies Q_{50}\) & Konec mřížky, přesun do stavu úpravy domén na
-        základě nerovností \\
+    \(Q_{11}\#\# \implies Q_{12}D\) & Pokud hranice mřížky, posun dolů \\
+    \(Q_{11} \implies Q_{11}U\) & Jinak posun nahoru \\
+    \(Q_{12}\#\# \implies Q_{20}U\) & Konec mřížky, přesun do stavu úpravy
+        domén v~řádku \\
+    \(Q_{12}X \implies Q_{12}D\) & Odebrání uložené hodnoty z~domény pole
+        a~posun dolů \\
+    \(Q_{12} \implies Q_{12}D\) & Jinak posun dolů \\
 
     & \\
-    \(Q_{40}\#\# \implies Q_{49}L\) & Posun doleva a~přesun do stavu ověření
-        konce mřížky \\
-    \(Q_{41}E \implies Q_{41}L\) & Vytvoření domény na základě domén řádku
-        a~sloupce \\
-    \(Q_{41}\#\# \implies Q_{30}U\) & Posun nahoru pokud hranice mřížky \\
-    \(Q_{41} \implies Q_{41}L\) & Jinak posun doleva \\
-    \(Q_{49}\# \implies Q_{41}U\) & Existuje předchozí řádek, přesun do stavu
-        vytváření domén polí \\
-    \(Q_{49} \implies Q_{50}\) & Konec mřížky, přesun do stavu úpravy domén na
-        základě nerovností \\
+    \(Q_{20} \implies Q_{21}F\) & Skok na vyplněné pole, na základě kterého se
+        upravují domény \\
+    \(Q_{21}\#\# \implies Q_{22}R\) & Pokud hranice mřížky, posun doprava \\
+    \(Q_{21} \implies Q_{21}L\) & Jinak posun doleva \\
+    \(Q_{22}\#\# \implies Q_{30}L\) & Konec mřížky, přesun do stavu úpravy
+        domén v~nerovnosti \\
+    \(Q_{22}X \implies Q_{22}R\) & Odebrání uložené hodnoty z~domény
+        nevyplněného pole a~posun doprava \\
+\end{tabular}
+
+\noindent
+\begin{tabular}{@{}p{4cm} p{10.5cm}@{}}
+    \(Q_{22} \implies Q_{22}R\) & Jinak posun doprava \\
 \end{tabular}
 
 \subsubsection*{Úprava domén na základě nerovností}
-
 \begin{tabular}{@{}p{4cm} p{10.5cm}@{}}
-    \(Q_{50} \implies Q_{51}N_-\) & Skok na horizontální nerovnost \\
-    \(Q_{50} \implies  Q_{60}\) & Žádná další horizontální nerovnost, přesun do
-        stavu prohledávání vertikálních nerovností \\
-    \(Q_{51} \implies Q_{52}L\) & Posun doleva na první pole v~nerovnosti,
-        uložení domény \\
-    \(Q_{52} \implies Q_{53}R\) & Posun zpět na nerovnost \\
-    \(Q_{53} \implies Q_{54}R\) & Posun doprava na druhé pole v~nerovnosti,
-        uložení domény \\
-    \(Q_{54} \implies Q_{55}L\) & Posun zpět na nerovnost, úprava domén na
-        základě nerovnosti \\
+    \(Q_{30} \implies Q_{31}F\) & Skok na vyplněné pole, na základě kterého
+        se upravují domény \\
+    \(Q_{31} \implies Q_{32}U\) & Posun nahoru pro ověření nerovnosti \\
+    \(Q_{32}N \implies Q_{32}U\) & Pokud nerovnost, uložení typu nerovnosti
+        a~posun nahoru \\
+    \(Q_{32}X \implies Q_{33}D\) & Úprava domény na základě nerovnosti
+        a~uložené hodnoty \\
+    \(Q_{32} \implies Q_{34}X\) & Jinak skok na vyplněné pole, na základě
+        kterého se upravují domény \\
 
-    & \\
-    \(Q_{60} \implies Q_{61}N_|\) & Skok na vertikální nerovnost \\
-    \(Q_{60} \implies Q_{70}\) & Žádná další vertikální nerovnost, přesun do
-        stavu řešení hry \\
-    \(Q_{61} \implies Q_{62}U\) & Posun nahoru na první pole v~nerovnosti,
-        uložení domény \\
-    \(Q_{62} \implies Q_{63}D\) & Posun zpět na nerovnost \\
-    \(Q_{63} \implies Q_{64}D\) & Posun dolů na druhé pole v~nerovnosti,
-        uložení domény \\
-    \(Q_{64} \implies Q_{65}U\) & Posun zpět na nerovnost, úprava domén na
-        základě nerovnosti \\
+    \(Q_{33} \implies Q_{34}D\) & Posun zpět na vyplněné pole, na základě
+        kterého se upravují domény \\
+    \(Q_{34} \implies Q_{35}D\) & Posun dolů pro ověření nerovnosti \\
+    \(Q_{35}N \implies Q_{35}D\) & Pokud nerovnost, uložení typu nerovnosti
+        a~posun dolů \\
+    \(Q_{35}X \implies Q_{40}U\) & Úprava domény na základě nerovnosti
+        a~uložené hodnoty \\
+    \(Q_{35} \implies Q_{41}X\) & Jinak skok na vyplněné pole, na základě
+        kterého se upravují domény \\
+
+    \(Q_{40} \implies Q_{41}U\) & Přesun na vyplněné pole, na základě kterého
+        se upravují domény \\
+    \(Q_{41} \implies Q_{42}L\) & Posun doleva pro ověření nerovnosti \\
+    \(Q_{42}N \implies Q_{42}L\) & Pokud nerovnost, uložení typu nerovnosti
+        a~posun doleva \\
+    \(Q_{42}X \implies Q_{43}R\) & Úprava domény na základě nerovnosti
+        a~uložené hodnoty \\
+    \(Q_{42} \implies Q_{44}X\) & Jinak skok na vyplněné pole, na základě
+        kterého se upravují domény \\
+
+    \(Q_{43} \implies Q_{44}R\) & Posun zpět na původní pole \\
+    \(Q_{44} \implies Q_{45}R\) & Posun doprava pro ověření nerovnosti \\
+    \(Q_{45}N \implies Q_{45}R\) & Pokud nerovnost, uložení typu nerovnosti
+        a~posun doprava \\
+    \(Q_{45}X \implies Q_{10}L\) & Úprava domény na základě nerovnosti
+        a~uložené hodnoty a~přesun do stavu úpravy domén na základě dalšího
+        pole \\
+    \(Q_{45} \implies Q_{10}L\) & Jinak přesun do stavu úpravy domén na základě
+        dalšího pole \\
 \end{tabular}
 
 \section{Řešení hry}
 
-Pravidla pro řešení hry
-
-\subsection*{Pravidla}
-
 \begin{tabular}{@{}p{4cm} p{10.5cm}@{}}
-    \(Q_{70} \implies Q_{71}\{L\}\) & Skok na pole s nejmenší doménou, uložení
+    \(Q_{50} \implies Q_{51}\{L\}\) & Skok na pole s nejmenší doménou, uložení
         stavu mřížky \\
-    \(Q_{71}{} \implies Q_{BT}U\) & Nefunkční řešení, vrácení do řešitelného
+    \(Q_{51}\{\} \implies Q_{BT}U\) & Nefunkční řešení, vrácení do řešitelného
         stavu \\
-    \(Q_{71} \implies Q_{72}U\) & Jinak uložení a~následné smazání první
+    \(Q_{51} \implies Q_{52}U\) & Jinak uložení a~následné smazání první
         hodnoty z~domény a~přesun do stavu odstranění hodnoty z~ovlivněných
         domén \\
 \end{tabular}
 
-\subsubsection*{Úprava domén polí ve stejném sloupci}
+\subsubsection*{Úprava domén polí ve stejném řádku a sloupci}
 
 \begin{tabular}{@{}p{4cm} p{10.5cm}@{}}
-    \(Q_{72}\#\# \implies Q_{73}D\) & Posun zpět do herního pole \\
-    \(Q_{72} \implies Q_{72}U\) & Jinak posun nahoru \\
+    \(Q_{52}\#\# \implies Q_{53}D\) & Posun zpět do herního pole \\
+    \(Q_{52} \implies Q_{52}U\) & Jinak posun nahoru \\
 
-    \(Q_{73}X \implies Q_{73}D\) & Odstranění hodnoty z domény a posun dolů \\
-    \(Q_{73}\#\# \implies Q_{74}\) & Konec mřížky, přesun do stavu odstraňování
-        hodnot z domén horizontálních sousedů \\
-    \(Q_{73} \implies Q_{73}D\) & Jinak pouze posun dolů \\
+    \(Q_{53}X \implies Q_{53}D\) & Odstranění hodnoty z domény a posun dolů \\
+    \(Q_{53}\#\# \implies Q_{54}U\) & Konec mřížky, přesun do stavu odstraňování
+        hodnot z~domén ve stejném řádku \\
+    \(Q_{53} \implies Q_{53}D\) & Jinak pouze posun dolů \\
 \end{tabular}
 
-\subsubsection*{Úprava domén polí ve stejném řádku}
-
+\noindent
 \begin{tabular}{@{}p{4cm} p{10.5cm}@{}}
-    \(Q_{74} \implies Q_{75}\{L\}\) & Skok na pole s nejmenší doménou \\
-    \(Q_{75}\#\# \implies Q_{76}R\) & Posun zpět do herního pole \\
-    \(Q_{75} \implies Q_{75}L\) & Jinak posun doleva \\
+    \(Q_{54} \implies Q_{55}\{L\}\) & Skok na pole s nejmenší doménou \\
+    \(Q_{55}\#\# \implies Q_{56}R\) & Posun zpět do herního pole \\
+    \(Q_{55} \implies Q_{55}L\) & Jinak posun doleva \\
 
-    \(Q_{76}X \implies Q_{76}R\) & Odstranění hodnoty z domény a posun
+    \(Q_{56}X \implies Q_{56}R\) & Odstranění hodnoty z domény a posun
         doprava \\
-    \(Q_{76}\#\# \implies Q_{80}\) & Konec mřížky, přesun do stavu úpravy
+    \(Q_{56}\#\# \implies Q_{60}L\) & Konec mřížky, přesun do stavu úpravy
         domén polí v nerovnosti \\
-    \(Q_{76} \implies Q_{76}R\) & Jinak pouze posun doprava \\
+    \(Q_{56} \implies Q_{56}R\) & Jinak pouze posun doprava \\
 \end{tabular}
 
 \subsubsection*{Úprava domén polí v nerovnosti}
 
 \begin{tabular}{@{}p{4cm} p{10.5cm}@{}}
-    \(Q_{80} \implies Q_{81}U\) & Posun nahoru pro ověření nerovnosti \\
-    \(Q_{81}N \implies Q_{81}U\) & Pokud nerovnost, uložení typu nerovnosti
+    \(Q_{60} \implies Q_{70}\{L\}\) & Skok na pole s~nejmenší doménou \\
+
+    \(Q_{70} \implies Q_{71}U\) & Posun nahoru pro ověření nerovnosti \\
+    \(Q_{71}N \implies Q_{71}U\) & Pokud nerovnost, uložení typu nerovnosti
         a~posun nahoru \\
-    \(Q_{81}\{X\} \implies Q_{81}L\) & Úprava domény aby platila uložená
+    \(Q_{71}X \implies Q_{71}L\) & Úprava domény aby byla splněna uložená
         nerovnost \\
-    \(Q_{81} \implies Q_{82}\{L\}\) & Jinak skok na původní pole \\
+    \(Q_{71} \implies Q_{72}\{L\}\) & Jinak skok na původní pole \\
     & \\
-    \(Q_{82} \implies Q_{83}L\) & Posun doleva pro ověření nerovnosti \\
-    \(Q_{83}N \implies Q_{83}L\) & Pokud nerovnost, uložení typu nerovnosti
+    \(Q_{72} \implies Q_{73}L\) & Posun doleva pro ověření nerovnosti \\
+    \(Q_{73}N \implies Q_{73}L\) & Pokud nerovnost, uložení typu nerovnosti
         a~posun doleva \\
-    \(Q_{83}\{X\} \implies Q_{83}U\) & Úprava domény aby platila uložená
+    \(Q_{73}X \implies Q_{73}U\) & Úprava domény aby byla splněna uložená
         nerovnost \\
-    \(Q_{83} \implies Q_{84}\{L\}\) & Jinak skok na původní pole \\
+    \(Q_{73} \implies Q_{74}\{L\}\) & Jinak skok na původní pole \\
     & \\
-    \(Q_{84} \implies Q_{85}R\) & Posun doprava pro ověření nerovnosti \\
-    \(Q_{85}N \implies Q_{85}R\) & Pokud nerovnost, uložení typu nerovnosti
+    \(Q_{74} \implies Q_{75}R\) & Posun doprava pro ověření nerovnosti \\
+    \(Q_{75}N \implies Q_{75}R\) & Pokud nerovnost, uložení typu nerovnosti
         a~posun doprava \\
-    \(Q_{85}\{X\} \implies Q_{85}U\) & Úprava domény aby platila uložená
+    \(Q_{75}X \implies Q_{75}U\) & Úprava domény aby byla splněna uložená
         nerovnost \\
-    \(Q_{85} \implies Q_{86}\{L\}\) & Jinak skok na původní pole \\
+    \(Q_{75} \implies Q_{76}\{L\}\) & Jinak skok na původní pole \\
     & \\
-    \(Q_{86} \implies Q_{87}D\) & Posun dolů pro ověření nerovnosti \\
-    \(Q_{87}N \implies Q_{87}D\) & Pokud nerovnost, uložení typu nerovnosti
+    \(Q_{76} \implies Q_{77}D\) & Posun dolů pro ověření nerovnosti \\
+    \(Q_{77}N \implies Q_{77}D\) & Pokud nerovnost, uložení typu nerovnosti
         a~posun dolů \\
-    \(Q_{87}\{X\} \implies Q_{87}L\) & Úprava domény aby platila uložená
-        nerovnost \\
-    \(Q_{87} \implies Q_{71}\{L\}\) & Jinak skok na původní pole a zapsání
+    \(Q_{77}X \implies Q_{77}L\) & Úprava domény aby byla splněna uložená
+        nerovnost\\
+    \(Q_{77} \implies Q_{51}\{L\}\) & Jinak skok na původní pole a zapsání
         hodnoty \\
 \end{tabular}
 
 \subsubsection*{Zpětné navrácení}
 
 \begin{tabular}{@{}p{4cm} p{10.5cm}@{}}
-    \(Q_{BT} \implies Q_{BT1}L\) & Skok na předchozí pole a~obnovení stavu
+    \(Q_{BT} \implies Q_{BT1}P\) & Skok na předchozí pole a~obnovení stavu
         mřížky \\
     \(Q_{BT1}{} \implies Q_{BT}U\) & Předchozí pole má prázdnou doménu,
         pokračování ve zpětném navrácení \\
-    \(Q_{BT1} \implies Q_{74}U\) & Jinak přesun do stavu vyplňování mřížky \\
+    \(Q_{BT1} \implies Q_{51}\{L\}\) & Jinak přesun do stavu vyplňování mřížky \\
 \end{tabular}
 
 \chapter{Implementace}
@@ -1174,7 +1150,7 @@ Vývoj probíhal na operačním systému Linux.
 \section{Spuštění aplikace}
 
 Pomocí argumentů lze při spouštění aplikace upřesnit, jaká část implementace
-má být spuštěna. Aplikace podporuje tři druhy spuštění:
+má být spuštěna. Aplikace podporuje čtyři druhy spuštění:
 \begin{enumerate}
     \item Spuštění hry
     \item Spuštění benchmarku
@@ -1193,9 +1169,10 @@ vyžadován žádný dodatečný argument. Dostupné argumenty jsou:
         (\hyperref[sec:argsAlgs]{dostupné algoritmy})
     \item \texttt{-t, --theme [téma]}: Téma aplikace (jak aplikace vypadá)
     \begin{itemize}
-        \item \texttt{light}: Světlé téma
-        \item \texttt{dark}: Tmavé téma
-        \item \texttt{default}: Výchozí téma
+        \item \texttt{light}: Světlé téma (světlé pozadí, tmavý text)
+        \item \texttt{dark}: Tmavé téma (tmavé pozadí, světlý text)
+        \item \texttt{default}: Výchozí téma (na základě výchozího nastavení
+            terminálu)
     \end{itemize}
 \end{itemize}
 
@@ -1242,7 +1219,7 @@ V~případě spuštění aplikace s~argumentem \texttt{doc} jsou spuštěny něk
 benchmarky, jejichž výsledné grafy jsou využity v~této práci. Konkrétně se
 jedná o~benchmarky domén, kdy se testuje využití paměti a~jejich časová
 náročnost. Podrobný popis výstupu této části implementace bude popsán
-v~kapitole \hyperref[sec:timeComplexity]{benchmark řešících algoritmů}.
+v~kapitole \hyperref[sec:domain-benchmark]{benchmark domén}.
 
 \subsection*{Argumenty konfigurace}
 
@@ -1300,7 +1277,7 @@ umožňuje stránka vytváření mřížky
     \begin{itemize}
         \item Hodnotu lze smazat zapsáním čísla nula nebo klávesou
             \texttt{Delete}.
-        \item Stiskem klávesy \texttt{Backspace} bude odstaněna číslice z~řádu
+        \item Stiskem klávesy \texttt{Backspace} bude odstraněna číslice z~řádu
             jednotek.
         \item Nelze mazat původní hodnoty, tedy tučně zvýrazněné hodnoty.
     \end{itemize}
@@ -1311,7 +1288,7 @@ umožňuje stránka vytváření mřížky
 Jestliže je mřížka úspěšně vyřešena, zobrazí se zpráva o~úspěšném složení.
 Pokud má uživatel problém se složením mřížky, lze využít nastaveného algoritmu
 stisknutím klávesy \texttt{S} a~tím zobrazit správné řešení. V~případě úspěchu
-bude vypsaná zpráva o~úspešném složení, v~opačném případě bude vypsaná zpráva,
+bude vypsaná zpráva o~úspěšném složení, v~opačném případě bude vypsaná zpráva,
 že mřížku nelze složit.
 
 \subsection{Vytváření mřížky}
@@ -1355,7 +1332,7 @@ stránce se ovládá stejným způsobem jako na stránce pro řešení mřížky
 
 Po dokončení vytváření mřížky lze stisknutím klávesy \texttt{S} aktivovat
 aktuálně zvolený algoritmus, který následně mřížku vyřeší. V případě úspěchu
-se do mřížky doplní zbývající hodnoty a~nad mřížku se vypíše zpráva o~úspešném
+se do mřížky doplní zbývající hodnoty a~nad mřížku se vypíše zpráva o~úspěšném
 složení. V opačném případě bude nad mřížku vypsaná zpráva, že mřížka není
 složitelná.
 
@@ -1439,7 +1416,7 @@ hry Futoshiki. Současně je hodnocena časová náročnost algoritmů, přičem
 výkonnost je porovnána při různých velikostech hrací mřížky.
 
 Testovány jsou i~další nepostradatelné části aplikace, jako je například
-ověřovač řešení, který testuje, zda je daná mřížka složena v~soulady
+ověřovač řešení, který testuje, zda je daná mřížka složena v~souladu
 s~pravidly. Dále je testován generátor mřížky, aby bylo zaručeno, že daná
 mřížka je složitelná.
 
@@ -1467,7 +1444,7 @@ Integrační testy ověřují správnou spolupráci jednotlivých částí imple
 Oproti jednotkovým testům se tedy netestují jednotlivé části implementace, ale
 jejich soubor a~zda spolupracují dle očekávání.
 
-Integračních testů již v~implementaci není tolik a~proto budou testy popsány
+Integračních testů již v~implementaci není tolik, a~proto budou testy popsány
 více detailně. Mezi implementované integrační testy patří: testy řešících
 algoritmů, ověřovače složení a~generátoru mřížky.
 
@@ -1488,10 +1465,11 @@ správně složena či nikoli.
 
 \subsection*{Testování generování mřížky}
 
-V~testování generátoru mřížky bylo nejdříve vytvořeno několik náhodných mřížek,
-které byly následně složeny pomocí jednoho z~algoritmů. Výsledné složené mřížky
-byly zkontrolovány ověřovačem složení, což zajišťuje, že každá vygenerovaná
-mřížka je řešitelná a~splňuje pravidla hry.
+Při testování generátoru mřížky bylo nejprve vytvořeno několik náhodných
+mřížek, které byly následně vyřešeny pomocí jednoho z~algoritmů. Výsledné
+mřížky byly zkontrolovány ověřovačem složení, který zajišťuje, že daná mřížka
+splňuje všechna pravidla. Pokud ověřovač potvrdí správné řešení, znamená to, že
+mřížka je řešitelná a~generátor funguje správně.
 
 \section{Benchmark}
 
@@ -1506,17 +1484,15 @@ I~když na základě teorie by domény implementované pomocí bitmap měly být
 nejvíce efektivní, rozhodl jsem se toto teoretické tvrzení ověřit v~praxi.
 Proto jsem implementoval benchmark, který změří využití paměti domén pro různé
 velikosti a~který změří časovou náročnost nejčastěji využívaných operací domén.
-Tento benchmark je proveden po spuštění aplikace s~argumentem \texttt{doc}, což
-vypíše výsledky do terminálu a~vygeneruje odpovídající grafy.
+Tento benchmark se provádí po spuštění aplikace s~argumentem \texttt{doc},
+který vypíše výsledky do terminálu a~vygeneruje odpovídající grafy.
 
 Při prohlédnutí grafu na obrázku~\ref{fig:domain-size} obsahující
 paměťové využití domén, implementace pomocí hašovacích množin a~pomocí vektorů
 výrazně zaostávají za bitmapovou implementací. Bitmapová doména využívá pouze
 jedinou hodnotu čísla, zatímco hašovací množiny i~vektory mají těchto hodnot
-několik. V grafu je využita aproximace minimální velikosti hašovacích množin
-i~vektorů. To je z~důvodu, že tyto datové struktury často obsahují další
-pomocná či kontrolní data. V~grafu lze také pozorovat, že si hašovací množiny
-předalokovávají paměť, což způsobuje stejné využití paměti u různých velikostí.
+několik. V~grafu lze také pozorovat, že si hašovací množiny před alokovávají
+paměť, což způsobuje stejné využití paměti u různých velikostí.
 
 \begin{figure}[hbt]
 	\centering
@@ -1539,22 +1515,22 @@ množinách jsou výrazně pomalejší, hlavně tedy s~rostoucí velikostí dom�
     \label{fig:domain-benchmark}
 \end{figure}
 
-Konkrétně jsou porovnány operace vymazání hodnoty a~vymazání hodnot
-větších/menších jak daná hodnota. Tyto operace jsou velmi často využity
-v~algoritmech pro řešení Futoshiki. Zajímavostí je to, že samotná implementace
-pro vymazání hodnot větších/menších jak daná hodnota, je pro implementace domén
-pomocí vektorů i~hašovacích množin stejná, přesto jsou hašovací množiny výrazně
-pomalejší. Důvod pro tento jev je, že vektory si prvky ukládají do souvislého
-bloku paměti, zatímco hašovací množiny ne. Hašovací množiny pak musí vypočítat
-haš prvku, na základě něho přistoupit k~prvku a~až poté vymazat.
+Konkrétně jsou porovnány operace mazání hodnoty a~mazání hodnot větších či
+menších než zadaná hodnota. Tyto operace se velmi často využívají v~algoritmech
+pro řešení Futoshiki. Zajímavé je, že samotná implementace mazání hodnot
+větších či menších než daná hodnota je pro implementace domén pomocí vektorů
+i~hašovacích množin prakticky stejná, přesto jsou hašovací množiny výrazně
+pomalejší. Důvodem je, že vektory ukládají prvky do souvislého bloku paměti,
+zatímco hašovací množiny nikoliv. Hašovací množiny musí navíc nejprve vypočítat
+haš daného prvku, poté k~němu přistoupit a~teprve pak jej odstranit.
 
-\section{Benchmark řešících algoritmů}
+\subsection{Benchmark řešících algoritmů}
 \label{sec:timeComplexity}
 
 Testování časové náročnosti řešících algoritmů je prováděno po spuštění
 aplikace s~argumentem \texttt{bench}. Tento režim umožňuje měřit výkonnost
 zvolených algoritmů (při výchozím nastavení všech algoritmů) na různých
-velikostech mřížek.
+velikostech mřížky.
 
 Pro každou velikost mřížky je náhodně vygenerována mřížka, kterou následně
 vyřeší každý algoritmus. Aby se minimalizoval vliv náhodných výkyvů, je test
@@ -1566,22 +1542,22 @@ a~velikost mřížky.
 
 Kromě textového výstupu aplikace automaticky generuje graf, který vizualizuje
 průměrné časy jednotlivých algoritmů pro různé velikosti mřížek. Tento graf
-usnadňuje porovnání efektivity algoritmů při řešení s~různě velkými mřížkami.
+usnadňuje porovnání efektivity algoritmů při řešení mřížek různé velikosti.
 
 \subsection{Zhodnocení}
 
 Jak ukazuje graf~\ref{fig:benchmark}, menší mřížky zvládnou všechny algoritmy
-rychle. Rozdíl mezi jednotlivými algoritmy je velice malý, avšak Backtracking
-je nejrychlejší a~to díky své jednoduchosti a~absenci režie, jako je generování
-domén polí. S~rostoucí velikostí mřížky však jeho výkon výrazně klesá, což je
-dáno jeho systematickým prohledáváním všech možností, kdy počet možností, které
-je třeba vyzkoušet, exponenciálně roste.
+rychle. Rozdíly mezi jednotlivými algoritmy jsou velmi malé, avšak Backtracking
+je nejrychlejší, a~to díky své jednoduchosti a~absenci režie, jako je například
+generování domén polí. S~rostoucí velikostí mřížky však jeho výkon výrazně
+klesá, což je dáno jeho systematickým prohledáváním všech možností, kdy počet
+možností, které je třeba vyzkoušet, exponenciálně roste.
 
 Na větších mřížkách jsou rozdíly mezi algoritmy výraznější. Je také důležité
-zmínit, že osa \texttt{y}~je logaritmická, což může zkreslovat reálně rozdíly.
-Nejrychlejší algoritmus pro řešení větších mřížek je Arc Consistency \#3, kdy
-rozdíly mezi implementací s~využitím bitmap a~hašovacích množin není příliš
-znatelný.
+zmínit, že osa \texttt{y}~je logaritmická, což může zkreslovat reálné rozdíly.
+Nejrychlejším algoritmem pro řešení větších mřížek je Arc Consistency \#3,
+přičemž rozdíly mezi implementacemi využívajícími bitmapy a~hašovací množiny
+nejsou příliš výrazné.
 
 \begin{figure}[hbt]
 	\centering
@@ -1595,14 +1571,14 @@ znatelný.
 
 \chapter{Závěr}
 
-Tato práce se soustředí na poukázání vhodnosti využití dvojdimenzionálních
-automatů pro řešení hry Futoshiki, ale i~všech dalších her, které obsahují
-dvojdimenzionální herní mřížku.
+Tato práce se zaměřuje na vhodnost využití dvoudimenzionálních automatů pro
+řešení hry Futoshiki, ale i~všech dalších her, které využívají
+dvoudimenzionální herní mřížku.
 
 Na začátku práce je popsána hra Futoshiki a~její pravidla, která je potřeba
-splnit pro úspešné složení mřížky. Následně jsou detailně popsány algoritmy
+splnit pro úspěšné složení mřížky. Následně jsou detailně popsány algoritmy
 sloužící pro vyřešení libovolné mřížky. Jedná se o~algoritmus Backtracking
-a~o~jeho vylepšení s~využitím Look-ahead technik ve formě algoritmů Forward
+a~jeho vylepšení s~využitím Look-ahead technik ve formě algoritmu Forward
 Checking a~algoritmů Arc Consistency, konkrétně Arc Consistency \#1 a~častěji
 používaná varianta Arc Consistency \#3.
 
@@ -1616,19 +1592,43 @@ techniky, což je způsobeno tím, že Backtracking je jednodušší a~neobsahuj
 režii spojenou s~předpovídáním budoucích kroků. Proto je i Backtracking velice
 užitečný, hlavně tedy pro řešení problémů s~menším stavovým prostorem.
 
+Nejčastěji používané algoritmy pro řešení Futoshiki jsou Backtracking a~Forward
+Checking s~využitím různých heuristik. Tedy při porovnání časové náročnosti
+je mnou implementovaný algoritmus využívající Arc Consistency \#3 rychlejší,
+pouze však u~větších mřížek, kde se může projevit jeho síla.
+
+Možné vylepšení algoritmů Forward Checking a~Arc Consistency je využití
+efektivnějších heuristik, které by umožnily rychleji najít řešení. Heuristiky
+však přidají další režii, která by mohla zpomalit algoritmy, avšak při větších
+mřížkách by se toto vylepšení nejspíše pozitivně projevilo. Já jsem
+v~implementaci využil heuristiku pouze pro výběr domény, avšak použitím
+heuristiky pro výběr hodnoty by se předešlo některým slepým cestám, které
+nevedou k~řešení.
+
+Další možností vylepšení je efektivnější ukládání stavu mřížky, kdy mnou
+implementované algoritmy ukládají stav celé mřížky. To není nejvíce efektivní
+a~ani potřebné. Stačilo by ukládat pouze změněné domény polí.
+
+Dále lze uvažovat o~využití více efektivních algoritmů, jako jsou například
+pokročilejší algoritmy pro Arc Consistency, konkrétně algoritmy
+Arc Consistency~\#4, \#5 a~\#6. Tyto algoritmy by mohly zvýšit efektivitu
+řešení, avšak složitost jejich implementace a~režie algoritmů by byly výrazně
+vyšší. Tedy využití těchto algoritmů by se opět vyplatilo pouze u~větších
+mřížek.
+
 Další kapitola se věnuje popisu konečných automatů, ve které jsou představeny
 deterministické konečné automaty, nedeterministické konečné automaty a
 dvojcestné konečné automaty. Poslední ze zmíněných automatů ukazuje princip
-pohybu po pásce, který je následně využit i~u~dvojdimenzionálních automatů.
+pohybu po pásce, který je následně využit i~u~dvoudimenzionálních automatů.
 Následně je popsán skákající automat, který jak z~názvu vypovídá, podporuje
-skoky po vstupní pásce, což dokáže zvýšit efektivity řešení.
+skoky po vstupní pásce, což dokáže zvýšit efektivitu řešení.
 
-Na konci této kapitoly jsou popsány dvojdimenzionální automaty. Bylo také
+Na konci této kapitoly jsou popsány dvoudimenzionální automaty. Bylo také
 popsáno, jak vypadá jejich vstup a~jak se vstup upravuje, aby bylo lépe poznat
-hranice. Následně bylo vysvětleno z~jakého důvodu se dvojdimenzionální automaty
-hodí pro řešení Futoshiki. Nakonec pak byl popsán čtyřcestný konečný automat,
-který využívá princip dvojcestného automatu pro řešení problému s~dvojrozměrnou
-vstupní páskou.
+hranice. Následně byl popsán čtyřcestný konečný automat, který využívá princip
+pohybu dvojcestného automatu pro řešení problému s~dvojrozměrnou vstupní
+páskou. Nakonec bylo vysvětleno z~jakého důvodu se dvoudimenzionální automaty
+hodí pro řešení Futoshiki.
 
 Následuje popis dvojrozměrného skákajícího automatu, který je postaven na
 základě dříve popsaného skákajícího automatu a~čtyřcestného automatu. Tento
@@ -1640,8 +1640,8 @@ mřížky, čímž se zvyšuje efektivita řešení.
 
 Navazující kapitola obsahuje již konkrétní pravidla pro dvojrozměrný skákající
 automat. Nejdříve jsou popsány základní symboly, které jsou použity jako
-vstupní abeceda. Následně jsou popsána pravidla pro řešení mřížky pomocí
-algoritmu Backtracking a~pravidla pro řešení pomocí Forward Checking.
+vstupní abeceda. Následně jsou popsána pravidla pro řešení mřížky algoritmem
+Backtracking a~pravidla pro řešení algoritmem Forward Checking.
 
 Kapitola šestá se zaměřuje na implementaci aplikace pro řešení hry Futoshiki.
 Aplikace je napsána v~programovacím jazyce Rust a~využívá knihovnu
@@ -1662,7 +1662,7 @@ celků implementace, jako třeba správnost implementovaných algoritmů, gener�
 mřížek nebo ověřovače složení. Nakonec byl také implementován benchmark, který
 testuje časovou složitost a~využití paměti domén a nakonec i~benchmark řešících
 algoritmů. Výsledky testování, obsahující minimální, maximální a~průměrný čas,
-jsou následně vytisknuty do terminálu. Z~průměrných časů je následně také
+jsou následně vytisknuty do terminálu. Na základě průměrných časů je následně
 vygenerován graf, který zobrazuje časovou náročnost jednotlivých algoritmů.
 Tento graf umožňuje snadné porovnání efektivity algoritmů při řešení různě
 velkých mřížek.

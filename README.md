@@ -1,9 +1,10 @@
 # futoshiki
 
-Futoshiki TUI implementation in Rust 🦀
+My bachelor thesis: **How to Solve Futoshiki by Means of Automata**.
 
 ## Table of Contents
-- [Installation](#installation)
+- [Running the project](#running-the-project)
+- [Running on merlin server](#running-on-merlin-server)
 - [Usage](#usage)
 - [Detailed description](#detailed-description)
     - [What is Futoshiki?](#what-is-futoshiki)
@@ -14,31 +15,52 @@ Futoshiki TUI implementation in Rust 🦀
     - [Config](#config)
 - [Links](#links)
 
-## Installation
+## Running the project
 
-You have to compile it yourself, but that shouldn't be a problem. Only thing
-you need is [cargo](https://www.rust-lang.org/tools/install). You need to go to
-the futoshiki project folder and run:
+> App was tested on Linux only, other operating systems might not work.
 
+To build the project, you need to have the Rust Toolchain installed (see
+[rust installation page](https://www.rust-lang.org/tools/install)). When you
+have the Rust Toochain, you can build the project with `cargo`:
 ```bash
 cargo build -r
 ```
 
-After it's done compiling, you can start it in `./target/release/futoshiki`.
+If you have issues with permissions for cargo registry cache, you can build the
+project like this (this is how you have to build on merlin):
+```bash
+CARGO_HOME=target/cargo-home/ cargo build -r
+```
+
+After it's done compiling, the binary will be `target/release/futoshiki`.
+Because the project is a console program, it needs to be run from terminal.
+
+## Running on merlin server
+
+The binary in the archive (`futoshiki`) can be used on merlin. To create a new
+build on merlin, you need to run the project like this:
+```bash
+CARGO_HOME=target/cargo-home cargo build -r
+```
 
 ## Usage
 
+In all the examples, the path to the project binary is substituted by
+`futoshiki`. If you want run the project, you need to use the path to the built
+binary from the previous step.
+
 You can start `futoshiki` in default size *(4×4)* by running:
 ```bash
-./futoshiki
+futoshiki
 ```
 
-To play a game with different size, you can do it like this:
+To play a game with different size and different solving algorithm, you can do
+it like this:
 ```bash
-./futoshiki -s 10
+futoshiki -s 10 --solver bt
 ```
 
-All the usage and options can be seen in the help:
+All the other usage and options can be seen in the help:
 ```bash
 ./futoshiki -h
 ```
@@ -55,16 +77,16 @@ all the inequalities must be satisfied.
 
 ### Game
 
-Game is implemented using TUI. When you start a game, you get put into game
-screen in **solver** mode. In this mode you can solve board, generate new once
+Game is implemented using TUI. When you start a game, you get put into
+**board solver screen**. On this screen you can solve board, generate new one
 or let an algorithm to solve the board for you. To change selected cells you
 can use `Arrow` keys, place number by typing the desired `digit`.
 
-You can also switch to **builder** mode *(by pressing `b` key)*, where you can
-create your own board. You can add digits the same way as in **solver** mode,
-but you can also add conditions. To add condition, you have to press
-corresponding condition *(`<` or `>`)* and `Arrow` in which direction the
-condition should be placed.
+You can also switch to **board creation screen** *(by pressing `b` key)*, where
+you can create your own board. You can add digits the same way as in
+**board solver screen**, but you can also add conditions. To add condition, you
+have to press corresponding condition *(`<` or `>`)* and `Arrow` in which
+direction the condition should be placed.
 
 All other keybinds are listed in the help on the bottom of each page.
 
