@@ -53,6 +53,12 @@ impl App {
     pub fn listen_solver(&mut self, event: KeyEvent) -> Result<(), Error> {
         match event.code {
             KeyCode::Char('s') => {
+                for pos in self.board.rect() {
+                    if self.board[pos].enabled() {
+                        self.board.set_selected(pos);
+                        self.board.clear();
+                    }
+                }
                 self.state = match self.solver.solve(&mut self.board) {
                     true => State::Solved,
                     false => State::Unsolvable,
