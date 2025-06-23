@@ -21,7 +21,7 @@
 % splněna dvě pravidla. První pravidlo je, že každý řádek i sloupec musí 
 % obsahovat čísla od 1 do velikosti mřížky. Z toho vyplývá, že každé pole musí 
 % mít v řádku i sloupci unikátní hodnotu. Druhé pravidlo říká, že musí platit 
-% nerovnosti mezi čísly v mřížce.
+% nerovnosti mezi poli v mřížce.
 \begin{frame}
   \frametitle{Co je futoshiki?}
   \centering\includegraphics[width=0.4\textwidth]{img/futoshiki.png}
@@ -95,14 +95,7 @@
 % pomocí algoritmu Backtracking a Forward Checking. Dále jsem vytvořil 
 % aplikaci s terminálovým rozhraním, která umožňuje uživateli vytvořit mřížku,
 % nechat si vygenerovat náhodnou mřížku, složit mřížku a případně využít
-% implementovaných algoritmů pro automatické řešení mřížky. Algoritmy, které
-% využívají domény, jsou implementovány pro dva různé typy domén - pomocí
-% hašovacích množin a pomocí bitmap. 
-% Algoritmus Arc Consistency #3 pouze upravuje domény polí a dále neřeší 
-% samotné vyřešení mřížky. Implementoval jsem proto dvě varianty řešení 
-% - první varianta vygeneruje domény pomocí Arc Consistency #3 a poté využije
-% Backtracking pro vyřešení mřížky. Druhá varianta je obdoba algoritmu 
-% Forward Checking, jen se domény upravují pomocí Arc Consistency #3.
+% implementovaných algoritmů pro automatické řešení mřížky.
 \begin{frame}
   \frametitle{Výsledky práce}
 
