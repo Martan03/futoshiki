@@ -424,12 +424,9 @@ dependencies = [
 name = "futoshiki-core"
 version = "0.1.0"
 dependencies = [
- "dirs",
  "rand",
  "serde",
- "serde_json",
  "termint",
- "thiserror",
 ]
 
 [[package]]
