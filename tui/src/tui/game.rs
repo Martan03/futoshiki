@@ -44,7 +44,7 @@ impl App {
             }
             KeyCode::Enter => {
                 let mut board = self.board.borrow_mut();
-                *board = BoardGen::generate(board.size);
+                *board = BoardGen::generate(board.size, rand::rng());
                 self.state = State::Playing;
             }
             KeyCode::Char('r') => self.board.borrow_mut().reset(),
@@ -81,7 +81,7 @@ impl App {
             }
             KeyCode::Enter => {
                 let mut board = self.board.borrow_mut();
-                *board = BoardGen::generate(board.size);
+                *board = BoardGen::generate(board.size, rand::rng());
                 board.disable_vals();
                 self.state = State::Playing;
             }

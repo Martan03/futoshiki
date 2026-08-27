@@ -6,8 +6,9 @@ use crate::{
 const REP_CNT: usize = 10;
 
 fn board_gen_n_times(size: usize) {
+    let mut rng = rand::rng();
     for _ in 0..REP_CNT {
-        let mut board = BoardGen::generate(size);
+        let mut board = BoardGen::generate(size, &mut rng);
         assert!(AC3Solver::bit(&mut board).solve());
     }
 }

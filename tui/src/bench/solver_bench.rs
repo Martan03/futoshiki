@@ -52,8 +52,9 @@ impl SolverBench {
 
     fn test_boards(&mut self, size: usize) {
         let mut stats: HashMap<SolverType, BenchStat> = HashMap::new();
+        let mut rng = rand::rng();
         for _ in 0..self.boards {
-            let board = BoardGen::generate(size);
+            let board = BoardGen::generate(size, &mut rng);
             self.test_solvers(&mut stats, board);
         }
 

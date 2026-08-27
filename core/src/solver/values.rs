@@ -1,4 +1,4 @@
-use rand::{rngs::ThreadRng, seq::SliceRandom};
+use rand::{seq::SliceRandom, Rng};
 
 use super::domain::DomainTrait;
 
@@ -24,21 +24,18 @@ impl Values for ConstValues {
     }
 }
 
-pub struct ConstRngValues {
+pub struct ConstRngValues<R> {
     max: usize,
-    rng: ThreadRng,
+    rng: R,
 }
 
-impl ConstRngValues {
-    pub fn new(max: usize) -> Self {
-        Self {
-            max,
-            rng: rand::thread_rng(),
-        }
+impl<R: Rng> ConstRngValues<R> {
+    pub fn new(max: usize, rng: R) -> Self {
+        Self { max, rng }
     }
 }
 
-impl Values for ConstRngValues {
+impl<R: Rng> Values for ConstRngValues<R> {
     fn get(&mut self, _id: usize) -> Vec<usize> {
         let mut domain: Vec<usize> = (1..=self.max).collect();
         domain.shuffle(&mut self.rng);

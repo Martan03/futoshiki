@@ -1,3 +1,5 @@
+use rand::Rng;
+
 use crate::board::board_struct::Board;
 
 use super::{
@@ -30,14 +32,14 @@ impl<'a> BtSolver<'a, ConstValues> {
     }
 }
 
-impl<'a> BtSolver<'a, ConstRngValues> {
+impl<'a, R: Rng> BtSolver<'a, ConstRngValues<R>> {
     /// Creates new instance of the backtracking solver used for generating
     /// new board
-    pub fn generator(board: &'a mut Board) -> Self {
+    pub fn generator(board: &'a mut Board, rng: R) -> Self {
         let size = board.size();
         Self {
             board,
-            values: ConstRngValues::new(size),
+            values: ConstRngValues::new(size, rng),
         }
     }
 }
