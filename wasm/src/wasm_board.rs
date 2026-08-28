@@ -37,6 +37,16 @@ impl WasmBoard {
         self.inner[sel].value()
     }
 
+    pub fn get_hor_cond(&self, x: usize, y: usize) -> Option<bool> {
+        let id = x + y * self.inner.size().saturating_sub(1);
+        self.inner.hor_conds.get(id).copied().flatten()
+    }
+
+    pub fn get_ver_cond(&self, x: usize, y: usize) -> Option<bool> {
+        let id = x + y * self.inner.size();
+        self.inner.ver_conds.get(id).copied().flatten()
+    }
+
     /// Sets the value of the selected cell to the given value.
     pub fn set_value(&mut self, val: usize) {
         let sel = self.inner.selected.x + self.inner.selected.y * self.size();
