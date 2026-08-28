@@ -11,7 +11,7 @@
         width: 24px;
         height: 24px;
         fill: none;
-        stroke: #aaa;
+        stroke: var(--text);
         stroke-width: 3px;
         stroke-linecap: round;
         stroke-linejoin: round;
