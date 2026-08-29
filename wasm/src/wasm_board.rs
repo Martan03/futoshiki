@@ -5,7 +5,7 @@ use wasm_bindgen::prelude::wasm_bindgen;
 #[derive(Debug)]
 #[wasm_bindgen]
 pub struct WasmBoard {
-    inner: Board,
+    pub(crate) inner: Board,
 }
 
 #[wasm_bindgen]
