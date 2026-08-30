@@ -1,4 +1,7 @@
-use futoshiki_core::board::{board_gen::BoardGen, board_struct::Board};
+use futoshiki_core::{
+    board::{board_gen::BoardGen, board_struct::Board},
+    solver::{Solver, ac3_solver::AC3Solver},
+};
 use wasm_bindgen::prelude::wasm_bindgen;
 
 /// Core [`Board`] wrapper for wasm exposure.
@@ -24,6 +27,13 @@ impl WasmBoard {
         Self {
             inner: BoardGen::generate(size, &mut rng),
         }
+    }
+
+    /// Solves the current board. Returns true if solution found.
+    ///
+    /// It removes all already filled digits and uses only the permanent ones.
+    pub fn solve(&mut self) -> bool {
+        AC3Solver::bit(&mut self.inner).solve()
     }
 
     /// Gets the size of the board.

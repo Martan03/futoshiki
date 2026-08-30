@@ -7,8 +7,9 @@
 
     let board: WasmBoard | null = null;
     let hasWon = false;
-    let size = 0;
+    let isRevealed = false;
 
+    let size = 0;
     let inputSize = 4;
     let debounceTimer: ReturnType<typeof setTimeout>;
 
@@ -24,6 +25,7 @@
 
     async function newGame(newSize: number) {
         hasWon = false;
+        isRevealed = false;
         selected = null;
 
         let b = WasmBoard.generate(newSize);
@@ -43,9 +45,24 @@
     }
 
     function solveBoard() {
-        if (!board || hasWon) return;
+        if (!board || hasWon || isRevealed) return;
 
-        alert("Not implemented");
+        for (let y = 0; y < size; y++) {
+            for (let x = 0; x < size; x++) {
+                if (!fixedCells.has(`${x},${y}`)) {
+                    board.set_value(x, y, 0);
+                }
+            }
+        }
+
+        const success = board.solve();
+        if (success) {
+            board = board;
+            isRevealed = true;
+            selected = null;
+        } else {
+            alert("This board cannot be solved...");
+        }
     }
 
     onMount(async () => {
@@ -61,7 +78,7 @@
     }
 
     function writeVal(val: number) {
-        if (selected && board && !hasWon) {
+        if (selected && board && !hasWon && !isRevealed) {
             board.set_value(selected.x, selected.y, val);
             board = board;
 
@@ -73,7 +90,7 @@
     }
 
     function handleKey(e: KeyboardEvent) {
-        if (!selected || hasWon) return;
+        if (!selected || hasWon || isRevealed) return;
 
         const num = parseInt(e.key);
         if (num >= 0 && num <= size) {
@@ -113,7 +130,7 @@
             on:playAgain={() => newGame(size)}
         />
 
-        {#if !hasWon}
+        {#if !hasWon && !isRevealed}
             <Numpad
                 {size}
                 disabled={!selected}
