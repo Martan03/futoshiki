@@ -4,9 +4,68 @@
         <meta charset="UTF-8" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
         <title>futoshiki</title>
+        <meta name="title" content="futoshiki - online puzzle game" />
+        <meta
+            name="description"
+            content="Play futoshiki, a Japanese logic puzzle game similar to Sudoku. Solve grid-based puzzles with inequality constraints."
+        />
+        <meta
+            name="keywords"
+            content="futoshiki, logic puzzle, sudoku alternative, inequality puzzle, online game, browser game, rust, webassembly, svelte"
+        />
+        <meta name="author" content="Martin Slezák" />
+
+        <meta property="og:type" content="website" />
+        <meta
+            property="og:url"
+            content="https://martan03.github.io/futoshiki/"
+        />
+        <meta property="og:title" content="futoshiki - online puzzle game" />
+        <meta
+            property="og:description"
+            content="Play futoshiki, a Japanese logic puzzle game similar to Sudoku. Solve grid-based puzzles with inequality constraints."
+        />
+        <meta
+            property="og:image"
+            href="https://martan03.github.io/futoshiki/preview.png"
+        />
+
+        <link rel="canonical" href="https://martan03.github.io/futoshiki/" />
+
+        <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@type": "VideoGame",
+                "name": "futoshiki",
+                "description": "A free, fast, browser-based Futoshiki logic puzzle game built with Rust and Svelte.",
+                "genre": ["Logic Puzzle", "Puzzle Game", "Sudoku Alternative"],
+                "playMode": "SinglePlayer",
+                "applicationCategory": "Game",
+                "operatingSystem": "Any",
+                "offers": {
+                    "@type": "Offer",
+                    "price": "0",
+                    "priceCurrency": "USD"
+                },
+                "author": {
+                    "@type": "Person",
+                    "name": "Martin Slezák",
+                    "url": "https://martan03.github.io/"
+                }
+            }
+        </script>
     </head>
     <body>
+        <noscript>
+            <h1>futoshiki</h1>
+            <p>
+                Play the classic Japanese logic puzzle futoshiki online. Please
+                enable JavaScript to run the WebAssembly game engine.
+            </p>
+        </noscript>
+
         <div id="app"></div>
         <script type="module" src="/src/main.ts"></script>
     </body>
