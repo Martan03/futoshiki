@@ -41,6 +41,10 @@
                     {@const y = row / 2}
                     <button
                         class="cell"
+                        aria-label="Row {y + 1}, Column {x +
+                            1}. {board.get_value(x, y)
+                            ? `Value is ${board.get_value(x, y)}`
+                            : 'Empty'}"
                         class:fixed={fixedCells.has(`${x},${y}`)}
                         class:selected={selected?.x === x && selected?.y === y}
                         on:click={() => dispatch("select", { x, y })}

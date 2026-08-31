@@ -4,6 +4,8 @@
     import Controls from "./components/Controls.svelte";
     import BoardGrid from "./components/BoardGrid.svelte";
     import Numpad from "./components/Numpad.svelte";
+    import Footer from "./components/Footer.svelte";
+    import Rules from "./components/Rules.svelte";
 
     let board: WasmBoard | null = null;
     let hasWon = false;
@@ -140,10 +142,18 @@
     {:else}
         <p>Loading solver engine...</p>
     {/if}
+
+    <Rules {size} />
+
+    <Footer />
 </main>
 
 <style>
     main {
         text-align: center;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 </style>

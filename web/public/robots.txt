@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://martan03.github.io/futoshiki/sitemap.xml
